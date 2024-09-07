@@ -1,8 +1,7 @@
 package mysqldb
 
 import (
-	"time"
-
+	"github.com/tommjj/ql-kho-lua/internal/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -11,11 +10,9 @@ type MysqlDB struct {
 	*gorm.DB
 }
 
-func NewMysqlDB() (*MysqlDB, error) {
-	dsn := "root:@tcp(127.0.0.1:3306)/ql?charset=utf8mb4&parseTime=True&loc=Local"
-
+func NewMysqlDB(conf config.DB) (*MysqlDB, error) {
 	dbConn := mysql.New(mysql.Config{
-		DSN: dsn,
+		DSN: conf.DSN,
 	})
 
 	db, err := gorm.Open(dbConn, &gorm.Config{})
@@ -28,16 +25,16 @@ func NewMysqlDB() (*MysqlDB, error) {
 		return nil, err
 	}
 
-	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	mysql.SetMaxIdleConns(10)
-
-	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	mysql.SetMaxOpenConns(100)
-
-	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	mysql.SetConnMaxLifetime(time.Hour)
+	mysql.SetMaxIdleConns(conf.MaxIdleConns)
+	mysql.SetMaxOpenConns(conf.MaxOpenConns)
+	mysql.SetConnMaxLifetime(conf.ConnMaxLifetime)
 
 	err = mysql.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.AutoMigrate()
 	if err != nil {
 		return nil, err
 	}

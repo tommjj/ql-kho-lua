@@ -1,13 +1,14 @@
-package logger
+package logger_test
 
 import (
 	"testing"
 
 	"github.com/tommjj/ql-kho-lua/internal/config"
+	"github.com/tommjj/ql-kho-lua/internal/logger"
 )
 
 func TestLogger(t *testing.T) {
-	log, err := New(config.Logger{
+	log, err := logger.New(config.Logger{
 		Level:   "Info",
 		Encoder: "development",
 		LogFileWriter: &config.LogFileWriter{

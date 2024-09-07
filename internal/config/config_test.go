@@ -1,15 +1,16 @@
-package config
+package config_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/tommjj/ql-kho-lua/internal/config"
+)
 
 func TestConfig(t *testing.T) {
-	conf, err := New()
+	conf, err := config.New()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Log(conf.App)
-	t.Log(conf.Auth)
-	t.Log(conf.Http)
-	t.Log(conf.Logger)
+	t.Log(conf.DB)
 }

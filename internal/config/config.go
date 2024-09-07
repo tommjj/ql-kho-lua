@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -14,7 +15,8 @@ type (
 		App    *App
 		Logger *Logger
 		Auth   *Auth
-		Http   *Http
+		Http   *HTTP
+		DB     *DB
 	}
 
 	App struct {
@@ -28,6 +30,13 @@ type (
 		LogFileWriter *LogFileWriter
 	}
 
+	DB struct {
+		DSN             string
+		MaxIdleConns    int
+		MaxOpenConns    int
+		ConnMaxLifetime time.Duration
+	}
+
 	LogFileWriter struct {
 		FileName   string
 		MaxSize    int
@@ -37,10 +46,10 @@ type (
 
 	Auth struct {
 		SecretKey string
-		Duration  string
+		Duration  time.Duration
 	}
 
-	Http struct {
+	HTTP struct {
 		Env            string
 		AllowedOrigins []string
 		URL            string
@@ -64,9 +73,17 @@ func New() (*Config, error) {
 		return nil, err
 	}
 
-	auth := GetAuthConf()
+	auth, err := GetAuthConf()
+	if err != nil {
+		return nil, err
+	}
 
 	http, err := GetHTTPConf()
+	if err != nil {
+		return nil, err
+	}
+
+	db, err := GetDBConf()
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +93,7 @@ func New() (*Config, error) {
 		Logger: logger,
 		Auth:   auth,
 		Http:   http,
+		DB:     db,
 	}, nil
 }
 
@@ -99,10 +117,12 @@ func GetLoggerConf() (*Logger, error) {
 	if err != nil {
 		return nil, fmt.Errorf("LOG_MAX_SIZE must to be a number: %v", err)
 	}
+
 	maxBackups, err := strconv.Atoi(os.Getenv("LOG_MAX_BACKUPS"))
 	if err != nil {
 		return nil, fmt.Errorf("LOG_MAX_BACKUPS must to be a number: %v", err)
 	}
+
 	maxAge, err := strconv.Atoi(os.Getenv("LOG_MAX_AGE"))
 	if err != nil {
 		return nil, fmt.Errorf("LOG_MAX_AGE must to be a number: %v", err)
@@ -120,14 +140,43 @@ func GetLoggerConf() (*Logger, error) {
 	}, nil
 }
 
-func GetAuthConf() *Auth {
+func GetAuthConf() (*Auth, error) {
+	duration, err := time.ParseDuration(os.Getenv("AUTH_TOKEN_DURATION"))
+	if err != nil {
+		return nil, err
+	}
+
 	return &Auth{
 		SecretKey: os.Getenv("AUTH_SECRET"),
-		Duration:  os.Getenv("AUTH_TOKEN_DURATION"),
-	}
+		Duration:  duration,
+	}, nil
 }
 
-func GetHTTPConf() (*Http, error) {
+func GetDBConf() (*DB, error) {
+	duration, err := time.ParseDuration(os.Getenv("CONN_MAX_LIFE_TIME"))
+	if err != nil {
+		return nil, err
+	}
+
+	maxIdleConns, err := strconv.Atoi(os.Getenv("MAX_IDLE_CONN"))
+	if err != nil {
+		return nil, err
+	}
+
+	maxOpenConns, err := strconv.Atoi(os.Getenv("MAX_OPEN_CONN"))
+	if err != nil {
+		return nil, err
+	}
+
+	return &DB{
+		DSN:             os.Getenv("DSN"),
+		MaxIdleConns:    maxIdleConns,
+		MaxOpenConns:    maxOpenConns,
+		ConnMaxLifetime: duration,
+	}, nil
+}
+
+func GetHTTPConf() (*HTTP, error) {
 	allowedOrigins := strings.Split(os.Getenv("HTTP_ALLOWED_ORIGINS"), ",")
 	port, err := strconv.Atoi(os.Getenv("HTTP_PORT"))
 	if err != nil {
@@ -162,7 +211,7 @@ func GetHTTPConf() (*Http, error) {
 		}
 	}
 
-	return &Http{
+	return &HTTP{
 		Env:            os.Getenv("ENV"),
 		AllowedOrigins: allowedOrigins,
 		URL:            os.Getenv("HTTP_URL"),

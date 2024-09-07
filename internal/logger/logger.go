@@ -41,15 +41,15 @@ func New(conf config.Logger) (*zap.Logger, error) {
 	}
 
 	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(getJSONEncoder(conf.Encoder)),
-		getWriteSyncer(conf.LogFileWriter),
+		zapcore.NewJSONEncoder(newJSONEncoder(conf.Encoder)),
+		newWriteSyncer(conf.LogFileWriter),
 		level,
 	)
 
 	return zap.New(core), nil
 }
 
-func getWriteSyncer(conf *config.LogFileWriter) zapcore.WriteSyncer {
+func newWriteSyncer(conf *config.LogFileWriter) zapcore.WriteSyncer {
 	if conf != nil {
 		w := zapcore.AddSync(&lumberjack.Logger{
 			Filename:   conf.FileName,
@@ -66,7 +66,7 @@ func getWriteSyncer(conf *config.LogFileWriter) zapcore.WriteSyncer {
 	return zapcore.AddSync(os.Stdout)
 }
 
-func getJSONEncoder(mode string) zapcore.EncoderConfig {
+func newJSONEncoder(mode string) zapcore.EncoderConfig {
 	if mode != "production" {
 		return zap.NewDevelopmentEncoderConfig()
 	}
@@ -129,7 +129,16 @@ func Fatalf(template string, args ...interface{}) {
 	S.Fatalf(template, args...)
 }
 
-func Sync() {
-	L.Sync()
-	S.Sync()
+func Sync() error {
+	var errs error = nil
+	err := L.Sync()
+	if err != nil {
+		errs = errors.Join(errs, err)
+	}
+
+	err = S.Sync()
+	if err != nil {
+		errs = errors.Join(errs, err)
+	}
+	return errs
 }
