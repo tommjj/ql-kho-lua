@@ -1,14 +1,14 @@
-package logger_test
+package logger
 
 import (
 	"testing"
 
 	"github.com/tommjj/ql-kho-lua/internal/config"
-	"github.com/tommjj/ql-kho-lua/internal/logger"
+	"go.uber.org/zap"
 )
 
 func TestLogger(t *testing.T) {
-	log, err := logger.New(config.Logger{
+	err := Set(config.Logger{
 		Level:   "Info",
 		Encoder: "development",
 		LogFileWriter: &config.LogFileWriter{
@@ -22,6 +22,5 @@ func TestLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	log.Info("abc")
+	zap.L().Info("aaa")
 }

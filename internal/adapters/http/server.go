@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/tommjj/ql-kho-lua/internal/config"
+	"go.uber.org/zap"
 
 	"github.com/gin-contrib/cors"
 	ginzap "github.com/gin-contrib/zap"
@@ -15,13 +16,13 @@ import (
 
 type RegisterRouterFunc func(gin.IRouter)
 
-type Router struct {
-	*gin.Engine
-	Port int
-	Url  string
+type router struct {
+	engine *gin.Engine
+	Port   int
+	Url    string
 }
 
-func New(conf *config.HTTP, options ...RegisterRouterFunc) (*Router, error) {
+func NewAdapter(conf *config.HTTP, options ...RegisterRouterFunc) (*router, error) {
 	if conf.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -38,27 +39,28 @@ func New(conf *config.HTTP, options ...RegisterRouterFunc) (*Router, error) {
 	r.Use(ginzap.RecoveryWithZap(logger, true))
 
 	// set CORS
-	ginConfig := cors.DefaultConfig()
-	ginConfig.AllowOrigins = conf.AllowedOrigins
-	r.Use(cors.New(ginConfig))
+	CORSConfig := cors.DefaultConfig()
+	CORSConfig.AllowOrigins = conf.AllowedOrigins
+	CORSConfig.AllowCredentials = true
+	r.Use(cors.New(CORSConfig))
 
 	for _, option := range options {
 		option(r)
 	}
 
-	return &Router{
-		Engine: r,
+	return &router{
+		engine: r,
 		Port:   conf.Port,
 		Url:    conf.URL,
 	}, nil
 }
 
 // Serve is a method start server
-func (r *Router) Serve() {
-	logger.Info(fmt.Sprintf("start server at http://%v:%v", r.Url, r.Port))
+func (r *router) Serve() {
+	zap.L().Info(fmt.Sprintf("start server at http://%v:%v", r.Url, r.Port))
 
-	err := r.Run(fmt.Sprintf("%v:%v", r.Url, r.Port))
+	err := r.engine.Run(fmt.Sprintf("%v:%v", r.Url, r.Port))
 	if err != nil {
-		logger.Error(err.Error())
+		zap.L().Error(err.Error())
 	}
 }

@@ -17,7 +17,7 @@ func main() {
 		logger.Fatal(err.Error())
 	}
 
-	server, err := http.New(conf.Http, http.RegisterPingRoute())
+	server, err := http.NewAdapter(conf.Http, http.RegisterPingRoute())
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
