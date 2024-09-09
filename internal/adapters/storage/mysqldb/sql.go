@@ -11,11 +11,11 @@ type MysqlDB struct {
 }
 
 func NewMysqlDB(conf config.DB) (*MysqlDB, error) {
-	dbConn := mysql.New(mysql.Config{
+	dialector := mysql.New(mysql.Config{
 		DSN: conf.DSN,
 	})
 
-	db, err := gorm.Open(dbConn, &gorm.Config{})
+	db, err := gorm.Open(dialector, &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
