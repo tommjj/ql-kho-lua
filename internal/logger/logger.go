@@ -50,14 +50,14 @@ func newWriteSyncer(conf *config.LogFileWriter) zapcore.WriteSyncer {
 		return zapcore.AddSync(os.Stdout)
 	}
 
-	w := zapcore.AddSync(&lumberjack.Logger{
+	fileWriteSyncer := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   conf.FileName,
 		MaxSize:    conf.MaxSize,
 		MaxBackups: conf.MaxBackups,
 		MaxAge:     conf.MaxAge,
 	})
 	return zapcore.NewMultiWriteSyncer(
-		zapcore.AddSync(w),
+		zapcore.AddSync(fileWriteSyncer),
 		zapcore.AddSync(os.Stdout),
 	)
 }
