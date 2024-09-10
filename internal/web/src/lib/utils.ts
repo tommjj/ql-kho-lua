@@ -5,14 +5,17 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type asyncFunc = (...args: any[]) => Promise<any>;
 /**
- * withError
+ * withError is a decorator func to decorated func will return with error\
+ * ! unsafe type if use for func that infer return types
  **/
-export const withError = <T extends (...args: any[]) => Promise<any>>(
+export function withError<T extends asyncFunc>(
     func: T
-): ((
+): (
     ...a: Parameters<T>
-) => Promise<[ReturnType<T>, undefined] | [undefined, unknown]>) => {
+) => Promise<[ReturnType<T>, undefined] | [undefined, unknown]> {
     return async (...a: Parameters<T>) => {
         try {
             const data = await func(...a);
@@ -21,14 +24,12 @@ export const withError = <T extends (...args: any[]) => Promise<any>>(
             return [undefined, err];
         }
     };
-};
+}
 
 /**
  * noError is a decorator func to decorated func will return null if there is an error
  **/
-export const noError = <T extends (...args: any[]) => Promise<any>>(
-    func: T
-): T => {
+export function noError<T extends asyncFunc>(func: T): T {
     return (async (...a: Parameters<T>) => {
         try {
             return await func(...a);
@@ -36,4 +37,4 @@ export const noError = <T extends (...args: any[]) => Promise<any>>(
             return null;
         }
     }) as T;
-};
+}

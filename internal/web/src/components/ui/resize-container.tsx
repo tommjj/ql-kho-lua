@@ -64,16 +64,13 @@ export const ResizeContainer = forwardRef<HTMLDivElement, Props>(
         }, [maxWidth, minWidth]);
 
         useEffect(() => {
-            if (!containerRef.current) return;
-            if (!isMouseDown) return;
+            const container = containerRef.current;
+            if (!container || !isMouseDown) return;
 
             const handleMouseMove = (e: MouseEvent) => {
                 window?.getSelection()?.removeAllRanges();
 
-                const rect = containerRef.current?.getBoundingClientRect();
-                if (rect === undefined) {
-                    return;
-                }
+                const rect = container.getBoundingClientRect();
 
                 const offset =
                     resizeDir === 'Left'
@@ -98,15 +95,13 @@ export const ResizeContainer = forwardRef<HTMLDivElement, Props>(
         }, [isMouseDown, maxWidth, minWidth, resizeDir]);
 
         useEffect(() => {
-            if (!isMouseDown) return;
+            const container = containerRef.current;
+            if (!container || !isMouseDown) return;
 
             const handleMouseClick = () => {
                 setIsMouseDown(false);
 
-                const rect = containerRef.current?.getBoundingClientRect();
-                if (rect === undefined) {
-                    return;
-                }
+                const rect = container.getBoundingClientRect();
 
                 setWidth(rect.width - offset);
                 setOffset(0);
