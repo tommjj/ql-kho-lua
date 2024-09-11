@@ -18,7 +18,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                     </div>
                 </ResizablePanel>
                 <ResizableHandle />
-                <ResizablePanel>
+                <ResizablePanel defaultSize={80}>
                     <div className="size-full">{children}</div>
                 </ResizablePanel>
             </ResizablePanelGroup>

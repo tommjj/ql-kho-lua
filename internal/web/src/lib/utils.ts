@@ -8,14 +8,16 @@ export function cn(...inputs: ClassValue[]) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type asyncFunc = (...args: any[]) => Promise<any>;
 /**
- * withError is a decorator func to decorated func will return with error\
- * ! unsafe type if use for func that infer return types
+ * withError is a decorator func to decorated func will return with error \
+ * ! unsafe types if use for func that infer return types
+ *
+ * @param func asyncFunc
  **/
 export function withError<T extends asyncFunc>(
     func: T
 ): (
     ...a: Parameters<T>
-) => Promise<[ReturnType<T>, undefined] | [undefined, unknown]> {
+) => Promise<[Awaited<ReturnType<T>>, undefined] | [undefined, unknown]> {
     return async (...a: Parameters<T>) => {
         try {
             const data = await func(...a);
