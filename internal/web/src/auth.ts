@@ -8,6 +8,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         newUser: '/sign-up',
     },
     callbacks: {
+        jwt: async ({ token, user }) => {
+            if (user) {
+                token.id = user.id;
+            }
+            return token;
+        },
+        session: async ({ session, token }) => {
+            if (session.user) {
+                session.user.id = token.sub || '';
+            }
+            return session;
+        },
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
 
@@ -43,8 +55,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             authorize: async () => {
                 const user = {
                     id: 'test',
-                    email: 'adw',
                     name: 'a',
+                    token: 'adw',
                 };
 
                 if (!user) {

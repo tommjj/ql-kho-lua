@@ -4,7 +4,7 @@ import NextAuth from 'next-auth';
 declare interface UserSession {
     id: string;
     name: string;
-    email: string;
+    token: string;
 }
 
 declare module 'next-auth' {

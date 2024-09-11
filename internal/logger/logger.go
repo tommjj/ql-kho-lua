@@ -3,6 +3,7 @@ package logger
 import (
 	"errors"
 	"os"
+	"strings"
 
 	"github.com/tommjj/ql-kho-lua/internal/config"
 	"go.uber.org/zap"
@@ -11,13 +12,13 @@ import (
 )
 
 var logLevelMap = map[string]zapcore.Level{
-	"Debug":  zap.DebugLevel,
-	"Info":   zap.InfoLevel,
-	"Warn":   zap.WarnLevel,
-	"Error":  zap.ErrorLevel,
-	"DPanic": zap.DPanicLevel,
-	"Panic":  zap.PanicLevel,
-	"Fatal":  zap.FatalLevel,
+	"debug":  zap.DebugLevel,
+	"info":   zap.InfoLevel,
+	"warn":   zap.WarnLevel,
+	"error":  zap.ErrorLevel,
+	"fpanic": zap.DPanicLevel,
+	"panic":  zap.PanicLevel,
+	"fatal":  zap.FatalLevel,
 }
 
 func Set(conf config.Logger) error {
@@ -31,7 +32,7 @@ func Set(conf config.Logger) error {
 }
 
 func New(conf config.Logger) (*zap.Logger, error) {
-	level, ok := logLevelMap[conf.Level]
+	level, ok := logLevelMap[strings.ToLower(conf.Level)]
 	if !ok {
 		return nil, errors.New("logger level is not valid")
 	}
