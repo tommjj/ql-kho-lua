@@ -35,4 +35,6 @@ var (
 	ErrUnauthorized = errors.New("user is unauthorized to access the resource")
 	// ErrForbidden is an error for when the user is forbidden to access the resource
 	ErrForbidden = errors.New("user is forbidden to access the resource")
+	// ErrInvalidLocation is an error for the location is not valid
+	ErrInvalidLocation = errors.New("location is not valid")
 )

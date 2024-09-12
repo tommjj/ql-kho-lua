@@ -14,7 +14,6 @@ func TestConnection(t *testing.T) {
 		MaxOpenConns:    100,
 		ConnMaxLifetime: time.Hour,
 	})
-
 	if err != nil {
 		t.Fatal(err)
 	}

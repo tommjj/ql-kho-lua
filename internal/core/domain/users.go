@@ -15,3 +15,7 @@ type User struct {
 	Password string `json:"-"`
 	Role     Role   `json:"role"`
 }
+
+func (u *User) RemovePass() {
+	u.Password = ""
+}

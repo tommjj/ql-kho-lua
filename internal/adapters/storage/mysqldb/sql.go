@@ -1,6 +1,7 @@
 package mysqldb
 
 import (
+	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb/schema"
 	"github.com/tommjj/ql-kho-lua/internal/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -34,7 +35,16 @@ func NewMysqlDB(conf config.DB) (*MysqlDB, error) {
 		return nil, err
 	}
 
-	err = db.AutoMigrate()
+	err = db.AutoMigrate(
+		&schema.User{},
+		&schema.Storehouse{},
+		&schema.Customer{},
+		&schema.Rice{},
+		&schema.ExportInvoice{},
+		&schema.ExportInvoiceDetail{},
+		&schema.ImportInvoice{},
+		&schema.ImportInvoiceDetail{},
+	)
 	if err != nil {
 		return nil, err
 	}
