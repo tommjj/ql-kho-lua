@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb"
 	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb/schema"
@@ -13,18 +15,18 @@ import (
 )
 
 // implement ports.IUserRepository
-type userRepo struct {
+type userRepository struct {
 	db *mysqldb.MysqlDB
 }
 
-func NewUserRepo(db *mysqldb.MysqlDB) ports.IUserRepository {
-	return &userRepo{
+func NewUserRepository(db *mysqldb.MysqlDB) ports.IUserRepository {
+	return &userRepository{
 		db: db,
 	}
 }
 
 // Create create an new user
-func (ur *userRepo) Create(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (ur *userRepository) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	createdUser := &schema.User{
 		Name:     user.Name,
 		Email:    user.Email,
@@ -44,7 +46,7 @@ func (ur *userRepo) Create(ctx context.Context, user *domain.User) (*domain.User
 	return convertToDomainUser(createdUser), nil
 }
 
-func (ur *userRepo) GetByID(ctx context.Context, id int) (*domain.User, error) {
+func (ur *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
 	user := &schema.User{}
 
 	err := ur.db.Where("id = ?", id).First(user).Error
@@ -58,7 +60,7 @@ func (ur *userRepo) GetByID(ctx context.Context, id int) (*domain.User, error) {
 	return convertToDomainUser(user), nil
 }
 
-func (ur *userRepo) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
+func (ur *userRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	user := &schema.User{}
 
 	err := ur.db.Where("email = ?", email).First(user).Error
@@ -72,28 +74,29 @@ func (ur *userRepo) GetByEmail(ctx context.Context, email string) (*domain.User,
 	return convertToDomainUser(user), nil
 }
 
-func (ur *userRepo) GetList(ctx context.Context, skip, limit int) ([]domain.User, error) {
-	users := []schema.User{}
+func (ur *userRepository) GetListUsers(ctx context.Context, query string, limit, skip int) ([]domain.User, error) {
+	users := []domain.User{}
+	var err error
 
-	err := ur.db.WithContext(ctx).Omit("password").Limit(limit).Offset((skip - 1) * limit).Find(&users).Error
+	selectFields := []string{"id", "name", "email", "phone", "role"}
+
+	if strings.TrimSpace(query) == "" {
+		err = ur.db.Table("users").WithContext(ctx).Select(selectFields).Limit(limit).Offset((skip - 1) * limit).Scan(&users).Error
+	} else {
+		err = ur.db.Table("users").WithContext(ctx).Select(selectFields).Where("name LIKE ?", fmt.Sprintf("%%%v%%", query)).Limit(limit).Offset((skip - 1) * limit).Scan(&users).Error
+	}
 
 	if err != nil {
 		return nil, err
 	}
-
 	if len(users) == 0 {
 		return nil, domain.ErrDataNotFound
 	}
 
-	domainUsers := make([]domain.User, 0, len(users))
-	for _, user := range users {
-		domainUsers = append(domainUsers, *convertToDomainUser(&user))
-	}
-
-	return domainUsers, nil
+	return users, nil
 }
 
-func (ur *userRepo) Update(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (ur *userRepository) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	updateData := &schema.User{
 		ID:       user.ID,
 		Name:     user.Name,
@@ -107,8 +110,8 @@ func (ur *userRepo) Update(ctx context.Context, user *domain.User) (*domain.User
 
 	result := ur.db.WithContext(ctx).Clauses(clause.Returning{}).Model(updatedUser).Where("id = ?", user.ID).Updates(updateData)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, domain.ErrDataNotFound
+		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+			return nil, domain.ErrConflictingData
 		}
 		return nil, result.Error
 	}
@@ -120,10 +123,8 @@ func (ur *userRepo) Update(ctx context.Context, user *domain.User) (*domain.User
 	return convertToDomainUser(updatedUser), nil
 }
 
-func (ur *userRepo) Delete(ctx context.Context, id int) error {
-	user := &schema.User{}
-
-	result := ur.db.Where("id = ?", id).Delete(user)
+func (ur *userRepository) DeleteUser(ctx context.Context, id int) error {
+	result := ur.db.WithContext(ctx).Where("id = ?", id).Delete(&schema.User{})
 	if result.Error != nil {
 		return result.Error
 	}

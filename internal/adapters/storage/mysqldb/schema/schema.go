@@ -25,6 +25,7 @@ type Storehouse struct {
 	Name            string          `gorm:"type:VARCHAR(255);not null"`
 	Location        string          `gorm:"type:VARCHAR(50);not null"`
 	Capacity        int             `gorm:"type:INTEGER;not null"`
+	DeletedAt       gorm.DeletedAt  `gorm:"index"`
 	AuthorizedUsers []*User         `gorm:"many2many:authorized;"`
 	ExportInvoices  []ExportInvoice `gorm:"foreignKey:StorehouseID"`
 	ImportInvoices  []ImportInvoice `gorm:"foreignKey:StorehouseID"`
@@ -32,7 +33,8 @@ type Storehouse struct {
 
 type Rice struct {
 	ID                   int                   `gorm:"primaryKey;autoIncrement"`
-	Name                 string                `gorm:"type:VARCHAR(50);not null"`
+	Name                 string                `gorm:"type:VARCHAR(50);not null;uniqueIndex"`
+	DeletedAt            gorm.DeletedAt        `gorm:"index"`
 	ExportInvoiceDetails []ExportInvoiceDetail `gorm:"foreignKey:RiceID"`
 	ImportInvoiceDetails []ImportInvoiceDetail `gorm:"foreignKey:RiceID"`
 }

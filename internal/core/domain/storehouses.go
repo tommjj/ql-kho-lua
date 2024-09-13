@@ -5,14 +5,14 @@ import (
 	"strings"
 )
 
-type Storehouses struct {
+type Storehouse struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
 	Location string `json:"location"`
 	Capacity int    `json:"capacity"`
 }
 
-func (s *Storehouses) ParseLocation() (float64, float64, error) {
+func (s *Storehouse) ParseLocation() (float64, float64, error) {
 	before, after, found := strings.Cut(s.Location, ",")
 	if !found {
 		return 0, 0, ErrInvalidLocation

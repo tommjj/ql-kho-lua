@@ -22,7 +22,7 @@ func NewDefaultUserRepo() (ports.IUserRepository, error) {
 		return nil, err
 	}
 
-	return NewUserRepo(db), nil
+	return NewUserRepository(db), nil
 }
 
 func TestUserRepo_Create(t *testing.T) {
@@ -31,7 +31,7 @@ func TestUserRepo_Create(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	user, err := repo.Create(context.TODO(), &domain.User{
+	user, err := repo.CreateUser(context.TODO(), &domain.User{
 		Name:     "fiammetta",
 		Phone:    "012345678",
 		Email:    "fiammetta@gmail.com",
@@ -51,7 +51,7 @@ func TestUserRepo_GetByID(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	user, err := repo.GetByID(context.TODO(), 1)
+	user, err := repo.GetUserByID(context.TODO(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestUserRepo_GetByEmail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	user, err := repo.GetByEmail(context.TODO(), "mus.update@gmail.com")
+	user, err := repo.GetUserByEmail(context.TODO(), "mus.update@gmail.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,12 +79,12 @@ func TestUserRepo_GetList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	users, err := repo.GetList(context.TODO(), 1, 5)
+	users, err := repo.GetListUsers(context.TODO(), "", 1, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Log(users)
+	t.Logf("%+v\n", users)
 }
 
 func TestUserRepo_Update(t *testing.T) {
@@ -93,7 +93,7 @@ func TestUserRepo_Update(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	updated, err := repo.Update(context.TODO(), &domain.User{
+	updated, err := repo.UpdateUser(context.TODO(), &domain.User{
 		ID:       1,
 		Name:     "mostima",
 		Phone:    "1256",
@@ -113,7 +113,7 @@ func TestUserRepo_Delete(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = repo.Delete(context.TODO(), 1)
+	err = repo.DeleteUser(context.TODO(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
