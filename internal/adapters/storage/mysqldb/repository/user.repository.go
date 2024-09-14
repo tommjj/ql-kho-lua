@@ -49,7 +49,7 @@ func (ur *userRepository) CreateUser(ctx context.Context, user *domain.User) (*d
 func (ur *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
 	user := &schema.User{}
 
-	err := ur.db.Where("id = ?", id).First(user).Error
+	err := ur.db.WithContext(ctx).Where("id = ?", id).First(user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrDataNotFound
@@ -63,7 +63,7 @@ func (ur *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User
 func (ur *userRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	user := &schema.User{}
 
-	err := ur.db.Where("email = ?", email).First(user).Error
+	err := ur.db.WithContext(ctx).Where("email = ?", email).First(user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrDataNotFound

@@ -1,7 +1,6 @@
 package http
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -32,7 +31,7 @@ func NewAdapter(conf *config.HTTP, options ...RegisterRouterFunc) (*router, erro
 	// set logger middleware
 	logger, err := logger.New(conf.Logger)
 	if err != nil {
-		return nil, errors.New("http logger conf is not valid")
+		return nil, err
 	}
 
 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))

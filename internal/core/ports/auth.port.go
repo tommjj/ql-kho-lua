@@ -7,7 +7,7 @@ import (
 )
 
 type IAuthService interface {
-	Login(ctx context.Context, username, password string) (string, error)
+	Login(ctx context.Context, email, password string) (string, error)
 }
 
 type ITokenService interface {
