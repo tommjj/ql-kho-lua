@@ -79,7 +79,7 @@ func TestUserRepo_GetList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	users, err := repo.GetListUsers(context.TODO(), "", 1, 1)
+	users, err := repo.GetListUsers(context.TODO(), "", 5, 1)
 	if err != nil {
 		t.Fatal(err)
 	}

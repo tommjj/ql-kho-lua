@@ -17,7 +17,9 @@ func NewMysqlDB(conf config.DB) (*MysqlDB, error) {
 	})
 
 	db, err := gorm.Open(dialector, &gorm.Config{
-		TranslateError: true,
+		TranslateError:         true,
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
 	})
 	if err != nil {
 		return nil, err

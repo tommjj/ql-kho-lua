@@ -92,7 +92,10 @@ function MapContainer() {
             },
         } as MaplibreGeocoderApi;
 
-        const geocoder = new MaplibreGeocoder(Geo, { maplibregl: maplibregl });
+        const geocoder = new MaplibreGeocoder(Geo, {
+            maplibregl: maplibregl,
+            zoom: 14,
+        });
         map.current.addControl(geocoder);
     }, [lng, lat, zoom]);
 

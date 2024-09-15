@@ -78,12 +78,14 @@ func (ur *userRepository) GetListUsers(ctx context.Context, query string, limit,
 	users := []domain.User{}
 	var err error
 
-	selectFields := []string{"id", "name", "email", "phone", "role"}
+	sql := ur.db.Table("users").WithContext(ctx).
+		Select("id", "name", "email", "phone", "role").
+		Limit(limit).Offset((skip - 1) * limit)
 
 	if strings.TrimSpace(query) == "" {
-		err = ur.db.Table("users").WithContext(ctx).Select(selectFields).Limit(limit).Offset((skip - 1) * limit).Scan(&users).Error
+		err = sql.Scan(&users).Error
 	} else {
-		err = ur.db.Table("users").WithContext(ctx).Select(selectFields).Where("name LIKE ?", fmt.Sprintf("%%%v%%", query)).Limit(limit).Offset((skip - 1) * limit).Scan(&users).Error
+		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", query)).Scan(&users).Error
 	}
 
 	if err != nil {
