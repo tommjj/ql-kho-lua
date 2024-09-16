@@ -36,7 +36,7 @@ func TestUserRepo_Create(t *testing.T) {
 		Phone:    "012345678",
 		Email:    "fiammetta@gmail.com",
 		Password: "123456789",
-		Role:     domain.Staff,
+		Role:     domain.Member,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -98,7 +98,7 @@ func TestUserRepo_Update(t *testing.T) {
 		Name:     "mostima",
 		Phone:    "1256",
 		Password: "123456789",
-		Role:     domain.Staff,
+		Role:     domain.Member,
 	})
 	if err != nil {
 		t.Fatal(err)
