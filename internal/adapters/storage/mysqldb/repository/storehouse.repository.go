@@ -64,10 +64,11 @@ func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query st
 		Select("id", "name", "location", "capacity").
 		Limit(limit).Offset((skip - 1) * limit)
 
-	if strings.TrimSpace(query) == "" {
+	trimQuery := strings.TrimSpace(query)
+	if trimQuery == "" {
 		err = sql.Scan(&stores).Error
 	} else {
-		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", query)).Scan(&stores).Error
+		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery)).Scan(&stores).Error
 	}
 
 	if err != nil {

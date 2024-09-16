@@ -34,3 +34,14 @@ func convertToDomainRice(r *schema.Rice) *domain.Rice {
 		Name: r.Name,
 	}
 }
+
+// convertToDomainCustomer is a helper to convert schema customer to domain customer type
+func convertToDomainCustomer(c *schema.Customer) *domain.Customer {
+	return &domain.Customer{
+		ID:      c.ID,
+		Name:    c.Name,
+		Email:   c.Email,
+		Phone:   c.Phone,
+		Address: c.Address,
+	}
+}

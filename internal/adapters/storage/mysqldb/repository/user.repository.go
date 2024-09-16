@@ -82,10 +82,11 @@ func (ur *userRepository) GetListUsers(ctx context.Context, query string, limit,
 		Select("id", "name", "email", "phone", "role").
 		Limit(limit).Offset((skip - 1) * limit)
 
-	if strings.TrimSpace(query) == "" {
+	trimQuery := strings.TrimSpace(query)
+	if trimQuery == "" {
 		err = sql.Scan(&users).Error
 	} else {
-		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", query)).Scan(&users).Error
+		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery)).Scan(&users).Error
 	}
 
 	if err != nil {

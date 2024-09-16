@@ -45,6 +45,7 @@ type Customer struct {
 	Email          string          `gorm:"type:VARCHAR(320);not null"`
 	Phone          string          `gorm:"type:VARCHAR(11);not null"`
 	Address        string          `gorm:"type:VARCHAR(255);not null"`
+	DeletedAt      gorm.DeletedAt  `gorm:"index"`
 	ExportInvoices []ExportInvoice `gorm:"foreignKey:CustomerID"`
 	ImportInvoices []ImportInvoice `gorm:"foreignKey:CustomerID"`
 }
