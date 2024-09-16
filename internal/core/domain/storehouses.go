@@ -5,11 +5,18 @@ import (
 	"strings"
 )
 
-type Storehouse struct {
+type StorehouseItem struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
-	Location string `json:"location"`
-	Capacity int    `json:"capacity"`
+	Quantity int    `json:"quantity"`
+}
+
+type Storehouse struct {
+	ID       int              `json:"id"`
+	Name     string           `json:"name"`
+	Location string           `json:"location"`
+	Capacity int              `json:"capacity"`
+	Items    []StorehouseItem `json:"items,omitempty"`
 }
 
 func (s *Storehouse) ParseLocation() (float64, float64, error) {

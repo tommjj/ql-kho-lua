@@ -58,10 +58,12 @@ func (rr *riceRepository) GetListRice(ctx context.Context, query string, skip, l
 	rice := []domain.Rice{}
 	var err error
 
+	sql := rr.db.Table("rice").WithContext(ctx).Limit(limit).Offset((skip - 1) * limit)
+
 	if strings.TrimSpace(query) == "" {
-		err = rr.db.Table("rice").WithContext(ctx).Limit(limit).Offset((skip - 1) * limit).Scan(&rice).Error
+		err = sql.Scan(&rice).Error
 	} else {
-		err = rr.db.Table("rice").WithContext(ctx).Where("name LIKE ?", fmt.Sprintf("%%%v%%", query)).Limit(limit).Offset((skip - 1) * limit).Scan(&rice).Error
+		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", query)).Scan(&rice).Error
 	}
 
 	if err != nil {

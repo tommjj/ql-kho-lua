@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-playground/validator/v10"
+	custom_validator "github.com/tommjj/ql-kho-lua/internal/adapters/http/validator"
 	"github.com/tommjj/ql-kho-lua/internal/config"
 	"go.uber.org/zap"
 
 	"github.com/gin-contrib/cors"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/tommjj/ql-kho-lua/internal/logger"
 )
 
@@ -42,6 +45,17 @@ func NewAdapter(conf *config.HTTP, options ...RegisterRouterFunc) (*router, erro
 	CORSConfig.AllowOrigins = conf.AllowedOrigins
 	CORSConfig.AllowCredentials = true
 	r.Use(cors.New(CORSConfig))
+
+	// Custom validators
+	v, ok := binding.Validator.Engine().(*validator.Validate)
+	if ok {
+		if err := v.RegisterValidation("user_role", custom_validator.UserRoleValidator); err != nil {
+			return nil, err
+		}
+		if err := v.RegisterValidation("location", custom_validator.LocationValidator); err != nil {
+			return nil, err
+		}
+	}
 
 	for _, option := range options {
 		option(r)
