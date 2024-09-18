@@ -57,7 +57,7 @@ function MapContainer() {
             forwardGeocode: async (config: MaplibreGeocoderApiConfig) => {
                 const features: CarmenGeojsonFeature[] = [];
                 try {
-                    const request = `https://nominatim.openstreetmap.org/search?q=${config.query}&format=geojson&polygon_geojson=1&addressdetails=1`;
+                    const request = `https://nominatim.openstreetmap.org/search?q=${config.query}&format=geojson&polygon_geojson=0&addressdetails=1`;
                     const response = await fetch(request);
                     const geojson = await response.json();
                     for (const feature of geojson.features) {
@@ -78,6 +78,7 @@ function MapContainer() {
                             properties: feature.properties,
                             text: feature.properties.display_name,
                             place_type: ['place'],
+                            bbox: feature.bbox,
                         };
                         features.push(point);
                     }

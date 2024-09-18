@@ -1,9 +1,9 @@
-import { Button } from '@/components/shadcn-ui/button';
+import NavItem from '@/components/nav/nav-items';
 
 export default function Home() {
     return (
         <div className="h-screen w-screen ">
-            <Button>Start</Button>
+            <NavItem active href="/map"></NavItem>
         </div>
     );
 }

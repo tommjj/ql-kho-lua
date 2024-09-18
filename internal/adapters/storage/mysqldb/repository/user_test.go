@@ -9,6 +9,7 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/config"
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
+	"github.com/tommjj/ql-kho-lua/internal/core/utils"
 )
 
 func NewDefaultUserRepo() (ports.IUserRepository, error) {
@@ -31,12 +32,17 @@ func TestUserRepo_Create(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	hashed, err := utils.HashPassword("12345678")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	user, err := repo.CreateUser(context.TODO(), &domain.User{
-		Name:     "fiammetta",
+		Name:     "mostima",
 		Phone:    "012345678",
-		Email:    "fiammetta@gmail.com",
-		Password: "123456789",
-		Role:     domain.Member,
+		Email:    "mostima@gmail.com",
+		Password: hashed,
+		Role:     domain.Root,
 	})
 	if err != nil {
 		t.Fatal(err)

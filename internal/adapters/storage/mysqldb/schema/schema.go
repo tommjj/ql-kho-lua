@@ -51,11 +51,11 @@ type Customer struct {
 }
 
 type ExportInvoice struct {
-	ID           int `gorm:"primaryKey;autoIncrement"`
-	StorehouseID int `gorm:"not null"`
-	CustomerID   int `gorm:"not null"`
-	UserID       int `gorm:"not null"`
-	CreatedAt    time.Time
+	ID           int                   `gorm:"primaryKey;autoIncrement"`
+	StorehouseID int                   `gorm:"not null"`
+	CustomerID   int                   `gorm:"not null"`
+	UserID       int                   `gorm:"not null"`
+	CreatedAt    time.Time             ``
 	Storehouse   Storehouse            `gorm:"foreignKey:StorehouseID"`
 	Customer     Customer              `gorm:"foreignKey:CustomerID"`
 	User         User                  `gorm:"foreignKey:UserID"`
@@ -72,11 +72,11 @@ type ExportInvoiceDetail struct {
 }
 
 type ImportInvoice struct {
-	ID           int `gorm:"primaryKey;autoIncrement"`
-	StorehouseID int `gorm:"not null"`
-	CustomerID   int `gorm:"not null"`
-	UserID       int `gorm:"not null"`
-	CreatedAt    time.Time
+	ID           int                   `gorm:"primaryKey;autoIncrement"`
+	StorehouseID int                   `gorm:"not null"`
+	CustomerID   int                   `gorm:"not null"`
+	UserID       int                   `gorm:"not null"`
+	CreatedAt    time.Time             ``
 	Storehouse   Storehouse            `gorm:"foreignKey:StorehouseID"`
 	Customer     Customer              `gorm:"foreignKey:CustomerID"`
 	User         User                  `gorm:"foreignKey:UserID"`
