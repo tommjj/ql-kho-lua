@@ -1,8 +1,11 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-// Your own logic for dealing with plaintext password strings; be careful!
+import fetcher from './lib/http/fetcher';
+import { jwtDecode } from 'jwt-decode';
+import { TokenPayload } from './types/jwt-payload';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    trustHost: true,
     pages: {
         signIn: '/log-in',
         newUser: '/sign-up',
@@ -11,12 +14,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         jwt: async ({ token, user }) => {
             if (user) {
                 token.id = user.id;
+                token.token = user.token;
+                token.role = user.role;
             }
             return token;
         },
         session: async ({ session, token }) => {
             if (session.user) {
                 session.user.id = token.sub || '';
+                session.user.token = token.token as string;
+                session.user.role = token.role as string;
             }
             return session;
         },
@@ -46,24 +53,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     providers: [
         Credentials({
-            // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-            // e.g. domain, username, password, 2FA token, etc.
             credentials: {
                 email: {},
                 password: {},
             },
-            authorize: async () => {
-                const user = {
-                    id: 'test',
-                    name: 'a',
-                    token: 'adw',
-                };
 
-                if (!user) {
-                    throw new Error('User not found.');
+            authorize: async (credentials) => {
+                const [res, err] = await fetcher.post.json(
+                    '/v1/api/auth/login',
+                    {
+                        email: credentials.email,
+                        password: credentials.password,
+                    }
+                );
+                if (!res?.ok || err) {
+                    return null;
                 }
-                // return user object with their profile data
-                return user;
+
+                const data = (await res.json()).data;
+
+                try {
+                    const dec = jwtDecode<TokenPayload>(data.token);
+
+                    return {
+                        id: dec.id.toString(),
+                        name: dec.name,
+                        email: dec.email,
+                        role: dec.role,
+                        token: data.token as string,
+                    };
+                } catch (err) {}
+
+                return null;
             },
         }),
     ],
