@@ -1,12 +1,12 @@
-import { auth } from '@/auth';
+import { authz } from '@/auth';
 
 const DashboardPage = async () => {
-    const session = await auth();
+    const session = await authz();
 
     return (
         <div className="size-full">
             <h1>Dashboard</h1>
-            <p>{'adaw ' + JSON.stringify(session?.user)}</p>
+            <p>{JSON.stringify(session)}</p>
         </div>
     );
 };

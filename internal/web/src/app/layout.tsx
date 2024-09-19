@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import { Providers } from '@/components/providers';
+import { authz } from '@/auth';
+import { SessionProvider } from '@/components/session-context';
 
 const geistSans = localFont({
     src: './fonts/GeistVF.woff',
@@ -19,17 +21,21 @@ export const metadata: Metadata = {
     description: '',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const session = await authz();
+
     return (
         <html lang="en" suppressHydrationWarning>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <Providers>{children}</Providers>
+                <SessionProvider user={session}>
+                    <Providers>{children}</Providers>
+                </SessionProvider>
             </body>
         </html>
     );

@@ -2,9 +2,11 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import fetcher from './lib/http/fetcher';
 import { jwtDecode } from 'jwt-decode';
-import { TokenPayload } from './types/jwt-payload';
+import { SessionPayload, TokenPayload } from './types/jwt-payload';
+import { z } from 'zod';
+import { Role } from './types/role';
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
     pages: {
         signIn: '/log-in',
@@ -59,14 +61,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
 
             authorize: async (credentials) => {
+                const parsedCredentials = z
+                    .object({
+                        email: z.string().email(),
+                        password: z.string().min(8),
+                    })
+                    .safeParse(credentials);
+
+                if (parsedCredentials.error) {
+                    return null;
+                }
+
                 const [res, err] = await fetcher.post.json(
                     '/v1/api/auth/login',
                     {
-                        email: credentials.email,
-                        password: credentials.password,
+                        email: parsedCredentials.data.email,
+                        password: parsedCredentials.data.password,
                     }
                 );
-                if (!res?.ok || err) {
+                if (err || !res?.ok) {
                     return null;
                 }
 
@@ -89,3 +102,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
 });
+
+/**
+ * authz is a helper func convert return of auth func
+ * @returns Promise<SessionPayload | undefined>
+ */
+async function authz(): Promise<SessionPayload | undefined> {
+    const s = await auth();
+
+    if (!s?.user) {
+        return undefined;
+    }
+    return {
+        id: Number(s.user.id),
+        name: s.user.name,
+        email: s.user.email,
+        role: s.user.role as Role,
+        token: s.user.token,
+    };
+}
+
+export { handlers, signIn, signOut, auth, authz };
