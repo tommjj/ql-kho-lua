@@ -3,24 +3,25 @@
 import React from 'react';
 import { Button } from '../shadcn-ui/button';
 import Link from 'next/link';
-import { GearIcon } from '@radix-ui/react-icons';
 
 type Props = {
     href: string;
-    active: boolean;
+    active?: boolean;
+    title: string;
+    icon: JSX.Element;
 };
 
-function NavItem({ active, href }: Props) {
+function NavItem({ icon, active = false, href, title }: Props) {
     return (
         <Button
             asChild
-            className="w-full justify-start px-3"
-            size="lg"
-            variant={active ? 'default' : 'secondary'}
+            className="w-full justify-start px-3 font-medium text-base"
+            size="default"
+            variant={active ? 'default' : 'ghost'}
         >
             <Link href={href}>
-                <GearIcon className="size-5 mr-2" />
-                LINK
+                {icon}
+                {title}
             </Link>
         </Button>
     );

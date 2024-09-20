@@ -101,7 +101,7 @@ function MapContainer() {
     }, [lng, lat, zoom]);
 
     return (
-        <div className="relative w-screen h-screen">
+        <div className="relative w-full h-screen">
             <div ref={mapContainer} className="absolute size-full" />
         </div>
     );
