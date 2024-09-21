@@ -35,8 +35,8 @@ function BottomBar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                     <DropdownMenuGroup>
-                        <DropdownMenuItem asChild>
-                            <form className="px-0 py-0" action={logout}>
+                        <DropdownMenuItem className="px-0 py-0" asChild>
+                            <form action={logout}>
                                 <Button
                                     type="submit"
                                     className="flex-grow justify-start font-medium text-base px-2"

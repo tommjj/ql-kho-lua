@@ -1,10 +1,10 @@
 'use client';
 
 import NavItem from './nav-items';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { Home, LucideProps, Map } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
+import { ForwardRefExoticComponent, RefAttributes, useMemo } from 'react';
 
 type NavItem = {
     path: string;
@@ -14,21 +14,31 @@ type NavItem = {
     >;
 };
 
-const navList: NavItem[] = [
+const storePageNavItems: NavItem[] = [
     {
-        path: '/dashboard',
+        path: '',
         title: 'Home',
         icon: Home,
     },
     {
-        path: '/dashboard/map',
+        path: '/dashboard/root/map',
         title: 'Map',
         icon: Map,
     },
 ];
 
-function NavBar() {
+function getStorePageNavItems(storeID: string): NavItem[] {
+    return storePageNavItems.map((item) => ({
+        path: `/dashboard/${storeID}${item.path}`,
+        title: item.title,
+        icon: Map,
+    }));
+}
+
+function StorehousePageNavBar() {
+    const { storeID } = useParams<{ storeID: string }>();
     const pathname = usePathname();
+    const navList = useMemo(() => getStorePageNavItems(storeID), [storeID]);
 
     return (
         <nav className="px-2 pt-2 grid gap-y-1.5">
@@ -51,4 +61,4 @@ function NavBar() {
     );
 }
 
-export default NavBar;
+export default StorehousePageNavBar;

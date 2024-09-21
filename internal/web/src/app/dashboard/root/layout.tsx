@@ -1,5 +1,5 @@
 import BottomBar from '@/components/nav/bottom-bar';
-import NavBar from '@/components/nav/nav';
+import RootPageNavBar from '@/components/nav/root-nav';
 import StoreSelector from '@/components/nav/store-selector';
 import {
     ResizableHandle,
@@ -17,7 +17,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 className="w-full rounded-lg border md:min-w-[450px]"
             >
                 <ResizablePanel
-                    className="relative"
+                    className="relative min-w-[220px]"
                     defaultSize={18}
                     minSize={16}
                     maxSize={23}
@@ -28,8 +28,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                         />
                     </div>
                     <Separator />
-                    <div className="">
-                        <NavBar />
+                    <div>
+                        <RootPageNavBar />
                     </div>
                     <BottomBar />
                 </ResizablePanel>

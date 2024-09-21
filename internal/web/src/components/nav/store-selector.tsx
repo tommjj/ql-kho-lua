@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../shadcn-ui/popover';
 import { Button } from '../shadcn-ui/button';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown, Box, Boxes } from 'lucide-react';
 import {
     CommandEmpty,
     CommandGroup,
@@ -12,7 +12,9 @@ import {
     CommandList,
     Command,
 } from '../shadcn-ui/command';
-import { CubeIcon } from '@radix-ui/react-icons';
+import { useParams, useRouter } from 'next/navigation';
+import { useSession } from '../session-context';
+import { Role } from '@/types/role';
 
 type Storehouse = {
     id: number;
@@ -24,8 +26,18 @@ type Props = {
 };
 
 function StoreSelector({ storehouses }: Props) {
+    const user = useSession();
+    const { push } = useRouter();
+    const { storeID } = useParams<{ storeID: string }>();
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(0);
+
+    const items = useMemo(
+        () =>
+            user.role === Role.ROOT
+                ? [{ id: 0, name: 'Root' }, ...storehouses]
+                : [...storehouses],
+        [storehouses, user.role]
+    );
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -37,12 +49,17 @@ function StoreSelector({ storehouses }: Props) {
                     className="w-full justify-between"
                 >
                     <div className="flex items-start justify-center">
-                        <CubeIcon className="size-[18px] mr-2 opacity-80" />
-                        {value
+                        {storeID ? (
+                            <Box className="size-[18px] mr-2 opacity-80" />
+                        ) : (
+                            <Boxes className="size-[18px] mr-2 opacity-80" />
+                        )}
+                        {storeID
                             ? storehouses.find(
-                                  (storehouse) => storehouse.id === value
+                                  (storehouse) =>
+                                      storehouse.id.toString() === storeID
                               )?.name
-                            : 'Select storehouse...'}
+                            : 'Root'}
                     </div>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -53,20 +70,24 @@ function StoreSelector({ storehouses }: Props) {
                     <CommandList>
                         <CommandEmpty>No storehouse found.</CommandEmpty>
                         <CommandGroup>
-                            {storehouses.map((storehouse) => (
+                            {items.map((storehouse) => (
                                 <CommandItem
                                     key={storehouse.id}
                                     value={storehouse.id.toString()}
                                     onSelect={(currentValue) => {
-                                        setValue(
-                                            Number(currentValue) === value
-                                                ? 0
-                                                : storehouse.id
-                                        );
+                                        if (currentValue === '0') {
+                                            push(`/dashboard/root`);
+                                        } else {
+                                            push(`/dashboard/${currentValue}`);
+                                        }
                                         setOpen(false);
                                     }}
                                 >
-                                    <CubeIcon className="size-5 mr-2 opacity-80" />
+                                    {storehouse.id ? (
+                                        <Box className="size-[18px] mr-2 opacity-80" />
+                                    ) : (
+                                        <Boxes className="size-[18px] mr-2 opacity-80" />
+                                    )}
                                     {storehouse.name}
                                 </CommandItem>
                             ))}
