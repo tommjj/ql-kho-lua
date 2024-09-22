@@ -30,9 +30,11 @@ const { handlers, signIn, signOut, auth } = NextAuth({
             return session;
         },
         authorized({ auth, request: { nextUrl } }) {
-            const isLoggedIn = !!auth?.user;
+            const user = auth?.user;
+            const isLoggedIn = !!user;
 
             const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+            const isOnRoot = nextUrl.pathname.startsWith('/dashboard/root');
             const isOnHomePage = nextUrl.pathname === '/';
 
             if (isOnHomePage) {
@@ -40,6 +42,16 @@ const { handlers, signIn, signOut, auth } = NextAuth({
                     return Response.redirect(new URL('/dashboard', nextUrl));
                 }
                 return true;
+            }
+
+            if (isOnRoot) {
+                if (isLoggedIn) {
+                    if (user.role === Role.ROOT) {
+                        return true;
+                    }
+                    return Response.redirect(new URL('/dashboard', nextUrl));
+                }
+                return false;
             }
 
             if (isOnDashboard) {
