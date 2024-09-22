@@ -7,10 +7,12 @@ type InvoiceItem struct {
 }
 
 type Invoice struct {
-	ID         int           `json:"id"`
-	UserID     int           `json:"user_id"`
-	CustomerID int           `json:"customer_id"`
-	Details    []InvoiceItem `json:"details"`
-	CreatedBy  User          `json:"created_by"`
-	Customer   Customer      `json:"customer"`
+	ID           int           `json:"id"`
+	UserID       int           `json:"user_id"`
+	CustomerID   int           `json:"customer_id"`
+	StorehouseID int           `json:"storehouse_id"`
+	Details      []InvoiceItem `json:"details"`
+	CreatedBy    User          `json:"created_by"`
+	Customer     Customer      `json:"customer"`
+	Storehouse   Storehouse    `json:"storehouse"`
 }

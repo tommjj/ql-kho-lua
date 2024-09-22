@@ -1,11 +1,13 @@
 package handlers
 
-// type UserHandler struct {
-// 	svc ports.IUserService
-// }
+import "github.com/tommjj/ql-kho-lua/internal/core/ports"
 
-// func NewUserHandler(userService ports.IUserService) *UserHandler {
-// 	return &UserHandler{
-// 		svc: userService,
-// 	}
-// }
+type UserHandler struct {
+	svc ports.IUserRepository
+}
+
+func NewUserHandler(userService ports.IUserRepository) *UserHandler {
+	return &UserHandler{
+		svc: userService,
+	}
+}

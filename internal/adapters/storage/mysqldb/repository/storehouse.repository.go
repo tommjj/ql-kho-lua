@@ -81,6 +81,27 @@ func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query st
 	return stores, nil
 }
 
+func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, userID int) ([]domain.Storehouse, error) {
+	list := []schema.Storehouse{}
+
+	err := ar.db.Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").Where("authorized.user_id = ?", userID).Find(&list).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, domain.ErrDataNotFound
+	}
+
+	storehouse := make([]domain.Storehouse, 0, len(list))
+
+	for _, v := range list {
+		storehouse = append(storehouse, *convertToDomainStorehouse(&v))
+	}
+
+	return storehouse, nil
+}
+
 func (sr *storehouseRepository) UpdateStorehouse(ctx context.Context, storehouses *domain.Storehouse) (*domain.Storehouse, error) {
 	updatedData := &schema.Storehouse{}
 

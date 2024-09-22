@@ -13,6 +13,8 @@ type IStorehouseRepository interface {
 	GetStorehouseByID(ctx context.Context, id int) (*domain.Storehouse, error)
 	// GetListStorehouses select a list storehouses
 	GetListStorehouses(ctx context.Context, query string, limit, skip int) ([]domain.Storehouse, error)
+	// GetAuthorizedStorehouses
+	GetAuthorizedStorehouses(ctx context.Context, userID int) ([]domain.Storehouse, error)
 	// UpdateStorehouse update a storehouse, only update non-zero fields by default
 	UpdateStorehouse(ctx context.Context, storehouses *domain.Storehouse) (*domain.Storehouse, error)
 	// DeleteStorehouse delete a storehouse

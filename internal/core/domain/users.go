@@ -16,6 +16,7 @@ type User struct {
 	Role     Role   `json:"role"`
 }
 
+// RemovePass is a method to set password to empty string
 func (u *User) RemovePass() {
 	u.Password = ""
 }

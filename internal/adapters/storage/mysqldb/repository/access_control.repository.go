@@ -60,18 +60,3 @@ func (ar *accessControlRepository) DelAccess(ctx context.Context, storeHouseID i
 	}
 	return nil
 }
-
-// func (ar *accessControlRepository) GetAuthorizedStorehouses(ctx context.Context, userID int) ([]domain.Storehouse, error) {
-// 	list := []schema.Storehouse{}
-
-// 	err := ar.db.Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").Where("authorized.user_id = ?", userID).Find(&list).Error
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	if len(list) == 0 {
-// 		return nil, domain.ErrDataNotFound
-// 	}
-
-// 	return nil, nil
-// }

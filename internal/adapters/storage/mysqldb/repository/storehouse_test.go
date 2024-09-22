@@ -25,7 +25,7 @@ func NewDefaultStoreHouseRepo() (ports.IStorehouseRepository, error) {
 	return NewStorehouseRepository(db), nil
 }
 
-func TestStoreHouseRepo_Create(t *testing.T) {
+func TestStoreHouseRepo_CreateStorehouse(t *testing.T) {
 	repo, err := NewDefaultStoreHouseRepo()
 	if err != nil {
 		t.Fatal(err)
@@ -60,6 +60,20 @@ func TestStoreHouseRepo_GetListStorehouses(t *testing.T) {
 	}
 
 	data, err := repo.GetListStorehouses(context.TODO(), "", 5, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v\n", data)
+}
+
+func TestStoreHouseRepo_GetAuthorizedStorehouses(t *testing.T) {
+	repo, err := NewDefaultStoreHouseRepo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := repo.GetAuthorizedStorehouses(context.TODO(), 2)
 	if err != nil {
 		t.Fatal(err)
 	}
