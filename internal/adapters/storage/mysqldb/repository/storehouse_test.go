@@ -80,3 +80,17 @@ func TestStoreHouseRepo_GetAuthorizedStorehouses(t *testing.T) {
 
 	t.Logf("%+v\n", data)
 }
+
+func TestStoreHouseRepo_GetStorehouseUsedCapacityByID(t *testing.T) {
+	repo, err := NewDefaultStoreHouseRepo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := repo.GetStorehouseUsedCapacityByID(context.TODO(), 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v\n", data)
+}

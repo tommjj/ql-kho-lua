@@ -33,8 +33,8 @@ func TestCustomerRepository_CreateCustomer(t *testing.T) {
 
 	data, err := repo.CreateCustomer(context.TODO(),
 		&domain.Customer{
-			Name:    "cus",
-			Email:   "cus@m.com",
+			Name:    "vertin",
+			Email:   "vertin@m.com",
 			Phone:   "0123456789",
 			Address: "abc xyz",
 		},

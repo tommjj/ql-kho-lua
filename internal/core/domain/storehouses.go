@@ -11,11 +11,12 @@ type StorehouseItem struct {
 }
 
 type Storehouse struct {
-	ID       int              `json:"id"`
-	Name     string           `json:"name"`
-	Location string           `json:"location"`
-	Capacity int              `json:"capacity"`
-	Items    []StorehouseItem `json:"items,omitempty"`
+	ID           int               `json:"id"`
+	Name         string            `json:"name"`
+	Location     string            `json:"location"`
+	Capacity     int               `json:"capacity"`
+	UsedCapacity *int              `json:"used_capacity,omitempty"`
+	Items        *[]StorehouseItem `json:"items,omitempty"`
 }
 
 func (s *Storehouse) ParseLocation() (float64, float64, error) {

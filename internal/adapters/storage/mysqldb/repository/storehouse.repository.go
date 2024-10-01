@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
@@ -100,6 +101,28 @@ func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, us
 	}
 
 	return storehouse, nil
+}
+
+func (sr *storehouseRepository) GetStorehouseUsedCapacityByID(ctx context.Context, id int) (float64, error) {
+	total := struct {
+		Total float64
+	}{}
+
+	err := sr.db.WithContext(ctx).
+		Raw(`SELECT (SUM(IF(t.type = "i", t.total, 0)) - SUM(IF(t.type = "e", t.total, 0))) as "total"
+			FROM 
+				(SELECT SUM( export_invoice_details.quantity) as total, "e" as type
+    			FROM export_invoices INNER JOIN export_invoice_details on export_invoices.id = export_invoice_details.invoice_id 
+    			WHERE export_invoices.storehouse_id = @id 
+    			UNION ALL
+    			SELECT SUM( import_invoice_details.quantity) as total, "i" as type 
+    			FROM import_invoices INNER JOIN import_invoice_details on import_invoices.id = import_invoice_details.invoice_id 
+    			WHERE import_invoices.storehouse_id = @id) as t`, sql.Named("id", id)).Scan(&total).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return total.Total, nil
 }
 
 func (sr *storehouseRepository) UpdateStorehouse(ctx context.Context, storehouses *domain.Storehouse) (*domain.Storehouse, error) {

@@ -12,12 +12,12 @@ var (
 	// authorizationHeaderKey is the key for authorization header in the request
 	authorizationHeaderKey = "authorization"
 	// authorizationType is the accepted authorization type
-	authorizationType = "bearer"
+	authorizationType = "JWT"
 	// authorizationPayloadKey is the key for authorization payload in the context
 	authorizationPayloadKey = "authorization_payload"
 )
 
-func AuthBeerMiddleware(token ports.ITokenService) gin.HandlerFunc {
+func AuthMiddleware(token ports.ITokenService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 
@@ -53,6 +53,22 @@ func AuthBeerMiddleware(token ports.ITokenService) gin.HandlerFunc {
 		}
 
 		ctx.Set(authorizationPayloadKey, payload)
+		ctx.Next()
+	}
+}
+
+// RoleRootMiddleware is a middleware to check if the user is a root
+func RoleRootMiddleware(token ports.ITokenService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		token := getAuthPayload(ctx, authorizationPayloadKey)
+
+		isRoot := token.Role == domain.Root
+		if !isRoot {
+			handleError(ctx, domain.ErrForbidden)
+			ctx.Abort()
+			return
+		}
+
 		ctx.Next()
 	}
 }

@@ -1,0 +1,14 @@
+.maplibregl-popup-content {
+    border-radius: 6px !important;
+    padding-bottom: 0.4rem;
+}
+
+.maplibregl-popup-close-button {
+    margin-right: 1px;
+    padding-right: 4px;
+    margin-left: 1px;
+    padding-left: 4px;
+
+    font-size: 16px;
+    opacity: 85%;
+}
