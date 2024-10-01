@@ -55,6 +55,7 @@ type ExportInvoice struct {
 	StorehouseID int                   `gorm:"not null"`
 	CustomerID   int                   `gorm:"not null"`
 	UserID       int                   `gorm:"not null"`
+	TotalPrice   float64               `gorm:"not null"`
 	CreatedAt    time.Time             ``
 	Storehouse   Storehouse            `gorm:"foreignKey:StorehouseID"`
 	Customer     Customer              `gorm:"foreignKey:CustomerID"`
@@ -63,12 +64,11 @@ type ExportInvoice struct {
 }
 
 type ExportInvoiceDetail struct {
-	InvoiceID     int           `gorm:"primaryKey"`
-	RiceID        int           `gorm:"primaryKey"`
-	Price         float64       `gorm:"not null"`
-	Quantity      int           `gorm:"not null"`
-	Rice          Rice          `gorm:"foreignKey:RiceID"`
-	ExportInvoice ExportInvoice `gorm:"foreignKey:InvoiceID"`
+	InvoiceID int     `gorm:"primaryKey"`
+	RiceID    int     `gorm:"primaryKey"`
+	Price     float64 `gorm:"not null"`
+	Quantity  int     `gorm:"not null"`
+	Rice      Rice    `gorm:"foreignKey:RiceID"`
 }
 
 type ImportInvoice struct {
@@ -76,6 +76,7 @@ type ImportInvoice struct {
 	StorehouseID int                   `gorm:"not null"`
 	CustomerID   int                   `gorm:"not null"`
 	UserID       int                   `gorm:"not null"`
+	TotalPrice   float64               `gorm:"not null"`
 	CreatedAt    time.Time             ``
 	Storehouse   Storehouse            `gorm:"foreignKey:StorehouseID"`
 	Customer     Customer              `gorm:"foreignKey:CustomerID"`
@@ -84,10 +85,9 @@ type ImportInvoice struct {
 }
 
 type ImportInvoiceDetail struct {
-	InvoiceID     int           `gorm:"primaryKey"`
-	RiceID        int           `gorm:"primaryKey"`
-	Price         float64       `gorm:"not null"`
-	Quantity      int           `gorm:"not null"`
-	Rice          Rice          `gorm:"foreignKey:RiceID"`
-	ImportInvoice ImportInvoice `gorm:"foreignKey:InvoiceID"`
+	InvoiceID int     `gorm:"primaryKey"`
+	RiceID    int     `gorm:"primaryKey"`
+	Price     float64 `gorm:"not null"`
+	Quantity  int     `gorm:"not null"`
+	Rice      Rice    `gorm:"foreignKey:RiceID"`
 }
