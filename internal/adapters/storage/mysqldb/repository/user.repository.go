@@ -78,7 +78,7 @@ func (ur *userRepository) GetListUsers(ctx context.Context, query string, limit,
 	users := []domain.User{}
 	var err error
 
-	sql := ur.db.Table("users").WithContext(ctx).
+	sql := ur.db.WithContext(ctx).Table("users").
 		Select("id", "name", "email", "phone", "role").
 		Limit(limit).Offset((skip - 1) * limit)
 

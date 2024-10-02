@@ -37,10 +37,16 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 		createData.TotalPrice += detail.Price * float64(detail.Quantity)
 	}
 
-	err := eir.db.WithContext(ctx).Preload("Details").Create(createData).Error
+	err := eir.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		err := tx.Preload("Details").Create(createData).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		switch {
-		case errors.Is(err, gorm.ErrDuplicatedKey):
+		case errors.Is(err, gorm.ErrForeignKeyViolated):
 			return nil, domain.ErrConflictingData
 		default:
 			return nil, err

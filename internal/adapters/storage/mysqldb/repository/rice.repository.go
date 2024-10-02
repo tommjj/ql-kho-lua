@@ -58,7 +58,7 @@ func (rr *riceRepository) GetListRice(ctx context.Context, query string, skip, l
 	rice := []domain.Rice{}
 	var err error
 
-	sql := rr.db.Table("rice").WithContext(ctx).Limit(limit).Offset((skip - 1) * limit)
+	sql := rr.db.WithContext(ctx).Table("rice").Limit(limit).Offset((skip - 1) * limit)
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery == "" {

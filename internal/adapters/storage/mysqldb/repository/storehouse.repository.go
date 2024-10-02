@@ -61,7 +61,7 @@ func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query st
 	stores := []domain.Storehouse{}
 	var err error
 
-	sql := sr.db.Table("storehouses").WithContext(ctx).
+	sql := sr.db.WithContext(ctx).Table("storehouses").
 		Select("id", "name", "location", "capacity").
 		Limit(limit).Offset((skip - 1) * limit)
 
@@ -85,7 +85,7 @@ func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query st
 func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, userID int) ([]domain.Storehouse, error) {
 	list := []schema.Storehouse{}
 
-	err := ar.db.Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").Where("authorized.user_id = ?", userID).Find(&list).Error
+	err := ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").Where("authorized.user_id = ?", userID).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
@@ -104,11 +104,19 @@ func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, us
 }
 
 func (sr *storehouseRepository) GetStorehouseUsedCapacityByID(ctx context.Context, id int) (float64, error) {
+	err := sr.db.WithContext(ctx).First(&schema.Storehouse{ID: id}).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, domain.ErrDataNotFound
+		}
+		return 0, err
+	}
+
 	total := struct {
 		Total float64
 	}{}
 
-	err := sr.db.WithContext(ctx).
+	err = sr.db.WithContext(ctx).
 		Raw(`SELECT (SUM(IF(t.type = "i", t.total, 0)) - SUM(IF(t.type = "e", t.total, 0))) as "total"
 			FROM 
 				(SELECT SUM( export_invoice_details.quantity) as total, "e" as type

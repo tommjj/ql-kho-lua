@@ -42,7 +42,7 @@ func (ar *accessControlRepository) HasAccess(ctx context.Context, storeHouseID i
 }
 
 func (ar *accessControlRepository) SetAccess(ctx context.Context, storeHouseID int, userID int) error {
-	err := ar.db.Model(&schema.User{ID: userID}).Association("AuthorizedStorehouses").Append(&schema.Storehouse{ID: storeHouseID})
+	err := ar.db.WithContext(ctx).Model(&schema.User{ID: userID}).Association("AuthorizedStorehouses").Append(&schema.Storehouse{ID: storeHouseID})
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
@@ -54,7 +54,7 @@ func (ar *accessControlRepository) SetAccess(ctx context.Context, storeHouseID i
 }
 
 func (ar *accessControlRepository) DelAccess(ctx context.Context, storeHouseID int, userID int) error {
-	err := ar.db.Model(&schema.User{ID: userID}).Association("AuthorizedStorehouses").Delete(&schema.Storehouse{ID: storeHouseID})
+	err := ar.db.WithContext(ctx).Model(&schema.User{ID: userID}).Association("AuthorizedStorehouses").Delete(&schema.Storehouse{ID: storeHouseID})
 	if err != nil {
 		return err
 	}

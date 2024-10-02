@@ -42,7 +42,7 @@ func TestImInvoices_createInvoice(t *testing.T) {
 				Quantity: 120,
 			},
 			{
-				RiceID:   2,
+				RiceID:   5,
 				Price:    500,
 				Quantity: 5052,
 			},

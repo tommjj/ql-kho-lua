@@ -1,9 +1,11 @@
 package mysqldb
 
 import (
+	"context"
 	"testing"
 	"time"
 
+	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb/schema"
 	"github.com/tommjj/ql-kho-lua/internal/config"
 )
 
@@ -32,7 +34,13 @@ func TestRaw(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	db.Begin()
-
+	var count int64
+	a := schema.ImportInvoice{}
+	q := db.Table("import_invoices").WithContext(context.TODO())
+	q.Select("*").Limit(1).Where("id = 2").Scan(&a)
+	q.Select("*").Limit(1).Count(&count)
+	now := time.Now()
+	t.Log(count)
+	t.Log(a)
+	t.Log(time.Since(now))
 }

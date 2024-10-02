@@ -61,7 +61,7 @@ func (cr *customerRepository) GetListCustomers(ctx context.Context, query string
 	customers := []domain.Customer{}
 	var err error
 
-	sql := cr.db.Table("customers").WithContext(ctx).
+	sql := cr.db.WithContext(ctx).Table("customers").
 		Limit(limit).Offset((skip - 1) * limit)
 
 	trimQuery := strings.TrimSpace(query)
