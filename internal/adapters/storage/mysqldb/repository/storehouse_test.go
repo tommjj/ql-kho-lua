@@ -31,7 +31,7 @@ func TestStoreHouseRepo_CreateStorehouse(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.CreateStorehouse(context.TODO(), &domain.Storehouse{Name: "store 02", Location: "50, 53", Capacity: 1200})
+	data, err := repo.CreateStorehouse(context.TODO(), &domain.Storehouse{Name: "store 02", Location: "50, 53", Capacity: 1000})
 	if err != nil {
 		t.Fatal(err)
 	}

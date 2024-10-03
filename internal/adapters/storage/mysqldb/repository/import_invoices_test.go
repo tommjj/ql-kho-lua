@@ -33,7 +33,7 @@ func TestImInvoices_createInvoice(t *testing.T) {
 
 	data, err := repo.CreateImInvoice(context.TODO(), &domain.Invoice{
 		UserID:       1,
-		CustomerID:   2,
+		CustomerID:   1,
 		StorehouseID: 2,
 		Details: []domain.InvoiceItem{
 			{
@@ -42,12 +42,42 @@ func TestImInvoices_createInvoice(t *testing.T) {
 				Quantity: 120,
 			},
 			{
-				RiceID:   5,
+				RiceID:   2,
 				Price:    500,
 				Quantity: 5052,
 			},
 		},
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v\n", data)
+}
+
+func TestImInvoices_getInvoice(t *testing.T) {
+	repo, err := NewDefaultImInvoicesRepo()
+	if err != nil {
+
+		t.Fatal(err)
+	}
+
+	data, err := repo.GetImInvoiceByID(context.TODO(), 3)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v\n", data.Details)
+}
+
+func TestImInvoices_getListInvoices(t *testing.T) {
+	repo, err := NewDefaultImInvoicesRepo()
+	if err != nil {
+
+		t.Fatal(err)
+	}
+
+	data, err := repo.GetListImInvoices(context.TODO(), 1, 5)
 	if err != nil {
 		t.Fatal(err)
 	}

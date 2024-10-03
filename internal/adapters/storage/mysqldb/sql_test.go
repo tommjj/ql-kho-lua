@@ -2,6 +2,7 @@ package mysqldb
 
 import (
 	"context"
+	"sync"
 	"testing"
 	"time"
 
@@ -26,6 +27,37 @@ func TestConnection(t *testing.T) {
 func TestRaw(t *testing.T) {
 	db, err := NewMysqlDB(config.DB{
 		DSN:             "root:@tcp(127.0.0.1:3306)/ql?charset=utf8mb4&parseTime=True&loc=Local",
+		MaxIdleConns:    100,
+		MaxOpenConns:    140,
+		ConnMaxLifetime: time.Hour,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	q := db.Table("import_invoices").Select("*").Limit(1).WithContext(context.TODO())
+
+	wg := sync.WaitGroup{}
+
+	wg.Add(140)
+
+	for range 140 {
+		go func() {
+			for range 1000 {
+				a := schema.ImportInvoice{}
+				var count int64
+				q.Count(&count)
+				q.Scan(&a)
+			}
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+}
+
+func TestDown(t *testing.T) {
+	db, err := NewMysqlDB(config.DB{
+		DSN:             "root:@tcp(127.0.0.1:3306)/ql?charset=utf8mb4&parseTime=True&loc=Local",
 		MaxIdleConns:    10,
 		MaxOpenConns:    100,
 		ConnMaxLifetime: time.Hour,
@@ -34,13 +66,42 @@ func TestRaw(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var count int64
-	a := schema.ImportInvoice{}
-	q := db.Table("import_invoices").WithContext(context.TODO())
-	q.Select("*").Limit(1).Where("id = 2").Scan(&a)
-	q.Select("*").Limit(1).Count(&count)
-	now := time.Now()
-	t.Log(count)
-	t.Log(a)
-	t.Log(time.Since(now))
+
+	m := db.Migrator()
+	m.DropTable(
+		&schema.ExportInvoiceDetail{},
+		&schema.ExportInvoice{},
+		&schema.ImportInvoiceDetail{},
+		&schema.ImportInvoice{},
+		&schema.Customer{},
+		"authorized",
+		&schema.User{},
+		&schema.Rice{},
+		&schema.Storehouse{},
+	)
+}
+
+func TestUp(t *testing.T) {
+	db, err := NewMysqlDB(config.DB{
+		DSN:             "root:@tcp(127.0.0.1:3306)/ql?charset=utf8mb4&parseTime=True&loc=Local",
+		MaxIdleConns:    10,
+		MaxOpenConns:    100,
+		ConnMaxLifetime: time.Hour,
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m := db.Migrator()
+	m.AutoMigrate(
+		&schema.ExportInvoiceDetail{},
+		&schema.ExportInvoice{},
+		&schema.ImportInvoiceDetail{},
+		&schema.ImportInvoice{},
+		&schema.Customer{},
+		&schema.User{},
+		&schema.Rice{},
+		&schema.Storehouse{},
+	)
 }

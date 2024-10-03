@@ -32,7 +32,7 @@ func TestRice_Create(t *testing.T) {
 	}
 
 	rice, err := repo.CreateRice(context.TODO(), &domain.Rice{
-		Name: "rice 02",
+		Name: "rice 03",
 	})
 	if err != nil {
 		t.Fatal(err)

@@ -8,6 +8,7 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb/schema"
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type importInvoicesRepository struct {
@@ -71,4 +72,77 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 	}
 
 	return created, nil
+}
+
+func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error) {
+	data := &schema.ImportInvoice{}
+
+	err := eir.db.WithContext(ctx).Preload("Details.Rice").
+		Preload(clause.Associations).Where("id = ?", id).First(data).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain.ErrDataNotFound
+		}
+		return nil, err
+	}
+
+	invoice := &domain.Invoice{
+		ID:           data.ID,
+		UserID:       data.UserID,
+		CustomerID:   data.CustomerID,
+		StorehouseID: data.StorehouseID,
+		TotalPrice:   data.TotalPrice,
+		Details:      make([]domain.InvoiceItem, len(data.Details)),
+	}
+
+	if data.Customer.ID != 0 {
+		invoice.Customer = convertToDomainCustomer(&data.Customer)
+	}
+
+	if data.Storehouse.ID != 0 {
+		invoice.Storehouse = convertToDomainStorehouse(&data.Storehouse)
+	}
+
+	for i, detail := range data.Details {
+		invoice.Details[i] = domain.InvoiceItem{
+			Price:    detail.Price,
+			Quantity: detail.Quantity,
+			RiceID:   detail.RiceID,
+		}
+
+		if detail.Rice.ID != 0 {
+			invoice.Details[i].Rice = convertToDomainRice(&detail.Rice)
+		}
+	}
+
+	return invoice, nil
+}
+
+func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, skip, limit int) ([]domain.Invoice, error) {
+	invoices := []domain.Invoice{}
+
+	row, err := eir.db.WithContext(ctx).Select("id", "storehouse_id", "customer_id", "user_id", "created_at", "total_price").Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	for row.Next() {
+		invoice := domain.Invoice{}
+		row.Scan(
+			&invoice.ID,
+			&invoice.StorehouseID,
+			&invoice.CustomerID,
+			&invoice.UserID,
+			&invoice.CreatedAt,
+			&invoice.TotalPrice,
+		)
+
+		invoices = append(invoices, invoice)
+	}
+
+	if len(invoices) == 0 {
+		return nil, domain.ErrDataNotFound
+	}
+
+	return invoices, nil
 }

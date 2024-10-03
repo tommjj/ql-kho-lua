@@ -52,7 +52,7 @@ func TestCustomerRepository_GetCustomerByID(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.GetCustomerByID(context.TODO(), 2)
+	data, err := repo.GetCustomerByID(context.TODO(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,8 +102,9 @@ func TestCustomerRepository_DeleteCustomer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = repo.DeleteCustomer(context.TODO(), 2)
+	err = repo.DeleteCustomer(context.TODO(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 }

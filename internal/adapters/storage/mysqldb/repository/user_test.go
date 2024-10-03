@@ -38,11 +38,11 @@ func TestUserRepo_Create(t *testing.T) {
 	}
 
 	user, err := repo.CreateUser(context.TODO(), &domain.User{
-		Name:     "mostima",
+		Name:     "fiammetta",
 		Phone:    "012345678",
-		Email:    "mostima@gmail.com",
+		Email:    "fiammetta@gmail.com",
 		Password: hashed,
-		Role:     domain.Root,
+		Role:     domain.Member,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -99,12 +99,17 @@ func TestUserRepo_Update(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	hashed, err := utils.HashPassword("12345678")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	updated, err := repo.UpdateUser(context.TODO(), &domain.User{
 		ID:       1,
 		Name:     "mostima",
 		Phone:    "1256",
-		Password: "123456789",
-		Role:     domain.Member,
+		Password: hashed,
+		Role:     domain.Root,
 	})
 	if err != nil {
 		t.Fatal(err)
