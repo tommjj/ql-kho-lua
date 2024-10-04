@@ -35,3 +35,10 @@ func RegisterAuthRoute(authHandler *handlers.AuthHandler) RegisterRouterFunc {
 		}
 	}
 }
+
+// RegisterUploadRoute is a option function to return register upload router function
+func RegisterUploadRoute(uploadHandler *handlers.UploadHandler) RegisterRouterFunc {
+	return func(e gin.IRouter) {
+		e.POST("/upload", uploadHandler.UploadImage)
+	}
+}

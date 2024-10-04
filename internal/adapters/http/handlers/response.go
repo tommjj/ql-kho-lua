@@ -52,6 +52,18 @@ func newAuthResponse(token string) authResponse {
 	}
 }
 
+// uploadImageResponse type to upload response for upload handler
+type uploadImageResponse struct {
+	Filename string `json:"filename" example:"name.ext"`
+}
+
+// newUploadImageResponse create a upload image response for upload handler
+func newUploadImageResponse(filename string) uploadImageResponse {
+	return uploadImageResponse{
+		Filename: filename,
+	}
+}
+
 // errorStatusMap is a map of defined error messages and their corresponding http status codes
 var errorStatusMap = map[error]int{
 	domain.ErrInternal:                   http.StatusInternalServerError,
