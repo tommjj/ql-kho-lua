@@ -26,6 +26,19 @@ type uploadImageRequest struct {
 	File *multipart.FileHeader `form:"file" binding:"required"`
 }
 
+// UploadImage ql-kho-lua
+//
+//	@Summary		Upload image and get a file name
+//	@Description	Upload temporary images for creating other resources
+//	@Tags			upload
+//	@Accept			mpfd
+//	@Produce		json
+//	@Param			request	body		uploadImageRequest					true	"Image file"
+//	@Success		200		{object}	response{data=uploadImageResponse}	"Uploaded"
+//	@Failure		400		{object}	errorResponse						"Validation error"
+//	@Failure		401		{object}	errorResponse						"Unauthorized error"
+//	@Failure		500		{object}	errorResponse						"Internal server error"
+//	@Router			/upload [post]
 func (u UploadHandler) UploadImage(ctx *gin.Context) {
 	var req uploadImageRequest
 

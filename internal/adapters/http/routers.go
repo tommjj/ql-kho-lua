@@ -42,3 +42,10 @@ func RegisterUploadRoute(uploadHandler *handlers.UploadHandler) RegisterRouterFu
 		e.POST("/upload", uploadHandler.UploadImage)
 	}
 }
+
+// RegisterStatic is a option function to return register static router function
+func RegisterStatic(root string) RegisterRouterFunc {
+	return func(i gin.IRouter) {
+		i.Static("/static", root)
+	}
+}
