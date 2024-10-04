@@ -65,7 +65,6 @@ func TestRice_GetListRice(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	t.Logf("%+v\n", rice)
 }
 

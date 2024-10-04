@@ -7,6 +7,7 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb"
 	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb/schema"
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
+	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -15,7 +16,7 @@ type importInvoicesRepository struct {
 	db *mysqldb.MysqlDB
 }
 
-func NewImInvoicesRepository(db *mysqldb.MysqlDB) *importInvoicesRepository {
+func NewImInvoicesRepository(db *mysqldb.MysqlDB) ports.IImportInvoicesRepository {
 	return &importInvoicesRepository{
 		db: db,
 	}
@@ -77,6 +78,37 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error) {
 	data := &schema.ImportInvoice{}
 
+	err := eir.db.WithContext(ctx).Preload("Details").Where("id = ?", id).First(data).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain.ErrDataNotFound
+		}
+		return nil, err
+	}
+
+	invoice := &domain.Invoice{
+		ID:           data.ID,
+		UserID:       data.UserID,
+		CustomerID:   data.CustomerID,
+		StorehouseID: data.StorehouseID,
+		TotalPrice:   data.TotalPrice,
+		Details:      make([]domain.InvoiceItem, len(data.Details)),
+	}
+
+	for i, detail := range data.Details {
+		invoice.Details[i] = domain.InvoiceItem{
+			Price:    detail.Price,
+			Quantity: detail.Quantity,
+			RiceID:   detail.RiceID,
+		}
+	}
+
+	return invoice, nil
+}
+
+func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error) {
+	data := &schema.ImportInvoice{}
+
 	err := eir.db.WithContext(ctx).Preload("Details.Rice").
 		Preload(clause.Associations).Where("id = ?", id).First(data).Error
 	if err != nil {
@@ -96,11 +128,11 @@ func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id in
 	}
 
 	if data.Customer.ID != 0 {
-		invoice.Customer = convertToDomainCustomer(&data.Customer)
+		invoice.Customer = convertToCustomer(&data.Customer)
 	}
 
 	if data.Storehouse.ID != 0 {
-		invoice.Storehouse = convertToDomainStorehouse(&data.Storehouse)
+		invoice.Storehouse = convertToStorehouse(&data.Storehouse)
 	}
 
 	for i, detail := range data.Details {
@@ -111,7 +143,7 @@ func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id in
 		}
 
 		if detail.Rice.ID != 0 {
-			invoice.Details[i].Rice = convertToDomainRice(&detail.Rice)
+			invoice.Details[i].Rice = convertToRice(&detail.Rice)
 		}
 	}
 
@@ -121,7 +153,9 @@ func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id in
 func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, skip, limit int) ([]domain.Invoice, error) {
 	invoices := []domain.Invoice{}
 
-	row, err := eir.db.WithContext(ctx).Select("id", "storehouse_id", "customer_id", "user_id", "created_at", "total_price").Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Rows()
+	row, err := eir.db.WithContext(ctx).Select(
+		"id", "storehouse_id", "customer_id", "user_id", "created_at", "total_price",
+	).Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Rows()
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ type IStorehouseRepository interface {
 	// GetListStorehouses select a list storehouses
 	GetListStorehouses(ctx context.Context, query string, limit, skip int) ([]domain.Storehouse, error)
 	// GetAuthorizedStorehouses
-	GetAuthorizedStorehouses(ctx context.Context, userID int) ([]domain.Storehouse, error)
+	GetAuthorizedStorehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Storehouse, error)
 	// GetStorehouseUsedCapacityByID get used capacity of storehouse
 	GetStorehouseUsedCapacityByID(ctx context.Context, id int) (float64, error)
 	// UpdateStorehouse update a storehouse, only update non-zero fields by default

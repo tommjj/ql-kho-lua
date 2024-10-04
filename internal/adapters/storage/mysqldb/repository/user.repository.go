@@ -43,7 +43,7 @@ func (ur *userRepository) CreateUser(ctx context.Context, user *domain.User) (*d
 		return nil, err
 	}
 
-	return convertToDomainUser(createdUser), nil
+	return convertToUser(createdUser), nil
 }
 
 func (ur *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
@@ -57,7 +57,7 @@ func (ur *userRepository) GetUserByID(ctx context.Context, id int) (*domain.User
 		return nil, err
 	}
 
-	return convertToDomainUser(user), nil
+	return convertToUser(user), nil
 }
 
 func (ur *userRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
@@ -71,7 +71,7 @@ func (ur *userRepository) GetUserByEmail(ctx context.Context, email string) (*do
 		return nil, err
 	}
 
-	return convertToDomainUser(user), nil
+	return convertToUser(user), nil
 }
 
 func (ur *userRepository) GetListUsers(ctx context.Context, query string, limit, skip int) ([]domain.User, error) {
@@ -123,7 +123,7 @@ func (ur *userRepository) UpdateUser(ctx context.Context, user *domain.User) (*d
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return convertToDomainUser(updatedUser), nil
+	return convertToUser(updatedUser), nil
 }
 
 func (ur *userRepository) DeleteUser(ctx context.Context, id int) error {

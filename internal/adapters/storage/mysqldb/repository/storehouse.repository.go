@@ -40,7 +40,7 @@ func (sr *storehouseRepository) CreateStorehouse(ctx context.Context, storehouse
 		return nil, err
 	}
 
-	return convertToDomainStorehouse(createData), nil
+	return convertToStorehouse(createData), nil
 }
 
 func (sr *storehouseRepository) GetStorehouseByID(ctx context.Context, id int) (*domain.Storehouse, error) {
@@ -54,7 +54,7 @@ func (sr *storehouseRepository) GetStorehouseByID(ctx context.Context, id int) (
 		return nil, err
 	}
 
-	return convertToDomainStorehouse(store), nil
+	return convertToStorehouse(store), nil
 }
 
 func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query string, limit, skip int) ([]domain.Storehouse, error) {
@@ -82,10 +82,21 @@ func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query st
 	return stores, nil
 }
 
-func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, userID int) ([]domain.Storehouse, error) {
+func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Storehouse, error) {
 	list := []schema.Storehouse{}
+	var err error
 
-	err := ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").Where("authorized.user_id = ?", userID).Find(&list).Error
+	trimQuery := strings.TrimSpace(query)
+
+	if trimQuery != "" {
+		err = ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").
+			Where("authorized.user_id = ? AND name LIKE ?", userID, fmt.Sprintf("%%%v%%", trimQuery)).
+			Limit(limit).Offset((skip - 1) * limit).Find(&list).Error
+	} else {
+		err = ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").
+			Where("authorized.user_id = ?", userID).Limit(limit).Offset((skip - 1) * limit).Find(&list).Error
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +108,7 @@ func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, us
 	storehouse := make([]domain.Storehouse, 0, len(list))
 
 	for _, v := range list {
-		storehouse = append(storehouse, *convertToDomainStorehouse(&v))
+		storehouse = append(storehouse, *convertToStorehouse(&v))
 	}
 
 	return storehouse, nil
@@ -145,9 +156,6 @@ func (sr *storehouseRepository) UpdateStorehouse(ctx context.Context, storehouse
 		})
 
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, domain.ErrDataNotFound
-		}
 		return nil, result.Error
 	}
 
@@ -155,7 +163,7 @@ func (sr *storehouseRepository) UpdateStorehouse(ctx context.Context, storehouse
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return convertToDomainStorehouse(updatedData), nil
+	return convertToStorehouse(updatedData), nil
 }
 
 func (sr *storehouseRepository) DeleteStorehouse(ctx context.Context, id int) error {

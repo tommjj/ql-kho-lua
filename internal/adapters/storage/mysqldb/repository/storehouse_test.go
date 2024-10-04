@@ -73,7 +73,7 @@ func TestStoreHouseRepo_GetAuthorizedStorehouses(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.GetAuthorizedStorehouses(context.TODO(), 2)
+	data, err := repo.GetAuthorizedStorehouses(context.TODO(), 1, "", 1, 1)
 	if err != nil {
 		t.Fatal(err)
 	}

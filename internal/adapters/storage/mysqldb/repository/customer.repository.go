@@ -40,7 +40,7 @@ func (cr *customerRepository) CreateCustomer(ctx context.Context, customer *doma
 		return nil, err
 	}
 
-	return convertToDomainCustomer(createData), nil
+	return convertToCustomer(createData), nil
 }
 
 func (cr *customerRepository) GetCustomerByID(ctx context.Context, id int) (*domain.Customer, error) {
@@ -54,7 +54,7 @@ func (cr *customerRepository) GetCustomerByID(ctx context.Context, id int) (*dom
 		return nil, err
 	}
 
-	return convertToDomainCustomer(customer), nil
+	return convertToCustomer(customer), nil
 }
 
 func (cr *customerRepository) GetListCustomers(ctx context.Context, query string, limit, skip int) ([]domain.Customer, error) {
@@ -103,7 +103,7 @@ func (cr *customerRepository) UpdateCustomer(ctx context.Context, customer *doma
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return convertToDomainCustomer(updatedData), nil
+	return convertToCustomer(updatedData), nil
 }
 
 func (cr *customerRepository) DeleteCustomer(ctx context.Context, id int) error {

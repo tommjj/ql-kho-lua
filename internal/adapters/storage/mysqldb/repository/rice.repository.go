@@ -37,7 +37,7 @@ func (rr *riceRepository) CreateRice(ctx context.Context, rice *domain.Rice) (*d
 		return nil, err
 	}
 
-	return convertToDomainRice(createData), nil
+	return convertToRice(createData), nil
 }
 
 func (rr *riceRepository) GetRiceByID(ctx context.Context, id int) (*domain.Rice, error) {
@@ -51,7 +51,7 @@ func (rr *riceRepository) GetRiceByID(ctx context.Context, id int) (*domain.Rice
 		return nil, err
 	}
 
-	return convertToDomainRice(rice), nil
+	return convertToRice(rice), nil
 }
 
 func (rr *riceRepository) GetListRice(ctx context.Context, query string, skip, limit int) ([]domain.Rice, error) {
@@ -97,7 +97,7 @@ func (rr *riceRepository) UpdateRice(ctx context.Context, rice *domain.Rice) (*d
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return convertToDomainRice(updated), nil
+	return convertToRice(updated), nil
 }
 
 func (rr *riceRepository) DeleteRice(ctx context.Context, id int) error {

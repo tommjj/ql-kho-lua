@@ -5,8 +5,8 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 )
 
-// convertToDomainUser is a helper to convert schema user to domain user type
-func convertToDomainUser(u *schema.User) *domain.User {
+// convertToUser is a helper to convert schema user to domain user type
+func convertToUser(u *schema.User) *domain.User {
 	return &domain.User{
 		ID:       u.ID,
 		Name:     u.Name,
@@ -17,8 +17,8 @@ func convertToDomainUser(u *schema.User) *domain.User {
 	}
 }
 
-// convertToDomainStorehouse is a helper to convert schema storehouse to domain storehouse type
-func convertToDomainStorehouse(s *schema.Storehouse) *domain.Storehouse {
+// convertToStorehouse is a helper to convert schema storehouse to domain storehouse type
+func convertToStorehouse(s *schema.Storehouse) *domain.Storehouse {
 	return &domain.Storehouse{
 		ID:       s.ID,
 		Name:     s.Name,
@@ -27,16 +27,16 @@ func convertToDomainStorehouse(s *schema.Storehouse) *domain.Storehouse {
 	}
 }
 
-// convertToDomainRice is a helper to convert schema rice to domain rice type
-func convertToDomainRice(r *schema.Rice) *domain.Rice {
+// convertToRice is a helper to convert schema rice to domain rice type
+func convertToRice(r *schema.Rice) *domain.Rice {
 	return &domain.Rice{
 		ID:   r.ID,
 		Name: r.Name,
 	}
 }
 
-// convertToDomainCustomer is a helper to convert schema customer to domain customer type
-func convertToDomainCustomer(c *schema.Customer) *domain.Customer {
+// convertToCustomer is a helper to convert schema customer to domain customer type
+func convertToCustomer(c *schema.Customer) *domain.Customer {
 	return &domain.Customer{
 		ID:      c.ID,
 		Name:    c.Name,
