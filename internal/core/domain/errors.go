@@ -38,3 +38,21 @@ var (
 	// ErrInvalidLocation is an error for the location is not valid
 	ErrInvalidLocation = errors.New("location is not valid")
 )
+
+// File storage
+var (
+	// ErrConflictDir is an error for base dir and temp dir conflicting
+	ErrConflictingDirectory = errors.New("directory conflicting err")
+	// ErrCanNotCreateTemp is an error for can not create base directory
+	ErrCreateBaseDirectory = errors.New("can not create base directory")
+	// ErrCanNotCreateTemp is an error for can not create temp directory
+	ErrCreateTempDirectory = errors.New("can not create temp directory")
+	// ErrFileIsNotExist is an error for file is not exist
+	ErrFileIsNotExist = errors.New("file is not exist")
+	// ErrCreateFile is an for create file err
+	ErrCreateFile = errors.New("create file err")
+	// ErrSaveFile is an error for save file err
+	ErrSaveFile = errors.New("save file err")
+	// ErrOpenFile is an error for open file err
+	ErrOpenFile = errors.New("open file err")
+)

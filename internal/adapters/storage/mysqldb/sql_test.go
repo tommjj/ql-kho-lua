@@ -95,13 +95,13 @@ func TestUp(t *testing.T) {
 
 	m := db.Migrator()
 	m.AutoMigrate(
-		&schema.ExportInvoiceDetail{},
-		&schema.ExportInvoice{},
-		&schema.ImportInvoiceDetail{},
-		&schema.ImportInvoice{},
-		&schema.Customer{},
 		&schema.User{},
-		&schema.Rice{},
 		&schema.Storehouse{},
+		&schema.Customer{},
+		&schema.Rice{},
+		&schema.ExportInvoice{},
+		&schema.ExportInvoiceDetail{},
+		&schema.ImportInvoice{},
+		&schema.ImportInvoiceDetail{},
 	)
 }

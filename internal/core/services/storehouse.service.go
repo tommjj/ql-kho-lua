@@ -59,8 +59,8 @@ func (ss *storehouseService) GetListStorehouses(ctx context.Context, query strin
 	return list, nil
 }
 
-func (ss *storehouseService) GetAuthorizedStorehouses(ctx context.Context, userID int) ([]domain.Storehouse, error) {
-	list, err := ss.repo.GetAuthorizedStorehouses(ctx, userID, "", 1, 1)
+func (ss *storehouseService) GetAuthorizedStorehouses(ctx context.Context, userID int, query string, limit int, skip int) ([]domain.Storehouse, error) {
+	list, err := ss.repo.GetAuthorizedStorehouses(ctx, userID, query, limit, skip)
 	if err != nil {
 		switch err {
 		case domain.ErrDataNotFound:
@@ -72,8 +72,6 @@ func (ss *storehouseService) GetAuthorizedStorehouses(ctx context.Context, userI
 
 	return list, nil
 }
-
-//func (ss *storehouseService)
 
 func (ss *storehouseService) UpdateStorehouse(ctx context.Context, storehouse *domain.Storehouse) (*domain.Storehouse, error) {
 	created, err := ss.repo.UpdateStorehouse(ctx, storehouse)

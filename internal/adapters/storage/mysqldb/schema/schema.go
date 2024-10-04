@@ -52,7 +52,7 @@ type Customer struct {
 
 type ExportInvoice struct {
 	ID           int                   `gorm:"primaryKey;autoIncrement"`
-	StorehouseID int                   `gorm:"not null"`
+	StorehouseID int                   `gorm:"not null;index"`
 	CustomerID   int                   `gorm:"not null"`
 	UserID       int                   `gorm:"not null"`
 	TotalPrice   float64               `gorm:"not null"`
@@ -73,7 +73,7 @@ type ExportInvoiceDetail struct {
 
 type ImportInvoice struct {
 	ID           int                   `gorm:"primaryKey;autoIncrement"`
-	StorehouseID int                   `gorm:"not null"`
+	StorehouseID int                   `gorm:"not null;index"`
 	CustomerID   int                   `gorm:"not null"`
 	UserID       int                   `gorm:"not null"`
 	TotalPrice   float64               `gorm:"not null"`
