@@ -9,17 +9,29 @@ import (
 
 type storehouseService struct {
 	repo ports.IStorehouseRepository
+	file ports.IFileStorage
 }
 
-func NewStorehouseService(repo ports.IStorehouseRepository) *storehouseService {
+func NewStorehouseService(repo ports.IStorehouseRepository, fileStorage ports.IFileStorage) *storehouseService {
 	return &storehouseService{
 		repo: repo,
+		file: fileStorage,
 	}
 }
 
 func (ss *storehouseService) CreateStorehouse(ctx context.Context, storehouse *domain.Storehouse) (*domain.Storehouse, error) {
+	err := ss.file.SavePermanentFile(storehouse.Image)
+	if err != nil {
+		if err == domain.ErrFileIsNotExist {
+			return nil, err
+		}
+		return nil, domain.ErrInternal
+	}
+
 	created, err := ss.repo.CreateStorehouse(ctx, storehouse)
 	if err != nil {
+		_ = ss.file.DeleteFile(storehouse.Image)
+
 		switch err {
 		case domain.ErrConflictingData:
 			return nil, err
@@ -27,6 +39,7 @@ func (ss *storehouseService) CreateStorehouse(ctx context.Context, storehouse *d
 			return nil, domain.ErrInternal
 		}
 	}
+	ss.file.DeleteTempFile(storehouse.Image)
 
 	return created, nil
 }
@@ -74,8 +87,29 @@ func (ss *storehouseService) GetAuthorizedStorehouses(ctx context.Context, userI
 }
 
 func (ss *storehouseService) UpdateStorehouse(ctx context.Context, storehouse *domain.Storehouse) (*domain.Storehouse, error) {
-	created, err := ss.repo.UpdateStorehouse(ctx, storehouse)
+	current, err := ss.repo.GetStorehouseByID(ctx, storehouse.ID)
 	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return nil, err
+		}
+		return nil, domain.ErrInternal
+	}
+
+	isChangeImage := storehouse.Image != "" && storehouse.Image != current.Image
+	if isChangeImage {
+		err := ss.file.SavePermanentFile(storehouse.Image)
+		if err != nil {
+			if err == domain.ErrFileIsNotExist {
+				return nil, err
+			}
+			return nil, domain.ErrInternal
+		}
+	}
+
+	updated, err := ss.repo.UpdateStorehouse(ctx, storehouse)
+	if err != nil {
+		err := ss.file.DeleteFile(storehouse.Image)
+
 		switch err {
 		case domain.ErrNoUpdatedData:
 			return nil, err
@@ -84,7 +118,12 @@ func (ss *storehouseService) UpdateStorehouse(ctx context.Context, storehouse *d
 		}
 	}
 
-	return created, nil
+	if isChangeImage {
+		ss.file.DeleteFile(current.Image)
+		ss.file.DeleteTempFile(updated.Image)
+	}
+
+	return updated, nil
 }
 
 func (ss *storehouseService) DeleteStorehouse(ctx context.Context, id int) error {

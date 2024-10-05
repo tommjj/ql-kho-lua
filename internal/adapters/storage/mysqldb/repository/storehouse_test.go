@@ -31,7 +31,7 @@ func TestStoreHouseRepo_CreateStorehouse(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.CreateStorehouse(context.TODO(), &domain.Storehouse{Name: "store 02", Location: "50, 53", Capacity: 1000})
+	data, err := repo.CreateStorehouse(context.TODO(), &domain.Storehouse{Name: "store 03", Location: "50, 53", Capacity: 1000, Image: "f20e8a37-af94-4a09-99a4-b62e7b2edbdb.png"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +45,7 @@ func TestStoreHouseRepo_GetStorehouseByID(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.GetStorehouseByID(context.TODO(), 2)
+	data, err := repo.GetStorehouseByID(context.TODO(), 3)
 	if err != nil {
 		t.Fatal(err)
 	}

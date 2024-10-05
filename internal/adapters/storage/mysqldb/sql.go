@@ -34,11 +34,6 @@ func NewMysqlDB(conf config.DB) (*MysqlDB, error) {
 	mysql.SetMaxOpenConns(conf.MaxOpenConns)
 	mysql.SetConnMaxLifetime(conf.ConnMaxLifetime)
 
-	err = mysql.Ping()
-	if err != nil {
-		return nil, err
-	}
-
 	err = db.AutoMigrate(
 		&schema.User{},
 		&schema.Storehouse{},

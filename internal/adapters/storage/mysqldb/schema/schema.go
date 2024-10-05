@@ -25,6 +25,7 @@ type Storehouse struct {
 	Name            string          `gorm:"type:VARCHAR(255);not null"`
 	Location        string          `gorm:"type:VARCHAR(50);not null"`
 	Capacity        int             `gorm:"type:INTEGER;not null"`
+	Image           string          `gorm:"type:VARCHAR(255);not null"`
 	DeletedAt       gorm.DeletedAt  `gorm:"index"`
 	AuthorizedUsers []*User         `gorm:"many2many:authorized;"`
 	ExportInvoices  []ExportInvoice `gorm:"foreignKey:StorehouseID"`

@@ -30,6 +30,7 @@ func (sr *storehouseRepository) CreateStorehouse(ctx context.Context, storehouse
 		Name:     storehouses.Name,
 		Location: storehouses.Location,
 		Capacity: storehouses.Capacity,
+		Image:    storehouses.Image,
 	}
 
 	err := sr.db.WithContext(ctx).Create(createData).Error
@@ -60,21 +61,36 @@ func (sr *storehouseRepository) GetStorehouseByID(ctx context.Context, id int) (
 func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query string, limit, skip int) ([]domain.Storehouse, error) {
 	stores := []domain.Storehouse{}
 	var err error
+	var rows *sql.Rows
 
 	sql := sr.db.WithContext(ctx).Table("storehouses").
-		Select("id", "name", "location", "capacity").
+		Select("id", "name", "location", "capacity", "image").
 		Limit(limit).Offset((skip - 1) * limit)
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery == "" {
-		err = sql.Scan(&stores).Error
+		rows, err = sql.Rows()
 	} else {
-		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery)).Scan(&stores).Error
+		rows, err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery)).Rows()
 	}
 
 	if err != nil {
 		return nil, err
 	}
+
+	for rows.Next() {
+		store := domain.Storehouse{}
+		rows.Scan(
+			&store.ID,
+			&store.Name,
+			&store.Location,
+			&store.Capacity,
+			&store.Image,
+		)
+
+		stores = append(stores, store)
+	}
+
 	if len(stores) == 0 {
 		return nil, domain.ErrDataNotFound
 	}
@@ -153,6 +169,7 @@ func (sr *storehouseRepository) UpdateStorehouse(ctx context.Context, storehouse
 			Name:     storehouses.Name,
 			Location: storehouses.Location,
 			Capacity: storehouses.Capacity,
+			Image:    storehouses.Image,
 		})
 
 	if result.Error != nil {

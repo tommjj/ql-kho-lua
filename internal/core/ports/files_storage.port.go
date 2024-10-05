@@ -9,6 +9,8 @@ type IFileStorage interface {
 	SavePermanentFile(filename string) error
 	// DeleteFile delete permanent file
 	DeleteFile(filename string) error
+	// DeleteTempFile delete temp file
+	DeleteTempFile(filename string) error
 	// CleanupTempFiles cleanup expired files
 	CleanupTempFiles() error
 }

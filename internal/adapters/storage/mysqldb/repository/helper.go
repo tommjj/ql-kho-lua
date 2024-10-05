@@ -24,6 +24,7 @@ func convertToStorehouse(s *schema.Storehouse) *domain.Storehouse {
 		Name:     s.Name,
 		Location: s.Location,
 		Capacity: s.Capacity,
+		Image:    s.Image,
 	}
 }
 

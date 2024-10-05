@@ -30,11 +30,13 @@ import (
 //	@name						Authorization
 //	@description				Type "JWT" followed by a space and the access token.
 func main() {
+	// |> Start load config
 	conf, err := config.New()
 	if err != nil {
 		zap.L().Fatal(err.Error())
 	}
 
+	// |> Start set logger
 	err = logger.Set(*conf.Logger)
 	if err != nil {
 		zap.L().Fatal(err.Error())
@@ -43,7 +45,9 @@ func main() {
 	// |> Start Storage
 	zap.L().Info("Start create Storage")
 
-	db, err := mysqldb.NewMysqlDB(*conf.DB)
+	db, err := Retry(func() (*mysqldb.MysqlDB, error) {
+		return mysqldb.NewMysqlDB(*conf.DB)
+	}, time.Second, 10)
 	if err != nil {
 		zap.L().Fatal(err.Error())
 	}
@@ -52,13 +56,13 @@ func main() {
 	if err != nil {
 		zap.L().Fatal(err.Error())
 	}
+	defer fileStorage.CleanupTempFiles()
 
 	// |> Start CRON
 	zap.L().Info("Start CRON")
 
 	c := cron.New()
-	// Every hour
-	_, err = c.AddFunc("0 * * * *", func() {
+	_, err = c.AddFunc("@hourly", func() {
 		zap.L().Info("clean temp files")
 		fileStorage.CleanupTempFiles()
 	})
@@ -100,4 +104,28 @@ func main() {
 	}
 
 	server.Serve()
+}
+
+// Retry is a helper func to retry a function fc a specified number of times if it encounters an error.
+func Retry[T any](fc func() (T, error), duration time.Duration, times int) (T, error) {
+	var result T
+	var err error
+
+	result, err = fc()
+	if err == nil {
+		return result, nil
+	}
+
+	for i := range times {
+		zap.S().Infof("times: %v. retry...", i+1)
+		result, err = fc()
+		if err == nil {
+			zap.L().Info("success")
+			return result, err
+		}
+
+		zap.L().Error(err.Error())
+		time.Sleep(duration)
+	}
+	return result, err
 }

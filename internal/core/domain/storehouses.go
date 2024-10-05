@@ -16,6 +16,7 @@ type Storehouse struct {
 	Location     string            `json:"location"`
 	Capacity     int               `json:"capacity"`
 	UsedCapacity *int              `json:"used_capacity,omitempty"`
+	Image        string            `json:"image"`
 	Items        *[]StorehouseItem `json:"items,omitempty"`
 }
 

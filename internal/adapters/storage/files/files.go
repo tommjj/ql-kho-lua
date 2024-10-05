@@ -80,14 +80,6 @@ func (s *localFileStorage) SavePermanentFile(filename string) error {
 	out.Close()
 	src.Close()
 
-	err = s.deleteTempFile(filename)
-	if err != nil {
-		if err == domain.ErrFileIsNotExist {
-			return nil
-		}
-		return err
-	}
-
 	return nil
 }
 
@@ -104,7 +96,7 @@ func (s *localFileStorage) DeleteFile(filename string) error {
 	return nil
 }
 
-func (s *localFileStorage) deleteTempFile(filename string) error {
+func (s *localFileStorage) DeleteTempFile(filename string) error {
 	tempFilePath := filepath.Join(s.tempDir, filename)
 
 	err := os.Remove(tempFilePath)
@@ -135,7 +127,7 @@ func (s *localFileStorage) CleanupTempFiles() error {
 		modTime := file.ModTime()
 		isExpired := time.Since(modTime) > s.maxAge
 		if isExpired {
-			err := s.deleteTempFile(file.Name())
+			err := s.DeleteTempFile(file.Name())
 			if err != nil && err != domain.ErrFileIsNotExist {
 				return err
 			}

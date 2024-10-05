@@ -31,7 +31,7 @@ func TestSavePermanentFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = fileStorage.SavePermanentFile("test.go")
+	err = fileStorage.SavePermanentFile("f20e8a37-af94-4a09-99a4-b62e7b2edbdb.png")
 	if err != nil {
 		t.Fatal(err)
 	}
