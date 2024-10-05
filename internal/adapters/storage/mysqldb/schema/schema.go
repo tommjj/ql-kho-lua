@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
@@ -11,9 +12,10 @@ type User struct {
 	ID                    int             `gorm:"primaryKey;autoIncrement"`
 	Name                  string          `gorm:"type:VARCHAR(32);not null"`
 	Email                 string          `gorm:"type:VARCHAR(320);uniqueIndex;not null"`
-	Phone                 string          `gorm:"type:VARCHAR(11);not null"`
+	Phone                 string          `gorm:"type:VARCHAR(15);not null"`
 	Role                  domain.Role     `gorm:"type:VARCHAR(10);not null;default:'member'"`
 	Password              string          `gorm:"type:VARCHAR(320);not null"`
+	Key                   sql.NullString  `gorm:"type:VARCHAR(320)"`
 	DeletedAt             gorm.DeletedAt  `gorm:"index"`
 	AuthorizedStorehouses []*Storehouse   `gorm:"many2many:authorized"`
 	ExportInvoices        []ExportInvoice `gorm:"foreignKey:UserID"`

@@ -12,7 +12,6 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type storehouseRepository struct {
@@ -161,10 +160,8 @@ func (sr *storehouseRepository) GetStorehouseUsedCapacityByID(ctx context.Contex
 }
 
 func (sr *storehouseRepository) UpdateStorehouse(ctx context.Context, storehouses *domain.Storehouse) (*domain.Storehouse, error) {
-	updatedData := &schema.Storehouse{}
-
-	result := sr.db.WithContext(ctx).Clauses(clause.Returning{}).
-		Model(updatedData).Where("id = ?", storehouses.ID).
+	result := sr.db.WithContext(ctx).
+		Model(&schema.Storehouse{}).Where("id = ?", storehouses.ID).
 		Updates(&schema.Storehouse{
 			Name:     storehouses.Name,
 			Location: storehouses.Location,
@@ -180,7 +177,7 @@ func (sr *storehouseRepository) UpdateStorehouse(ctx context.Context, storehouse
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return convertToStorehouse(updatedData), nil
+	return sr.GetStorehouseByID(ctx, storehouses.ID)
 }
 
 func (sr *storehouseRepository) DeleteStorehouse(ctx context.Context, id int) error {

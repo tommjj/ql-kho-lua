@@ -85,7 +85,7 @@ func TestUserRepo_GetList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	users, err := repo.GetListUsers(context.TODO(), "", 5, 1)
+	users, err := repo.GetListUsers(context.TODO(), "f", 5, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -99,17 +99,9 @@ func TestUserRepo_Update(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	hashed, err := utils.HashPassword("12345678")
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	updated, err := repo.UpdateUser(context.TODO(), &domain.User{
-		ID:       1,
-		Name:     "mostima",
-		Phone:    "1256",
-		Password: hashed,
-		Role:     domain.Root,
+		ID:   6,
+		Name: "saria",
 	})
 	if err != nil {
 		t.Fatal(err)

@@ -11,7 +11,6 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type riceRepository struct {
@@ -85,7 +84,7 @@ func (rr *riceRepository) UpdateRice(ctx context.Context, rice *domain.Rice) (*d
 
 	updated := &schema.Rice{}
 
-	result := rr.db.WithContext(ctx).Clauses(clause.Returning{}).Model(updated).Where("id = ?", rice.ID).Updates(updateData)
+	result := rr.db.WithContext(ctx).Model(updated).Where("id = ?", rice.ID).Updates(updateData)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
 			return nil, domain.ErrConflictingData

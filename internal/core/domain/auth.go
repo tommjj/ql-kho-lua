@@ -5,4 +5,5 @@ type TokenPayload struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Role  Role   `json:"role"`
+	Key   string `json:"key"`
 }

@@ -11,7 +11,6 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 // implement ports.IUserRepository
@@ -109,9 +108,7 @@ func (ur *userRepository) UpdateUser(ctx context.Context, user *domain.User) (*d
 		Password: user.Password,
 	}
 
-	updatedUser := &schema.User{}
-
-	result := ur.db.WithContext(ctx).Clauses(clause.Returning{}).Model(updatedUser).Where("id = ?", user.ID).Updates(updateData)
+	result := ur.db.WithContext(ctx).Model(&schema.User{}).Where("id = ?", user.ID).Updates(updateData)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
 			return nil, domain.ErrConflictingData
@@ -123,7 +120,7 @@ func (ur *userRepository) UpdateUser(ctx context.Context, user *domain.User) (*d
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return convertToUser(updatedUser), nil
+	return ur.GetUserByID(ctx, user.ID)
 }
 
 func (ur *userRepository) DeleteUser(ctx context.Context, id int) error {
