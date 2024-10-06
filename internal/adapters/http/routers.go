@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tommjj/ql-kho-lua/internal/adapters/http/handlers"
+	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
 
 // Group is a option function to group register router functions.
@@ -47,5 +48,24 @@ func RegisterUploadRoute(uploadHandler *handlers.UploadHandler) RegisterRouterFu
 func RegisterStatic(root string) RegisterRouterFunc {
 	return func(i gin.IRouter) {
 		i.Static("/static", root)
+	}
+}
+
+// RegisterUsersRoute is a option function to return register user router function
+func RegisterUsersRoute(token ports.ITokenService, userHandler *handlers.UserHandler) RegisterRouterFunc {
+	return func(e gin.IRouter) {
+		auth := e.Group("/users", handlers.AuthMiddleware(token))
+		{
+			auth.GET("/:id", userHandler.GetUserByID)
+			auth.PATCH("/:id", userHandler.UpdateUser)
+
+			root := auth.Group("/", handlers.RoleRootMiddleware())
+			{
+
+				root.GET("/", userHandler.GetListUsers)
+				root.POST("/", userHandler.CreateUser)
+				root.DELETE("/:id", userHandler.DeleteUserByID)
+			}
+		}
 	}
 }

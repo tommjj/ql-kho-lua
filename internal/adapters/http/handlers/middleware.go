@@ -12,7 +12,7 @@ var (
 	// authorizationHeaderKey is the key for authorization header in the request
 	authorizationHeaderKey = "authorization"
 	// authorizationType is the accepted authorization type
-	authorizationType = "JWT"
+	authorizationType = "jwt"
 	// authorizationPayloadKey is the key for authorization payload in the context
 	authorizationPayloadKey = "authorization_payload"
 )
@@ -58,11 +58,12 @@ func AuthMiddleware(token ports.ITokenService) gin.HandlerFunc {
 }
 
 // RoleRootMiddleware is a middleware to check if the user is a root
-func RoleRootMiddleware(token ports.ITokenService) gin.HandlerFunc {
+func RoleRootMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := getAuthPayload(ctx, authorizationPayloadKey)
 
 		isRoot := token.Role == domain.Root
+
 		if !isRoot {
 			handleError(ctx, domain.ErrForbidden)
 			ctx.Abort()

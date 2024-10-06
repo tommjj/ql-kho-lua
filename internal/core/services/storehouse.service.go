@@ -12,7 +12,7 @@ type storehouseService struct {
 	file ports.IFileStorage
 }
 
-func NewStorehouseService(repo ports.IStorehouseRepository, fileStorage ports.IFileStorage) *storehouseService {
+func NewStorehouseService(repo ports.IStorehouseRepository, fileStorage ports.IFileStorage) ports.IStorehouseService {
 	return &storehouseService{
 		repo: repo,
 		file: fileStorage,
@@ -86,6 +86,18 @@ func (ss *storehouseService) GetAuthorizedStorehouses(ctx context.Context, userI
 	return list, nil
 }
 
+func (ss *storehouseService) GetStorehouseUsedCapacityByID(ctx context.Context, id int) (float64, error) {
+	usedCapacity, err := ss.repo.GetStorehouseUsedCapacityByID(ctx, id)
+	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return 0, err
+		}
+		return 0, domain.ErrInternal
+	}
+
+	return usedCapacity, nil
+}
+
 func (ss *storehouseService) UpdateStorehouse(ctx context.Context, storehouse *domain.Storehouse) (*domain.Storehouse, error) {
 	current, err := ss.repo.GetStorehouseByID(ctx, storehouse.ID)
 	if err != nil {
@@ -108,7 +120,7 @@ func (ss *storehouseService) UpdateStorehouse(ctx context.Context, storehouse *d
 
 	updated, err := ss.repo.UpdateStorehouse(ctx, storehouse)
 	if err != nil {
-		err := ss.file.DeleteFile(storehouse.Image)
+		ss.file.DeleteFile(storehouse.Image)
 
 		switch err {
 		case domain.ErrNoUpdatedData:

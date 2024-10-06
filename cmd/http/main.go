@@ -75,19 +75,22 @@ func main() {
 	zap.L().Info("Start create repository")
 
 	userRepository := repository.NewUserRepository(db)
+	keyRepository := repository.NewKeyRepository(db)
 
 	// |> Start Service
 	zap.L().Info("Start create service")
 
 	uploadService := services.NewUploadService(fileStorage)
-	tokenService := auth.NewJWTTokenService(*conf.Auth)
+	tokenService := auth.NewJWTTokenService(*conf.Auth, keyRepository)
 	authService := services.NewAuthService(userRepository, tokenService)
+	userService := services.NewUserService(userRepository)
 
 	// |> Start Handler
 	zap.L().Info("Start create handler")
 
 	uploadHandler := handlers.NewUploadHandler(uploadService)
 	authHandler := handlers.NewAuthHandler(authService)
+	userHandler := handlers.NewUserHandler(userService)
 
 	// |> Start HTTP Server
 	zap.L().Info("Start create http server")
@@ -97,6 +100,7 @@ func main() {
 		http.Group("/v1/api",
 			http.RegisterUploadRoute(uploadHandler),
 			http.RegisterAuthRoute(authHandler),
+			http.RegisterUsersRoute(tokenService, userHandler),
 		),
 	)
 	if err != nil {

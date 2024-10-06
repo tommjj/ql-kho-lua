@@ -52,15 +52,49 @@ func newAuthResponse(token string) authResponse {
 	}
 }
 
-// uploadImageResponse type to upload response for upload handler
+// uploadImageResponse represents a upland image response body
 type uploadImageResponse struct {
 	Filename string `json:"filename" example:"name.ext"`
 }
 
-// newUploadImageResponse create a upload image response for upload handler
+// newUploadImageResponse is a helper function to create a response body for handling upload image data
 func newUploadImageResponse(filename string) uploadImageResponse {
 	return uploadImageResponse{
 		Filename: filename,
+	}
+}
+
+// userResponse represents a user response body
+type userResponse struct {
+	ID    int         `json:"id" example:"1"`
+	Name  string      `json:"name" example:"vertin"`
+	Phone string      `json:"phone" example:"+84123456789"`
+	Email string      `json:"email" example:"example@exm.com"`
+	Role  domain.Role `json:"role" example:"member"`
+}
+
+// newUserResponse is a helper function to create a response body for handling user data
+func newUserResponse(user *domain.User) userResponse {
+	return userResponse{
+		ID:    user.ID,
+		Name:  user.Name,
+		Phone: user.Phone,
+		Email: user.Email,
+		Role:  user.Role,
+	}
+}
+
+// listResponse represents a list with meta response items
+type listResponse struct {
+	Meta  meta `json:"meta"`
+	Items any  `json:"items"`
+}
+
+// newListResponse is a helper function to create a response body for handling users data
+func newListResponse(meta meta, items any) listResponse {
+	return listResponse{
+		Meta:  meta,
+		Items: items,
 	}
 }
 

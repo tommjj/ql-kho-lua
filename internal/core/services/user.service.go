@@ -104,7 +104,7 @@ func (us *userService) UpdateUser(ctx context.Context, user *domain.User) (*doma
 		}
 	}
 
-	updatedUser, err := us.repo.CreateUser(ctx, &domain.User{
+	updatedUser, err := us.repo.UpdateUser(ctx, &domain.User{
 		ID:       user.ID,
 		Name:     user.Name,
 		Email:    user.Email,
