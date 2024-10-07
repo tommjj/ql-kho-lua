@@ -53,11 +53,11 @@ func (rr *riceRepository) GetRiceByID(ctx context.Context, id int) (*domain.Rice
 	return convertToRice(rice), nil
 }
 
-func (rr *riceRepository) GetListRice(ctx context.Context, query string, skip, limit int) ([]domain.Rice, error) {
+func (rr *riceRepository) GetListRice(ctx context.Context, query string, limit, skip int) ([]domain.Rice, error) {
 	rice := []domain.Rice{}
 	var err error
 
-	sql := rr.db.WithContext(ctx).Table("rice").Limit(limit).Offset((skip - 1) * limit)
+	sql := rr.db.WithContext(ctx).Table("rice").Limit(limit).Offset((skip - 1) * limit).Order("id desc")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery == "" {

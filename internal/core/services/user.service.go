@@ -90,10 +90,12 @@ func (us *userService) GetListUsers(ctx context.Context, q string, limit, skip i
 }
 
 func (us *userService) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
-	var err error
-
-	if user.ID <= 0 {
-		return nil, domain.ErrDataConflict
+	_, err := us.repo.GetUserByID(ctx, user.ID)
+	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return nil, err
+		}
+		return nil, domain.ErrInternal
 	}
 
 	var hashedPass string

@@ -64,7 +64,7 @@ func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query st
 
 	sql := sr.db.WithContext(ctx).Table("storehouses").
 		Select("id", "name", "location", "capacity", "image").
-		Limit(limit).Offset((skip - 1) * limit)
+		Limit(limit).Offset((skip - 1) * limit).Order("id desc")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery == "" {
@@ -103,13 +103,15 @@ func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, us
 
 	trimQuery := strings.TrimSpace(query)
 
+	q := ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").
+		Limit(limit).Offset((skip - 1) * limit).Order("id desc")
+
 	if trimQuery != "" {
-		err = ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").
-			Where("authorized.user_id = ? AND name LIKE ?", userID, fmt.Sprintf("%%%v%%", trimQuery)).
-			Limit(limit).Offset((skip - 1) * limit).Find(&list).Error
+		err = q.
+			Where("authorized.user_id = ? AND name LIKE ?", userID, fmt.Sprintf("%%%v%%", trimQuery)).Find(&list).Error
 	} else {
-		err = ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").
-			Where("authorized.user_id = ?", userID).Limit(limit).Offset((skip - 1) * limit).Find(&list).Error
+		err = q.
+			Where("authorized.user_id = ?", userID).Find(&list).Error
 	}
 
 	if err != nil {

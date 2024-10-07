@@ -79,7 +79,7 @@ func (ur *userRepository) GetListUsers(ctx context.Context, query string, limit,
 
 	sql := ur.db.WithContext(ctx).Table("users").
 		Select("id", "name", "email", "phone", "role").
-		Limit(limit).Offset((skip - 1) * limit)
+		Limit(limit).Offset((skip - 1) * limit).Order("id desc")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery == "" {
