@@ -125,6 +125,8 @@ func (ss *storehouseService) UpdateStorehouse(ctx context.Context, storehouse *d
 		switch err {
 		case domain.ErrNoUpdatedData:
 			return nil, err
+		case domain.ErrConflictingData:
+			return nil, err
 		default:
 			return nil, domain.ErrInternal
 		}

@@ -24,7 +24,7 @@ type User struct {
 
 type Storehouse struct {
 	ID              int             `gorm:"primaryKey;autoIncrement"`
-	Name            string          `gorm:"type:VARCHAR(255);not null"`
+	Name            string          `gorm:"type:VARCHAR(255);uniqueIndex;not null"`
 	Location        string          `gorm:"type:VARCHAR(50);not null"`
 	Capacity        int             `gorm:"type:INTEGER;not null"`
 	Image           string          `gorm:"type:VARCHAR(255);not null"`

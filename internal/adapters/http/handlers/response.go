@@ -84,6 +84,28 @@ func newUserResponse(user *domain.User) userResponse {
 	}
 }
 
+// storehouseResponse represents a storehouse response body
+type storehouseResponse struct {
+	ID       int       `json:"id"`
+	Name     string    `json:"name" example:"store 01"`
+	Location []float64 `json:"location" example:"[50.12,68.36]"`
+	Image    string    `json:"image" example:"2455.png"`
+	Capacity int       `json:"capacity" example:"1200"`
+}
+
+// newStorehouseResponse is a helper function to create a response body for handling storehouse data
+func newStorehouseResponse(store *domain.Storehouse) storehouseResponse {
+	latitude, longitude, _ := store.ParseLocation()
+
+	return storehouseResponse{
+		ID:       store.ID,
+		Name:     store.Name,
+		Location: []float64{latitude, longitude},
+		Image:    store.Image,
+		Capacity: store.Capacity,
+	}
+}
+
 // listResponse represents a list with meta response items
 type listResponse struct {
 	Meta  meta `json:"meta"`

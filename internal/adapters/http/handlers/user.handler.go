@@ -34,9 +34,10 @@ type createUserRequest struct {
 //	@Accept			json
 //	@Produce		json
 //	@Param			request	body		createUserRequest			true	"Create user body"
-//	@Success		200		{object}	response{data=userResponse}	"Uploaded"
+//	@Success		200		{object}	response{data=userResponse}	"Created user data"
 //	@Failure		400		{object}	errorResponse				"Validation error"
 //	@Failure		401		{object}	errorResponse				"Unauthorized error"
+//	@Failure		403		{object}	errorResponse				"Forbidden error"
 //	@Failure		409		{object}	errorResponse				"Conflicting data error"
 //	@Failure		500		{object}	errorResponse				"Internal server error"
 //	@Router			/users  [post]
@@ -74,7 +75,7 @@ func (u *UserHandler) CreateUser(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int							true	"User id"
-//	@Success		200	{object}	response{data=userResponse}	"Uploaded"
+//	@Success		200	{object}	response{data=userResponse}	"User data"
 //	@Failure		400	{object}	errorResponse				"Validation error"
 //	@Failure		401	{object}	errorResponse				"Unauthorized error"
 //	@Failure		403	{object}	errorResponse				"Forbidden error"
@@ -124,15 +125,15 @@ type getListUserRequest struct {
 //	@Tags			users
 //	@Accept			json
 //	@Produce		json
-//	@Param			q		query		string								false	"Query"
-//	@Param			skip	query		int									false	"Skip"	default(0)	minimum(0)
-//	@Param			limit	query		int									false	"Limit"	default(5)	minimum(5)
-//	@Success		200		{object}	response{data=listUsersResponse}	"Users data"
-//	@Failure		400		{object}	errorResponse						"Validation error"
-//	@Failure		401		{object}	errorResponse						"Unauthorized error"
-//	@Failure		403		{object}	errorResponse						"Forbidden error"
-//	@Failure		404		{object}	errorResponse						"Data not found error"
-//	@Failure		500		{object}	errorResponse						"Internal server error"
+//	@Param			q		query		string												false	"Query"
+//	@Param			skip	query		int													false	"Skip"	default(0)	minimum(0)
+//	@Param			limit	query		int													false	"Limit"	default(5)	minimum(5)
+//	@Success		200		{object}	response{data=listResponse{items=[]userResponse}}	"Users data"
+//	@Failure		400		{object}	errorResponse										"Validation error"
+//	@Failure		401		{object}	errorResponse										"Unauthorized error"
+//	@Failure		403		{object}	errorResponse										"Forbidden error"
+//	@Failure		404		{object}	errorResponse										"Data not found error"
+//	@Failure		500		{object}	errorResponse										"Internal server error"
 //	@Router			/users [get]
 //	@Security		JWTAuth
 func (u *UserHandler) GetListUsers(ctx *gin.Context) {
@@ -173,16 +174,16 @@ type updateUserRequest struct {
 //	@Description	update user
 //	@Tags			users
 //	@Accept			json
-//	@Param			id		path	int					true	"User id"
-//	@Param			request	body	updateUserRequest	true	"Update user body"
 //	@Produce		json
-//	@Success		200	{object}	response{data=userResponse}	"Users data"
-//	@Failure		400	{object}	errorResponse				"Validation error"
-//	@Failure		401	{object}	errorResponse				"Unauthorized error"
-//	@Failure		403	{object}	errorResponse				"Forbidden error"
-//	@Failure		404	{object}	errorResponse				"Data not found error"
-//	@Failure		409	{object}	errorResponse				"Conflicting data error"
-//	@Failure		500	{object}	errorResponse				"Internal server error"
+//	@Param			id		path		int							true	"User id"
+//	@Param			request	body		updateUserRequest			true	"Update user body"
+//	@Success		200		{object}	response{data=userResponse}	"Updated user data"
+//	@Failure		400		{object}	errorResponse				"Validation error"
+//	@Failure		401		{object}	errorResponse				"Unauthorized error"
+//	@Failure		403		{object}	errorResponse				"Forbidden error"
+//	@Failure		404		{object}	errorResponse				"Data not found error"
+//	@Failure		409		{object}	errorResponse				"Conflicting data error"
+//	@Failure		500		{object}	errorResponse				"Internal server error"
 //	@Router			/users/{id} [patch]
 //	@Security		JWTAuth
 func (u *UserHandler) UpdateUser(ctx *gin.Context) {
@@ -240,14 +241,14 @@ func (u *UserHandler) UpdateUser(ctx *gin.Context) {
 //	@Description	delete user
 //	@Tags			users
 //	@Accept			json
-//	@Param			id	path	int	true	"User id"
 //	@Produce		json
-//	@Success		200	{object}	response{data=userResponse}	"Users data"
-//	@Failure		400	{object}	errorResponse				"Validation error"
-//	@Failure		401	{object}	errorResponse				"Unauthorized error"
-//	@Failure		403	{object}	errorResponse				"Forbidden error"
-//	@Failure		404	{object}	errorResponse				"Data not found error"
-//	@Failure		500	{object}	errorResponse				"Internal server error"
+//	@Param			id	path		int				true	"User id"
+//	@Success		200	{object}	response		"Deleted data"
+//	@Failure		400	{object}	errorResponse	"Validation error"
+//	@Failure		401	{object}	errorResponse	"Unauthorized error"
+//	@Failure		403	{object}	errorResponse	"Forbidden error"
+//	@Failure		404	{object}	errorResponse	"Data not found error"
+//	@Failure		500	{object}	errorResponse	"Internal server error"
 //	@Router			/users/{id} [delete]
 //	@Security		JWTAuth
 func (u *UserHandler) DeleteUserByID(ctx *gin.Context) {

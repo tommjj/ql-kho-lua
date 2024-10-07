@@ -69,3 +69,19 @@ func RegisterUsersRoute(token ports.ITokenService, userHandler *handlers.UserHan
 		}
 	}
 }
+
+func RegisterStorehouseRoute(token ports.ITokenService, storehouseHandler *handlers.StorehouseHandler) RegisterRouterFunc {
+	return func(e gin.IRouter) {
+		auth := e.Group("/storehouses", handlers.AuthMiddleware(token))
+		{
+			auth.GET("/:id", storehouseHandler.GetStorehouseByID)
+			auth.GET("/", storehouseHandler.GetListStorehouses)
+			root := auth.Group("/", handlers.RoleRootMiddleware())
+			{
+				root.POST("/", storehouseHandler.CreateStorehouse)
+				root.PATCH("/:id", storehouseHandler.UpdateStorehouse)
+				root.DELETE("/:id", storehouseHandler.DeleteStorehouse)
+			}
+		}
+	}
+}

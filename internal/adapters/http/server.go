@@ -55,6 +55,9 @@ func NewAdapter(conf *config.HTTP, options ...RegisterRouterFunc) (*router, erro
 		if err := v.RegisterValidation("location", custom_validator.LocationValidator); err != nil {
 			return nil, err
 		}
+		if err := v.RegisterValidation("image_file", custom_validator.ImageFileValidator); err != nil {
+			return nil, err
+		}
 	}
 
 	for _, option := range options {

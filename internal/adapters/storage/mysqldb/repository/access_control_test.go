@@ -42,7 +42,7 @@ func TestAccessControl_SetAccess(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = repo.SetAccess(context.TODO(), 2, 1)
+	err = repo.SetAccess(context.TODO(), 2, 3)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -169,8 +169,12 @@ func (sr *storehouseRepository) UpdateStorehouse(ctx context.Context, storehouse
 			Image:    storehouses.Image,
 		})
 
-	if result.Error != nil {
-		return nil, result.Error
+	err := result.Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return nil, domain.ErrConflictingData
+		}
+		return nil, err
 	}
 
 	if result.RowsAffected == 0 {
