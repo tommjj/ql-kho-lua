@@ -77,6 +77,7 @@ func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query st
 		return nil, err
 	}
 
+	defer rows.Close()
 	for rows.Next() {
 		store := domain.Storehouse{}
 		rows.Scan(

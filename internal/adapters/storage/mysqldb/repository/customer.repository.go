@@ -62,7 +62,7 @@ func (cr *customerRepository) GetListCustomers(ctx context.Context, query string
 	var err error
 
 	sql := cr.db.WithContext(ctx).Table("customers").
-		Limit(limit).Offset((skip - 1) * limit)
+		Limit(limit).Offset((skip - 1) * limit).Order("name DESC")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery == "" {
@@ -103,7 +103,7 @@ func (cr *customerRepository) UpdateCustomer(ctx context.Context, customer *doma
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return convertToCustomer(updatedData), nil
+	return cr.GetCustomerByID(ctx, updatedData.ID)
 }
 
 func (cr *customerRepository) DeleteCustomer(ctx context.Context, id int) error {
