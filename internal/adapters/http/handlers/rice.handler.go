@@ -96,7 +96,7 @@ func (r *RiceHandler) GetRiceByID(ctx *gin.Context) {
 
 type getListRiceRequest struct {
 	Query string `form:"q" binding:"" example:"teo"`
-	Skip  int    `form:"skip" binding:"min=0" example:"0"`
+	Skip  int    `form:"skip" binding:"min=1" example:"1"`
 	Limit int    `form:"limit" binding:"min=5" example:"5"`
 }
 
@@ -107,23 +107,35 @@ type getListRiceRequest struct {
 //	@Tags			rice
 //	@Accept			json
 //	@Produce		json
-//	@Param			q		query		string												false	"Query"
-//	@Param			skip	query		int													false	"Skip"	default(0)	minimum(0)
-//	@Param			limit	query		int													false	"Limit"	default(5)	minimum(5)
-//	@Success		200		{object}	response{data=listResponse{items=[]riceResponse}}	"Rice data"
-//	@Failure		400		{object}	errorResponse										"Validation error"
-//	@Failure		401		{object}	errorResponse										"Unauthorized error"
-//	@Failure		404		{object}	errorResponse										"Data not found error"
-//	@Failure		500		{object}	errorResponse										"Internal server error"
+//	@Param			q		query		string										false	"Query"
+//	@Param			skip	query		int											false	"Skip"	default(1)	minimum(1)
+//	@Param			limit	query		int											false	"Limit"	default(5)	minimum(5)
+//	@Success		200		{object}	responseWithPagination{data=[]riceResponse}	"Rice data"
+//	@Failure		400		{object}	errorResponse								"Validation error"
+//	@Failure		401		{object}	errorResponse								"Unauthorized error"
+//	@Failure		404		{object}	errorResponse								"Data not found error"
+//	@Failure		500		{object}	errorResponse								"Internal server error"
 //	@Router			/rice [get]
 //	@Security		JWTAuth
 func (r *RiceHandler) GetListRice(ctx *gin.Context) {
 	req := getListRiceRequest{
 		Limit: 5,
+		Skip:  1,
 	}
 	err := ctx.BindQuery(&req)
 	if err != nil {
 		validationError(ctx, err)
+		return
+	}
+
+	count, err := r.svc.CountRice(ctx, req.Query)
+	if err != nil {
+		handleError(ctx, err)
+		return
+	}
+
+	if checkPageOverflow(count, req.Limit, req.Skip) {
+		handleError(ctx, domain.ErrDataNotFound)
 		return
 	}
 
@@ -138,8 +150,8 @@ func (r *RiceHandler) GetListRice(ctx *gin.Context) {
 		res = append(res, riceResponse(item))
 	}
 
-	meta := newMeta(len(res), req.Limit, req.Skip)
-	handleSuccess(ctx, newListResponse(meta, res))
+	pagination := newPagination(count, len(rice), req.Limit, req.Skip)
+	handleSuccessPagination(ctx, pagination, res)
 }
 
 type updateRiceRequest struct {

@@ -124,7 +124,7 @@ func (s *StorehouseHandler) GetStorehouseByID(ctx *gin.Context) {
 
 type getListStorehouseRequest struct {
 	Query string `form:"q" binding:"" example:"store 01"`
-	Skip  int    `form:"skip" binding:"min=1" example:"0"`
+	Skip  int    `form:"skip" binding:"min=1" example:"1"`
 	Limit int    `form:"limit" binding:"min=5" example:"5"`
 }
 

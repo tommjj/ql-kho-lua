@@ -75,36 +75,6 @@ func newResponse(success bool, message string, data any) response {
 	}
 }
 
-// meta represents metadata for a paginated response
-type meta struct {
-	Total int `json:"total" example:"100"`
-	Limit int `json:"limit" example:"10"`
-	Skip  int `json:"skip" example:"0"`
-}
-
-// newMeta is a helper function to create metadata for a paginated response
-func newMeta(total, limit, skip int) meta {
-	return meta{
-		Total: total,
-		Limit: limit,
-		Skip:  skip,
-	}
-}
-
-// listResponse represents a list with meta response items
-type listResponse struct {
-	Meta  meta `json:"meta"`
-	Items any  `json:"items"`
-}
-
-// newListResponse is a helper function to create a response body for handling users data
-func newListResponse(meta meta, items any) listResponse {
-	return listResponse{
-		Meta:  meta,
-		Items: items,
-	}
-}
-
 // authResponse type to auth response for auth handler
 type authResponse struct {
 	Token string `json:"token" example:"eyJJ9.eyJpEzNDR9.fUjDw0"`

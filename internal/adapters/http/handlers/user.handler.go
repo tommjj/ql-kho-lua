@@ -114,7 +114,7 @@ func (u *UserHandler) GetUserByID(ctx *gin.Context) {
 
 type getListUserRequest struct {
 	Query string `form:"q" binding:"" example:"teo"`
-	Skip  int    `form:"skip" binding:"min=0" example:"0"`
+	Skip  int    `form:"skip" binding:"min=1" example:"1"`
 	Limit int    `form:"limit" binding:"min=5" example:"5"`
 }
 
