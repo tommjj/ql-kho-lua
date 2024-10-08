@@ -150,19 +150,31 @@ func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx contex
 	return invoice, nil
 }
 
+func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context) (int64, error) {
+	var count int64
+
+	err := eir.db.WithContext(ctx).Model(&schema.ImportInvoice{}).Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, skip, limit int) ([]domain.Invoice, error) {
 	invoices := []domain.Invoice{}
 
-	row, err := eir.db.WithContext(ctx).Select(
+	rows, err := eir.db.WithContext(ctx).Select(
 		"id", "storehouse_id", "customer_id", "user_id", "created_at", "total_price",
 	).Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Rows()
 	if err != nil {
 		return nil, err
 	}
 
-	for row.Next() {
+	defer rows.Close()
+	for rows.Next() {
 		invoice := domain.Invoice{}
-		row.Scan(
+		rows.Scan(
 			&invoice.ID,
 			&invoice.StorehouseID,
 			&invoice.CustomerID,

@@ -79,6 +79,20 @@ func TestUserRepo_GetByEmail(t *testing.T) {
 	t.Log(*user)
 }
 
+func TestUserRepo_CountUser(t *testing.T) {
+	repo, err := NewDefaultUserRepo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	users, err := repo.CountUsers(context.TODO(), "m")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v\n", users)
+}
+
 func TestUserRepo_GetList(t *testing.T) {
 	repo, err := NewDefaultUserRepo()
 	if err != nil {

@@ -73,6 +73,26 @@ func (ur *userRepository) GetUserByEmail(ctx context.Context, email string) (*do
 	return convertToUser(user), nil
 }
 
+func (ur *userRepository) CountUsers(ctx context.Context, query string) (int64, error) {
+	var count int64
+	var err error
+
+	q := ur.db.WithContext(ctx).Table("users")
+
+	trimQuery := strings.TrimSpace(query)
+	if trimQuery == "" {
+		err = q.Count(&count).Error
+	} else {
+		err = q.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery)).Count(&count).Error
+	}
+
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (ur *userRepository) GetListUsers(ctx context.Context, query string, limit, skip int) ([]domain.User, error) {
 	users := []domain.User{}
 	var err error

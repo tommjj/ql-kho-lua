@@ -53,19 +53,37 @@ func (rr *riceRepository) GetRiceByID(ctx context.Context, id int) (*domain.Rice
 	return convertToRice(rice), nil
 }
 
+func (rr *riceRepository) CountRice(ctx context.Context, query string) (int64, error) {
+	var count int64
+	var err error
+
+	q := rr.db.WithContext(ctx).Table("rice")
+
+	trimQuery := strings.TrimSpace(query)
+	if trimQuery != "" {
+		q.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery))
+	}
+
+	err = q.Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (rr *riceRepository) GetListRice(ctx context.Context, query string, limit, skip int) ([]domain.Rice, error) {
 	rice := []domain.Rice{}
 	var err error
 
-	sql := rr.db.WithContext(ctx).Table("rice").Limit(limit).Offset((skip - 1) * limit).Order("id desc")
+	q := rr.db.WithContext(ctx).Table("rice").Limit(limit).Offset((skip - 1) * limit).Order("id desc")
 
 	trimQuery := strings.TrimSpace(query)
-	if trimQuery == "" {
-		err = sql.Scan(&rice).Error
-	} else {
-		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery)).Scan(&rice).Error
+	if trimQuery != "" {
+		q.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery))
 	}
 
+	err = q.Scan(&rice).Error
 	if err != nil {
 		return nil, err
 	}

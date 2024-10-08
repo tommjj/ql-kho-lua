@@ -55,6 +55,19 @@ func TestRice_GetRiceByID(t *testing.T) {
 	t.Logf("%+v\n", rice)
 }
 
+func TestRice_CountRice(t *testing.T) {
+	repo, err := NewDefaultRiceRepo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rice, err := repo.CountRice(context.TODO(), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("%+v\n", rice)
+}
+
 func TestRice_GetListRice(t *testing.T) {
 	repo, err := NewDefaultRiceRepo()
 	if err != nil {

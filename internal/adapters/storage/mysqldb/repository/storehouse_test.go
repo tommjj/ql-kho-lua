@@ -53,13 +53,40 @@ func TestStoreHouseRepo_GetStorehouseByID(t *testing.T) {
 	t.Logf("%+v\n", data)
 }
 
+func TestStoreHouseRepo_CountStorehouses(t *testing.T) {
+	repo, err := NewDefaultStoreHouseRepo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := repo.CountStorehouse(context.TODO(), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v\n", data)
+}
 func TestStoreHouseRepo_GetListStorehouses(t *testing.T) {
 	repo, err := NewDefaultStoreHouseRepo()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	data, err := repo.GetListStorehouses(context.TODO(), "", 5, 1)
+	data, err := repo.GetListStorehouses(context.TODO(), "3", 5, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v\n", data)
+}
+
+func TestStoreHouseRepo_CountAuthorizedStorehouses(t *testing.T) {
+	repo, err := NewDefaultStoreHouseRepo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := repo.CountAuthorizedStorehouses(context.TODO(), 1, "0")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,7 +100,7 @@ func TestStoreHouseRepo_GetAuthorizedStorehouses(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.GetAuthorizedStorehouses(context.TODO(), 1, "", 1, 1)
+	data, err := repo.GetAuthorizedStorehouses(context.TODO(), 1, "03", 1, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
