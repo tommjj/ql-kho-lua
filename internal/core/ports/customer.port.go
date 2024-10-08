@@ -11,6 +11,8 @@ type ICustomerRepository interface {
 	CreateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
 	// GetCustomerByID select a customer by id
 	GetCustomerByID(ctx context.Context, id int) (*domain.Customer, error)
+	// CountCustomers count customer
+	CountCustomers(ctx context.Context, query string) (int64, error)
 	// GetListCustomers select a customer
 	GetListCustomers(ctx context.Context, query string, limit, skip int) ([]domain.Customer, error)
 	// UpdateCustomer update a customer, only update non-zero fields by default

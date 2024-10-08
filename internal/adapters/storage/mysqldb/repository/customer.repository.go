@@ -57,20 +57,38 @@ func (cr *customerRepository) GetCustomerByID(ctx context.Context, id int) (*dom
 	return convertToCustomer(customer), nil
 }
 
+func (cr *customerRepository) CountCustomers(ctx context.Context, query string) (int64, error) {
+	var count int64
+	var err error
+
+	q := cr.db.WithContext(ctx).Table("customers")
+
+	trimQuery := strings.TrimSpace(query)
+	if trimQuery != "" {
+		q.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery))
+	}
+
+	err = q.Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (cr *customerRepository) GetListCustomers(ctx context.Context, query string, limit, skip int) ([]domain.Customer, error) {
 	customers := []domain.Customer{}
 	var err error
 
-	sql := cr.db.WithContext(ctx).Table("customers").
+	q := cr.db.WithContext(ctx).Table("customers").
 		Limit(limit).Offset((skip - 1) * limit).Order("name DESC")
 
 	trimQuery := strings.TrimSpace(query)
-	if trimQuery == "" {
-		err = sql.Scan(&customers).Error
-	} else {
-		err = sql.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery)).Scan(&customers).Error
+	if trimQuery != "" {
+		q.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery))
 	}
 
+	err = q.Scan(&customers).Error
 	if err != nil {
 		return nil, err
 	}
