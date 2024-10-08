@@ -125,15 +125,15 @@ type getListUserRequest struct {
 //	@Tags			users
 //	@Accept			json
 //	@Produce		json
-//	@Param			q		query		string												false	"Query"
-//	@Param			skip	query		int													false	"Skip"	default(1)	minimum(1)
-//	@Param			limit	query		int													false	"Limit"	default(5)	minimum(5)
-//	@Success		200		{object}	response{data=listResponse{items=[]userResponse}}	"Users data"
-//	@Failure		400		{object}	errorResponse										"Validation error"
-//	@Failure		401		{object}	errorResponse										"Unauthorized error"
-//	@Failure		403		{object}	errorResponse										"Forbidden error"
-//	@Failure		404		{object}	errorResponse										"Data not found error"
-//	@Failure		500		{object}	errorResponse										"Internal server error"
+//	@Param			q		query		string										false	"Query"
+//	@Param			skip	query		int											false	"Skip"	default(1)	minimum(1)
+//	@Param			limit	query		int											false	"Limit"	default(5)	minimum(5)
+//	@Success		200		{object}	responseWithPagination{data[]userResponse}	"Users data"
+//	@Failure		400		{object}	errorResponse								"Validation error"
+//	@Failure		401		{object}	errorResponse								"Unauthorized error"
+//	@Failure		403		{object}	errorResponse								"Forbidden error"
+//	@Failure		404		{object}	errorResponse								"Data not found error"
+//	@Failure		500		{object}	errorResponse								"Internal server error"
 //	@Router			/users [get]
 //	@Security		JWTAuth
 func (u *UserHandler) GetListUsers(ctx *gin.Context) {

@@ -52,8 +52,8 @@ type response struct {
 type responseWithPagination struct {
 	Success    bool        `json:"success" example:"true"`
 	Message    string      `json:"message" example:"Success"`
-	Pagination *pagination `json:"pagination,omitempty"`
-	Data       any         `json:"data,omitempty"`
+	Pagination *pagination `json:"pagination"`
+	Data       any         `json:"data"`
 }
 
 // newResponseWithPagination create a response body with pagination

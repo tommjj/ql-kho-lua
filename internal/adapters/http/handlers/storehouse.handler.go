@@ -124,7 +124,7 @@ func (s *StorehouseHandler) GetStorehouseByID(ctx *gin.Context) {
 
 type getListStorehouseRequest struct {
 	Query string `form:"q" binding:"" example:"store 01"`
-	Skip  int    `form:"skip" binding:"min=0" example:"0"`
+	Skip  int    `form:"skip" binding:"min=1" example:"0"`
 	Limit int    `form:"limit" binding:"min=5" example:"5"`
 }
 
@@ -135,20 +135,21 @@ type getListStorehouseRequest struct {
 //	@Tags			storehouses
 //	@Accept			json
 //	@Produce		json
-//	@Param			q		query		string												false	"Query"
-//	@Param			skip	query		int													false	"Skip"	default(0)	minimum(0)
-//	@Param			limit	query		int													false	"Limit"	default(5)	minimum(5)
-//	@Success		200		{object}	response{data=listResponse{items=[]userResponse}}	"Storehouses data"
-//	@Failure		400		{object}	errorResponse										"Validation error"
-//	@Failure		401		{object}	errorResponse										"Unauthorized error"
-//	@Failure		403		{object}	errorResponse										"Forbidden error"
-//	@Failure		404		{object}	errorResponse										"Data not found error"
-//	@Failure		500		{object}	errorResponse										"Internal server error"
+//	@Param			q		query		string										false	"Query"
+//	@Param			skip	query		int											false	"Skip"	default(1)	minimum(1)
+//	@Param			limit	query		int											false	"Limit"	default(5)	minimum(5)
+//	@Success		200		{object}	responseWithPagination{data=[]userResponse}	"Storehouses data"
+//	@Failure		400		{object}	errorResponse								"Validation error"
+//	@Failure		401		{object}	errorResponse								"Unauthorized error"
+//	@Failure		403		{object}	errorResponse								"Forbidden error"
+//	@Failure		404		{object}	errorResponse								"Data not found error"
+//	@Failure		500		{object}	errorResponse								"Internal server error"
 //	@Router			/storehouses [get]
 //	@Security		JWTAuth
 func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 	req := getListStorehouseRequest{
 		Limit: 5,
+		Skip:  1,
 	}
 	err := ctx.BindQuery(&req)
 	if err != nil {
@@ -159,6 +160,23 @@ func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 	token := getAuthPayload(ctx, authorizationPayloadKey)
 
 	isRoot := token.Role == domain.Root
+
+	var count int64
+
+	if isRoot {
+		count, err = s.scv.CountStorehouses(ctx, req.Query)
+	} else {
+		count, err = s.scv.CountAuthorizedStorehouses(ctx, token.ID, req.Query)
+	}
+	if err != nil {
+		handleError(ctx, err)
+		return
+	}
+
+	if checkPageOverflow(count, req.Limit, req.Skip) {
+		handleError(ctx, domain.ErrDataNotFound)
+		return
+	}
 
 	var stores []domain.Storehouse
 
@@ -179,8 +197,8 @@ func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 		res = append(res, newStorehouseResponse(&store))
 	}
 
-	meta := newMeta(len(res), req.Limit, req.Skip)
-	handleSuccess(ctx, newListResponse(meta, res))
+	pagination := newPagination(count, len(stores), req.Limit, req.Skip)
+	handleSuccessPagination(ctx, pagination, res)
 }
 
 type updateStorehouseRequest struct {
