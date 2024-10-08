@@ -9,3 +9,14 @@ import (
 func getAuthPayload(ctx *gin.Context, key string) *domain.TokenPayload {
 	return ctx.MustGet(key).(*domain.TokenPayload)
 }
+
+// newPtr return new pointer
+func newPtr[T any](v T) *T {
+	return &v
+}
+
+func checkPageOverflow(count int64, limit, skip int) bool {
+	start := limit * (skip - 1)
+
+	return count < int64(start)
+}

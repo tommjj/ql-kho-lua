@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"math"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,10 +10,60 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 )
 
+type pagination struct {
+	TotalRecords int  `json:"total_records" example:"5"`
+	LimitRecords int  `json:"limit_records" example:"5"`
+	CurrentPage  int  `json:"current_page" example:"2"`
+	TotalPages   int  `json:"total_pages" example:"10"`
+	NextPage     *int `json:"next_page" example:"2"`
+	PrevPage     *int `json:"prev_page" example:"1"`
+}
+
+func newPagination(count int64, totalRecords, limitRecords, currentPage int) *pagination {
+	var nextPage *int
+	var privPage *int
+
+	totalPages := int(math.Ceil(float64(count) / float64(limitRecords)))
+
+	if currentPage > 1 {
+		privPage = newPtr(currentPage - 1)
+	}
+
+	if currentPage < totalPages {
+		nextPage = newPtr(currentPage + 1)
+	}
+
+	return &pagination{
+		TotalRecords: totalRecords,
+		LimitRecords: limitRecords,
+		CurrentPage:  currentPage,
+		TotalPages:   totalPages,
+		NextPage:     nextPage,
+		PrevPage:     privPage,
+	}
+}
+
 type response struct {
 	Success bool   `json:"success" example:"true"`
 	Message string `json:"message" example:"Success"`
 	Data    any    `json:"data,omitempty"`
+}
+
+type responseWithPagination struct {
+	Success    bool        `json:"success" example:"true"`
+	Message    string      `json:"message" example:"Success"`
+	Pagination *pagination `json:"pagination,omitempty"`
+	Data       any         `json:"data,omitempty"`
+}
+
+// newResponseWithPagination create a response body with pagination
+func newResponseWithPagination(success bool, message string, pagination *pagination, data any) responseWithPagination {
+	return responseWithPagination{
+		Success:    success,
+		Message:    message,
+		Pagination: pagination,
+		Data:       data,
+	}
 }
 
 // newResponse create a response body
@@ -148,6 +199,12 @@ var errorStatusMap = map[error]int{
 	domain.ErrExpiredToken:               http.StatusUnauthorized,
 	domain.ErrForbidden:                  http.StatusForbidden,
 	domain.ErrNoUpdatedData:              http.StatusBadRequest,
+}
+
+// handleSuccess write success response with status code 200 mess Success and data
+func handleSuccessPagination(ctx *gin.Context, pagination *pagination, data any) {
+	res := newResponseWithPagination(true, "Success", pagination, data)
+	ctx.JSON(http.StatusOK, res)
 }
 
 // handleSuccess write success response with status code 200 mess Success and data

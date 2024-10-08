@@ -126,7 +126,7 @@ type getListUserRequest struct {
 //	@Accept			json
 //	@Produce		json
 //	@Param			q		query		string												false	"Query"
-//	@Param			skip	query		int													false	"Skip"	default(0)	minimum(0)
+//	@Param			skip	query		int													false	"Skip"	default(1)	minimum(1)
 //	@Param			limit	query		int													false	"Limit"	default(5)	minimum(5)
 //	@Success		200		{object}	response{data=listResponse{items=[]userResponse}}	"Users data"
 //	@Failure		400		{object}	errorResponse										"Validation error"
@@ -138,11 +138,23 @@ type getListUserRequest struct {
 //	@Security		JWTAuth
 func (u *UserHandler) GetListUsers(ctx *gin.Context) {
 	req := getListUserRequest{
+		Skip:  1,
 		Limit: 5,
 	}
 	err := ctx.BindQuery(&req)
 	if err != nil {
 		validationError(ctx, err)
+		return
+	}
+
+	count, err := u.svc.CountUsers(ctx, req.Query)
+	if err != nil {
+		handleError(ctx, err)
+		return
+	}
+
+	if checkPageOverflow(count, req.Limit, req.Skip) {
+		handleError(ctx, domain.ErrDataNotFound)
 		return
 	}
 
@@ -157,8 +169,8 @@ func (u *UserHandler) GetListUsers(ctx *gin.Context) {
 		res = append(res, newUserResponse(&user))
 	}
 
-	meta := newMeta(len(res), req.Limit, req.Skip)
-	handleSuccess(ctx, newListResponse(meta, res))
+	pagination := newPagination(count, len(users), req.Limit, req.Skip)
+	handleSuccessPagination(ctx, pagination, res)
 }
 
 type updateUserRequest struct {
