@@ -70,6 +70,7 @@ func RegisterUsersRoute(token ports.ITokenService, userHandler *handlers.UserHan
 	}
 }
 
+// RegisterStorehouseRoute is a option function to return register storehouse router function
 func RegisterStorehouseRoute(token ports.ITokenService, storehouseHandler *handlers.StorehouseHandler) RegisterRouterFunc {
 	return func(e gin.IRouter) {
 		auth := e.Group("/storehouses", handlers.AuthMiddleware(token))
@@ -81,6 +82,23 @@ func RegisterStorehouseRoute(token ports.ITokenService, storehouseHandler *handl
 				root.POST("/", storehouseHandler.CreateStorehouse)
 				root.PATCH("/:id", storehouseHandler.UpdateStorehouse)
 				root.DELETE("/:id", storehouseHandler.DeleteStorehouse)
+			}
+		}
+	}
+}
+
+// RegisterRiceRoute is a option function to return register rice router function
+func RegisterRiceRoute(token ports.ITokenService, riceHandler *handlers.RiceHandler) RegisterRouterFunc {
+	return func(e gin.IRouter) {
+		auth := e.Group("/rice", handlers.AuthMiddleware(token))
+		{
+			auth.GET("/", riceHandler.GetListRice)
+			auth.GET("/:id", riceHandler.GetRiceByID)
+			root := auth.Group("/", handlers.RoleRootMiddleware())
+			{
+				root.POST("/", riceHandler.CreateRice)
+				root.PATCH("/:id", riceHandler.UpdateRice)
+				root.DELETE("/:id", riceHandler.DeleteRice)
 			}
 		}
 	}

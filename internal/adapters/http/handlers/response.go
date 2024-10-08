@@ -40,6 +40,20 @@ func newMeta(total, limit, skip int) meta {
 	}
 }
 
+// listResponse represents a list with meta response items
+type listResponse struct {
+	Meta  meta `json:"meta"`
+	Items any  `json:"items"`
+}
+
+// newListResponse is a helper function to create a response body for handling users data
+func newListResponse(meta meta, items any) listResponse {
+	return listResponse{
+		Meta:  meta,
+		Items: items,
+	}
+}
+
 // authResponse type to auth response for auth handler
 type authResponse struct {
 	Token string `json:"token" example:"eyJJ9.eyJpEzNDR9.fUjDw0"`
@@ -106,17 +120,17 @@ func newStorehouseResponse(store *domain.Storehouse) storehouseResponse {
 	}
 }
 
-// listResponse represents a list with meta response items
-type listResponse struct {
-	Meta  meta `json:"meta"`
-	Items any  `json:"items"`
+// riceResponse represents a rice response body
+type riceResponse struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
-// newListResponse is a helper function to create a response body for handling users data
-func newListResponse(meta meta, items any) listResponse {
-	return listResponse{
-		Meta:  meta,
-		Items: items,
+// newRiceResponse is a helper function to create a response body for handling rice data
+func newRiceResponse(rice *domain.Rice) riceResponse {
+	return riceResponse{
+		ID:   rice.ID,
+		Name: rice.Name,
 	}
 }
 
