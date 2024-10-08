@@ -26,6 +26,8 @@ type IRiceService interface {
 	CreateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
 	// GetRiceByID get a rice by id
 	GetRiceByID(ctx context.Context, id int) (*domain.Rice, error)
+	// CountRice count rice
+	CountRice(ctx context.Context, query string) (int64, error)
 	// GetListRice get a list rice
 	GetListRice(ctx context.Context, query string, limit, skip int) ([]domain.Rice, error)
 	// UpdateRice update a rice, only update non-zero fields by default

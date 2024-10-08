@@ -13,7 +13,7 @@ type UserHandler struct {
 	svc ports.IUserRepository
 }
 
-func NewUserHandler(userService ports.IUserRepository) *UserHandler {
+func NewUserHandler(userService ports.IUserService) *UserHandler {
 	return &UserHandler{
 		svc: userService,
 	}

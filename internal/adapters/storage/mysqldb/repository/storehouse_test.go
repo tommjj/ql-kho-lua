@@ -59,7 +59,7 @@ func TestStoreHouseRepo_CountStorehouses(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.CountStorehouse(context.TODO(), "")
+	data, err := repo.CountStorehouses(context.TODO(), "")
 	if err != nil {
 		t.Fatal(err)
 	}

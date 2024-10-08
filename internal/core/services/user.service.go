@@ -12,7 +12,7 @@ type userService struct {
 	repo ports.IUserRepository
 }
 
-func NewUserService(userRepo ports.IUserRepository) *userService {
+func NewUserService(userRepo ports.IUserRepository) ports.IUserService {
 	return &userService{
 		repo: userRepo,
 	}
@@ -72,6 +72,15 @@ func (us *userService) GetUserByEmail(ctx context.Context, email string) (*domai
 	user.RemovePass()
 
 	return user, nil
+}
+
+func (us *userService) CountUsers(ctx context.Context, q string) (int64, error) {
+	count, err := us.repo.CountUsers(ctx, q)
+	if err != nil {
+		return 0, domain.ErrInternal
+	}
+
+	return count, nil
 }
 
 func (us *userService) GetListUsers(ctx context.Context, q string, limit, skip int) ([]domain.User, error) {

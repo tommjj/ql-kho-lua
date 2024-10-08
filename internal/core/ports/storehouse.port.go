@@ -12,7 +12,7 @@ type IStorehouseRepository interface {
 	// GetStorehouseByID select a storehouse by id
 	GetStorehouseByID(ctx context.Context, id int) (*domain.Storehouse, error)
 	// CountStorehouse count storehouse
-	CountStorehouse(ctx context.Context, query string) (int64, error)
+	CountStorehouses(ctx context.Context, query string) (int64, error)
 	// GetListStorehouses select a list storehouses
 	GetListStorehouses(ctx context.Context, query string, limit, skip int) ([]domain.Storehouse, error)
 	// CountAuthorizedStorehouses count authorized storehouses
@@ -32,8 +32,12 @@ type IStorehouseService interface {
 	CreateStorehouse(ctx context.Context, storehouses *domain.Storehouse) (*domain.Storehouse, error)
 	// GetStorehouseByID select a storehouse by id
 	GetStorehouseByID(ctx context.Context, id int) (*domain.Storehouse, error)
+	// CountStorehouse count storehouse
+	CountStorehouses(ctx context.Context, query string) (int64, error)
 	// GetListStorehouses select a list storehouses
 	GetListStorehouses(ctx context.Context, query string, limit, skip int) ([]domain.Storehouse, error)
+	// CountAuthorizedStorehouses count authorized storehouses
+	CountAuthorizedStorehouses(ctx context.Context, userID int, query string) (int64, error)
 	// GetAuthorizedStorehouses
 	GetAuthorizedStorehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Storehouse, error)
 	// GetStorehouseUsedCapacityByID get used capacity of storehouse

@@ -45,6 +45,15 @@ func (r *riceService) GetRiceByID(ctx context.Context, id int) (*domain.Rice, er
 	return rice, nil
 }
 
+func (r *riceService) CountRice(ctx context.Context, query string) (int64, error) {
+	count, err := r.repo.CountRice(ctx, query)
+	if err != nil {
+		return 0, domain.ErrInternal
+	}
+
+	return count, nil
+}
+
 func (r *riceService) GetListRice(ctx context.Context, query string, limit, skip int) ([]domain.Rice, error) {
 	rice, err := r.repo.GetListRice(ctx, query, limit, skip)
 	if err != nil {

@@ -57,7 +57,7 @@ func (sr *storehouseRepository) GetStorehouseByID(ctx context.Context, id int) (
 	return convertToStorehouse(store), nil
 }
 
-func (sr *storehouseRepository) CountStorehouse(ctx context.Context, query string) (int64, error) {
+func (sr *storehouseRepository) CountStorehouses(ctx context.Context, query string) (int64, error) {
 	var count int64
 	var err error
 

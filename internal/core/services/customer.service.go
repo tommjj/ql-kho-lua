@@ -43,6 +43,15 @@ func (c *customerService) GetCustomerByID(ctx context.Context, id int) (*domain.
 	return customer, nil
 }
 
+func (c *customerService) CountCustomers(ctx context.Context, query string) (int64, error) {
+	count, err := c.repo.CountCustomers(ctx, query)
+	if err != nil {
+		return 0, domain.ErrInternal
+	}
+
+	return count, nil
+}
+
 func (c *customerService) GetListCustomers(ctx context.Context, query string, limit, skip int) ([]domain.Customer, error) {
 	customers, err := c.repo.GetListCustomers(ctx, query, limit, skip)
 	if err != nil {

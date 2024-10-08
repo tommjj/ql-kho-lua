@@ -58,6 +58,15 @@ func (ss *storehouseService) GetStorehouseByID(ctx context.Context, id int) (*do
 	return store, nil
 }
 
+func (ss *storehouseService) CountStorehouses(ctx context.Context, query string) (int64, error) {
+	count, err := ss.repo.CountStorehouses(ctx, query)
+	if err != nil {
+		return 0, domain.ErrInternal
+	}
+
+	return count, nil
+}
+
 func (ss *storehouseService) GetListStorehouses(ctx context.Context, query string, limit, skip int) ([]domain.Storehouse, error) {
 	list, err := ss.repo.GetListStorehouses(ctx, query, limit, skip)
 	if err != nil {
@@ -70,6 +79,15 @@ func (ss *storehouseService) GetListStorehouses(ctx context.Context, query strin
 	}
 
 	return list, nil
+}
+
+func (ss *storehouseService) CountAuthorizedStorehouses(ctx context.Context, userID int, query string) (int64, error) {
+	count, err := ss.repo.CountAuthorizedStorehouses(ctx, userID, query)
+	if err != nil {
+		return 0, domain.ErrInternal
+	}
+
+	return count, nil
 }
 
 func (ss *storehouseService) GetAuthorizedStorehouses(ctx context.Context, userID int, query string, limit int, skip int) ([]domain.Storehouse, error) {
