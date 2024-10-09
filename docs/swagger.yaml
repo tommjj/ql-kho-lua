@@ -275,6 +275,12 @@ definitions:
         example: name.ext
         type: string
     type: object
+  handlers.usedCapacityResponse:
+    properties:
+      used_capacity:
+        example: 500
+        type: number
+    type: object
   handlers.userResponse:
     properties:
       email:
@@ -964,7 +970,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Updated storehouse data
+          description: deleted
           schema:
             $ref: '#/definitions/handlers.response'
         "400":
@@ -1006,7 +1012,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Created storehouse data
+          description: Storehouse data
           schema:
             allOf:
             - $ref: '#/definitions/handlers.response'
@@ -1094,6 +1100,54 @@ paths:
       security:
       - JWTAuth: []
       summary: Update a storehouse and get created user data
+      tags:
+      - storehouses
+  /storehouses/{id}/used_capacity:
+    get:
+      consumes:
+      - application/json
+      description: Get used capacity of storehouse by id
+      parameters:
+      - description: Storehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: used capacity data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.usedCapacityResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get used capacity
       tags:
       - storehouses
   /upload:

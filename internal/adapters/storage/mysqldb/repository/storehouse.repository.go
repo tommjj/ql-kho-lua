@@ -168,7 +168,7 @@ func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, us
 	return storehouse, nil
 }
 
-func (sr *storehouseRepository) GetStorehouseUsedCapacityByID(ctx context.Context, id int) (float64, error) {
+func (sr *storehouseRepository) GetUsedCapacityByID(ctx context.Context, id int) (float64, error) {
 	err := sr.db.WithContext(ctx).First(&schema.Storehouse{ID: id}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

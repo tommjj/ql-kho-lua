@@ -75,8 +75,9 @@ func RegisterStorehouseRoute(token ports.ITokenService, storehouseHandler *handl
 	return func(e gin.IRouter) {
 		auth := e.Group("/storehouses", handlers.AuthMiddleware(token))
 		{
-			auth.GET("/:id", storehouseHandler.GetStorehouseByID)
 			auth.GET("/", storehouseHandler.GetListStorehouses)
+			auth.GET("/:id", storehouseHandler.GetStorehouseByID)
+			auth.GET("/:id/used_capacity", storehouseHandler.GetUsedCapacityByID)
 			root := auth.Group("/", handlers.RoleRootMiddleware())
 			{
 				root.POST("/", storehouseHandler.CreateStorehouse)

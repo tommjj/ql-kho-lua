@@ -83,7 +83,7 @@ func (s *StorehouseHandler) CreateStorehouse(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int									true	"Storehouse id"
-//	@Success		200	{object}	response{data=storehouseResponse}	"Created storehouse data"
+//	@Success		200	{object}	response{data=storehouseResponse}	"Storehouse data"
 //	@Failure		400	{object}	errorResponse						"Validation error"
 //	@Failure		401	{object}	errorResponse						"Unauthorized error"
 //	@Failure		403	{object}	errorResponse						"Forbidden error"
@@ -201,6 +201,53 @@ func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 	handleSuccessPagination(ctx, pagination, res)
 }
 
+// GetUsedCapacityByID ql-kho-lua
+//
+//	@Summary		Get used capacity
+//	@Description	Get used capacity of storehouse by id
+//	@Tags			storehouses
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int									true	"Storehouse id"
+//	@Success		200	{object}	response{data=usedCapacityResponse}	"used capacity data"
+//	@Failure		400	{object}	errorResponse						"Validation error"
+//	@Failure		401	{object}	errorResponse						"Unauthorized error"
+//	@Failure		403	{object}	errorResponse						"Forbidden error"
+//	@Failure		404	{object}	errorResponse						"Data not found error"
+//	@Failure		500	{object}	errorResponse						"Internal server error"
+//	@Router			/storehouses/{id}/used_capacity  [get]
+//	@Security		JWTAuth
+func (s *StorehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	numID, err := strconv.Atoi(id)
+	if err != nil {
+		validationError(ctx, errors.New("id must be a number"))
+		return
+	}
+
+	token := getAuthPayload(ctx, authorizationPayloadKey)
+
+	isRoot := token.Role == domain.Root
+
+	if !isRoot {
+		err := s.acc.HasAccess(ctx, numID, token.ID)
+		if err != nil {
+			handleError(ctx, err)
+			return
+		}
+	}
+
+	usedCapacity, err := s.scv.GetUsedCapacityByID(ctx, numID)
+	if err != nil {
+		handleError(ctx, err)
+		return
+	}
+
+	res := newUsedCapacityResponse(usedCapacity)
+	handleSuccess(ctx, res)
+}
+
 type updateStorehouseRequest struct {
 	Name     string    `json:"name" binding:"omitempty,min=3" example:"store 01"`
 	Location []float64 `json:"location" binding:"omitempty,location" example:"51.12,68.36"`
@@ -277,7 +324,7 @@ func (s *StorehouseHandler) UpdateStorehouse(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int				true	"Storehouse id"
-//	@Success		200	{object}	response		"Updated storehouse data"
+//	@Success		200	{object}	response		"deleted"
 //	@Failure		400	{object}	errorResponse	"Validation error"
 //	@Failure		401	{object}	errorResponse	"Unauthorized error"
 //	@Failure		403	{object}	errorResponse	"Forbidden error"

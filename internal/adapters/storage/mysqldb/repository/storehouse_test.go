@@ -114,7 +114,7 @@ func TestStoreHouseRepo_GetStorehouseUsedCapacityByID(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.GetStorehouseUsedCapacityByID(context.TODO(), 2)
+	data, err := repo.GetUsedCapacityByID(context.TODO(), 2)
 	if err != nil {
 		t.Fatal(err)
 	}

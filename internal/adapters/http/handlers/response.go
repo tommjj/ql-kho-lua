@@ -142,6 +142,16 @@ func newStorehouseResponse(store *domain.Storehouse) storehouseResponse {
 	}
 }
 
+type usedCapacityResponse struct {
+	UsedCapacity float64 `json:"used_capacity" example:"500"`
+}
+
+func newUsedCapacityResponse(v float64) usedCapacityResponse {
+	return usedCapacityResponse{
+		UsedCapacity: v,
+	}
+}
+
 // riceResponse represents a rice response body
 type riceResponse struct {
 	ID   int    `json:"id"`

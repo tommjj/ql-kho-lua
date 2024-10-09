@@ -1090,7 +1090,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Created storehouse data",
+                        "description": "Storehouse data",
                         "schema": {
                             "allOf": [
                                 {
@@ -1167,7 +1167,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Updated storehouse data",
+                        "description": "deleted",
                         "schema": {
                             "$ref": "#/definitions/handlers.response"
                         }
@@ -1284,6 +1284,85 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Conflicting data error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/storehouses/{id}/used_capacity": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "description": "Get used capacity of storehouse by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "storehouses"
+                ],
+                "summary": "Get used capacity",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Storehouse id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "used capacity data",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/handlers.usedCapacityResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found error",
                         "schema": {
                             "$ref": "#/definitions/handlers.errorResponse"
                         }
@@ -2156,6 +2235,15 @@ const docTemplate = `{
                 "filename": {
                     "type": "string",
                     "example": "name.ext"
+                }
+            }
+        },
+        "handlers.usedCapacityResponse": {
+            "type": "object",
+            "properties": {
+                "used_capacity": {
+                    "type": "number",
+                    "example": 500
                 }
             }
         },
