@@ -20,7 +20,7 @@ func NewCustomerHandler(customerService ports.ICustomerService) *CustomerHandler
 }
 
 type createCustomerRequest struct {
-	Name    string `json:"name" binding:"required,min=3" example:"Sentenced"`
+	Name    string `json:"name" binding:"required,min=3,max=255" example:"Sentenced"`
 	Email   string `json:"email" binding:"required,email" example:"example@exp.com"`
 	Phone   string `json:"phone" binding:"required,e164" example:"+84123456789"`
 	Address string `json:"address" binding:"required" example:"abc, xyz"`
@@ -163,7 +163,7 @@ func (c *CustomerHandler) GetListCustomers(ctx *gin.Context) {
 }
 
 type updateCustomerRequest struct {
-	Name    string `json:"name" binding:"omitempty,min=3" example:"Sentenced"`
+	Name    string `json:"name" binding:"omitempty,min=3,max=255" example:"Sentenced"`
 	Email   string `json:"email" binding:"omitempty,email" example:"example@exp.com"`
 	Phone   string `json:"phone" binding:"omitempty,e164" example:"+84123456789"`
 	Address string `json:"address" binding:"omitempty,min=1" example:"abc, xyz"`

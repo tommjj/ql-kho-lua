@@ -23,7 +23,7 @@ func NewStorehouseHandler(storehouseService ports.IStorehouseService, accessCont
 }
 
 type createStorehouseRequest struct {
-	Name     string    `json:"name" binding:"required,min=3" example:"store 01"`
+	Name     string    `json:"name" binding:"required,min=3,max=255" example:"store 01"`
 	Location []float64 `json:"location" binding:"required,location" example:"50.12,68.36"`
 	Image    string    `json:"image" binding:"required,image_file" example:"2455.png"`
 	Capacity int       `json:"capacity" binding:"required,min=1" example:"1200"`
@@ -249,7 +249,7 @@ func (s *StorehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
 }
 
 type updateStorehouseRequest struct {
-	Name     string    `json:"name" binding:"omitempty,min=3" example:"store 01"`
+	Name     string    `json:"name" binding:"omitempty,min=3,max=255" example:"store 01"`
 	Location []float64 `json:"location" binding:"omitempty,location" example:"51.12,68.36"`
 	Image    string    `json:"image" binding:"omitempty,image_file" example:"2455.png"`
 	Capacity int       `json:"capacity" binding:"omitempty,min=1" example:"1200"`

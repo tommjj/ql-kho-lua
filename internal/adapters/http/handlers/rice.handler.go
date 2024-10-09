@@ -20,7 +20,7 @@ func NewRiceHandler(riceService ports.IRiceService) *RiceHandler {
 }
 
 type createRiceRequest struct {
-	Name string `json:"name" binding:"required"`
+	Name string `json:"name" binding:"required,min=3,max=50"`
 }
 
 // CreateRice ql-kho-lua
@@ -155,7 +155,7 @@ func (r *RiceHandler) GetListRice(ctx *gin.Context) {
 }
 
 type updateRiceRequest struct {
-	Name string `json:"name" binding:"required"`
+	Name string `json:"name" binding:"required,min=3,max=50"`
 }
 
 // UpdateRice ql-kho-lua

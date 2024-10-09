@@ -20,7 +20,7 @@ func NewUserHandler(userService ports.IUserService) *UserHandler {
 }
 
 type createUserRequest struct {
-	Name     string `json:"name" binding:"required,min=3" example:"vertin"`
+	Name     string `json:"name" binding:"required,min=3,max=32" example:"vertin"`
 	Email    string `json:"email" binding:"required,email" example:"example@exm.com"`
 	Phone    string `json:"phone" binding:"required,e164" example:"+84123456788"`
 	Password string `json:"password" binding:"required,min=8" example:"password"`
@@ -174,10 +174,10 @@ func (u *UserHandler) GetListUsers(ctx *gin.Context) {
 }
 
 type updateUserRequest struct {
-	Name     string `json:"name" binding:"omitempty,min=3" example:"vertin"`
+	Name     string `json:"name" binding:"omitempty,min=3,max=32" example:"vertin"`
 	Email    string `json:"email" binding:"omitempty,email" example:"example@exm.com"`
 	Phone    string `json:"phone" binding:"omitempty,e164" example:"+84123456788"`
-	Password string `json:"password" binding:"omitempty,min=8" example:"password"`
+	Password string `json:"password" binding:"omitempty,min=8,max=64" example:"password"`
 }
 
 // UpdateUser ql-kho-lua

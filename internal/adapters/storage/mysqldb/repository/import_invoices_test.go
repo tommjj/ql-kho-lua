@@ -79,7 +79,7 @@ func TestImInvoices_getListInvoices(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.GetListImInvoices(context.TODO(), 1, 5)
+	data, err := repo.GetListImInvoices(context.TODO(), nil, nil, 1, 5)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 )
@@ -14,5 +15,5 @@ type IImportInvoicesRepository interface {
 	// GetImInvoiceWithAssociationsByID select a invoice with user, storehouse, customer, rice by id
 	GetImInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error)
 	// GetListImInvoices select invoices
-	GetListImInvoices(ctx context.Context, skip, limit int) ([]domain.Invoice, error)
+	GetListImInvoices(ctx context.Context, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error)
 }

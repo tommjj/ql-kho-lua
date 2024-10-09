@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb"
 	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb/schema"
@@ -161,12 +162,12 @@ func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context) (int64
 	return count, nil
 }
 
-func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, skip, limit int) ([]domain.Invoice, error) {
+func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
 	invoices := []domain.Invoice{}
 
 	rows, err := eir.db.WithContext(ctx).Select(
 		"id", "storehouse_id", "customer_id", "user_id", "created_at", "total_price",
-	).Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Rows()
+	).Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Order("id DESC").Rows()
 	if err != nil {
 		return nil, err
 	}
