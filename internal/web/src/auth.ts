@@ -32,10 +32,21 @@ const { handlers, signIn, signOut, auth } = NextAuth({
         authorized({ auth, request: { nextUrl } }) {
             const user = auth?.user;
             const isLoggedIn = !!user;
-
             const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
             const isOnRoot = nextUrl.pathname.startsWith('/dashboard/root');
             const isOnHomePage = nextUrl.pathname === '/';
+
+            if (isLoggedIn) {
+                const isOnLogout = nextUrl.pathname.startsWith('/log-out');
+                if (isOnLogout) {
+                    return true;
+                }
+
+                const dec = jwtDecode(user.token);
+                if (dec.exp && Date.now() >= dec.exp * 1000) {
+                    return false;
+                }
+            }
 
             if (isOnHomePage) {
                 if (isLoggedIn) {
@@ -84,18 +95,17 @@ const { handlers, signIn, signOut, auth } = NextAuth({
                     return null;
                 }
 
-                const [res, err] = await fetcher.post.json(
-                    '/v1/api/auth/login',
-                    {
-                        email: parsedCredentials.data.email,
-                        password: parsedCredentials.data.password,
-                    }
-                );
-                if (err || !res?.ok) {
+                const [res, err] = await fetcher.post.json<{
+                    data: { token: string };
+                }>('/v1/api/auth/login', {
+                    email: parsedCredentials.data.email,
+                    password: parsedCredentials.data.password,
+                });
+                if (err) {
                     return null;
                 }
 
-                const data = (await res.json()).data;
+                const data = res.data;
 
                 try {
                     const dec = jwtDecode<TokenPayload>(data.token);
