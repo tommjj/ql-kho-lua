@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { Role } from './role';
 import { validateE164 } from '@/lib/validator/e164';
+import { Role } from '@/types/role';
 
 const phoneNumber = z.string().refine((v) => validateE164(v), {
     message: 'phone numbers is not valid',

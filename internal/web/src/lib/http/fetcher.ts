@@ -1,5 +1,5 @@
 export const API_HOST =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/v1/api';
 
 type ReturnType<T> = [undefined, Error | Response] | [T, undefined];
 
@@ -30,7 +30,7 @@ function createMethods(dfPath: Path = '', init: RequestInit = {}) {
         path: Path = '',
         body: object,
         requestInit: RequestInit = init
-    ): Promise<Promise<ReturnType<T>>> {
+    ): Promise<ReturnType<T>> {
         try {
             const res = await fetch(`${dfPath}${path}`, {
                 ...init,
@@ -57,7 +57,7 @@ function createMethods(dfPath: Path = '', init: RequestInit = {}) {
         path: Path = '',
         body: FormData,
         requestInit: RequestInit = init
-    ): Promise<Promise<ReturnType<T>>> {
+    ): Promise<ReturnType<T>> {
         try {
             const res = await fetch(`${dfPath}${path}`, {
                 ...init,
