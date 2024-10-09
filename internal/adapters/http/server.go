@@ -14,6 +14,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/tommjj/ql-kho-lua/internal/logger"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	docs "github.com/tommjj/ql-kho-lua/docs"
 )
 
 type RegisterRouterFunc func(gin.IRouter)
@@ -59,6 +63,10 @@ func NewAdapter(conf *config.HTTP, options ...RegisterRouterFunc) (*router, erro
 			return nil, err
 		}
 	}
+
+	// Swagger
+	docs.SwaggerInfo.BasePath = "/v1/api"
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	for _, option := range options {
 		option(r)

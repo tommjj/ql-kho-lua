@@ -1,0 +1,1403 @@
+basePath: /v1/api
+definitions:
+  domain.Role:
+    enum:
+    - root
+    - member
+    type: string
+    x-enum-varnames:
+    - Root
+    - Member
+  handlers.authResponse:
+    properties:
+      token:
+        example: eyJJ9.eyJpEzNDR9.fUjDw0
+        type: string
+    type: object
+  handlers.createCustomerRequest:
+    properties:
+      address:
+        example: abc, xyz
+        type: string
+      email:
+        example: example@exp.com
+        type: string
+      name:
+        example: Sentenced
+        minLength: 3
+        type: string
+      phone:
+        example: "+84123456789"
+        type: string
+    required:
+    - address
+    - email
+    - name
+    - phone
+    type: object
+  handlers.createRiceRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  handlers.createStorehouseRequest:
+    properties:
+      capacity:
+        example: 1200
+        minimum: 1
+        type: integer
+      image:
+        example: 2455.png
+        type: string
+      location:
+        example:
+        - 50.12
+        - 68.36
+        items:
+          type: number
+        type: array
+      name:
+        example: store 01
+        minLength: 3
+        type: string
+    required:
+    - capacity
+    - image
+    - location
+    - name
+    type: object
+  handlers.createUserRequest:
+    properties:
+      email:
+        example: example@exm.com
+        type: string
+      name:
+        example: vertin
+        minLength: 3
+        type: string
+      password:
+        example: password
+        minLength: 8
+        type: string
+      phone:
+        example: "+84123456788"
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    type: object
+  handlers.customerResponse:
+    properties:
+      address:
+        example: abc, eyz
+        type: string
+      email:
+        example: ascalon@exp.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Ascalon
+        type: string
+      phone:
+        example: "+84123456789"
+        type: string
+    type: object
+  handlers.errorResponse:
+    properties:
+      messages:
+        example:
+        - data not found
+        items:
+          type: string
+        type: array
+      success:
+        example: false
+        type: boolean
+    type: object
+  handlers.loginRequest:
+    properties:
+      email:
+        example: ex@email.com
+        format: email
+        type: string
+      password:
+        example: "12345678"
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handlers.pagination:
+    properties:
+      current_page:
+        example: 2
+        type: integer
+      limit_records:
+        example: 5
+        type: integer
+      next_page:
+        example: 2
+        type: integer
+      prev_page:
+        example: 1
+        type: integer
+      total_pages:
+        example: 10
+        type: integer
+      total_records:
+        example: 5
+        type: integer
+    type: object
+  handlers.response:
+    properties:
+      data: {}
+      message:
+        example: Success
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  handlers.responseWithPagination:
+    properties:
+      data: {}
+      message:
+        example: Success
+        type: string
+      pagination:
+        $ref: '#/definitions/handlers.pagination'
+      success:
+        example: true
+        type: boolean
+    type: object
+  handlers.riceResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  handlers.storehouseResponse:
+    properties:
+      capacity:
+        example: 1200
+        type: integer
+      id:
+        type: integer
+      image:
+        example: 2455.png
+        type: string
+      location:
+        example:
+        - 50.12
+        - 68.36
+        items:
+          type: number
+        type: array
+      name:
+        example: store 01
+        type: string
+    type: object
+  handlers.updateCustomerRequest:
+    properties:
+      address:
+        example: abc, xyz
+        minLength: 1
+        type: string
+      email:
+        example: example@exp.com
+        type: string
+      name:
+        example: Sentenced
+        minLength: 3
+        type: string
+      phone:
+        example: "+84123456789"
+        type: string
+    type: object
+  handlers.updateRiceRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  handlers.updateStorehouseRequest:
+    properties:
+      capacity:
+        example: 1200
+        minimum: 1
+        type: integer
+      image:
+        example: 2455.png
+        type: string
+      location:
+        example:
+        - 51.12
+        - 68.36
+        items:
+          type: number
+        type: array
+      name:
+        example: store 01
+        minLength: 3
+        type: string
+    type: object
+  handlers.updateUserRequest:
+    properties:
+      email:
+        example: example@exm.com
+        type: string
+      name:
+        example: vertin
+        minLength: 3
+        type: string
+      password:
+        example: password
+        minLength: 8
+        type: string
+      phone:
+        example: "+84123456788"
+        type: string
+    type: object
+  handlers.uploadImageRequest:
+    type: object
+  handlers.uploadImageResponse:
+    properties:
+      filename:
+        example: name.ext
+        type: string
+    type: object
+  handlers.userResponse:
+    properties:
+      email:
+        example: example@exm.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: vertin
+        type: string
+      phone:
+        example: "+84123456789"
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/domain.Role'
+        example: member
+    type: object
+info:
+  contact: {}
+  description: This is a RESTful ql-kho-lua.
+  title: Qua Ly Kho Lua
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a registered user and returns an access token if the credentials
+        are valid.
+      parameters:
+      - description: Login request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully logged in
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.authResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      summary: Login and get an access token
+      tags:
+      - auth
+  /customers:
+    get:
+      consumes:
+      - application/json
+      description: get customers
+      parameters:
+      - description: Query
+        in: query
+        name: q
+        type: string
+      - default: 1
+        description: Skip
+        in: query
+        minimum: 1
+        name: skip
+        type: integer
+      - default: 5
+        description: Limit
+        in: query
+        minimum: 5
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Customers data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.responseWithPagination'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/handlers.customerResponse'
+                  type: array
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: get customers
+      tags:
+      - customers
+    post:
+      consumes:
+      - application/json
+      description: Create a new customer and get created user data
+      parameters:
+      - description: Create customer body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created customer data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.customerResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Create a new customer and get created user data
+      tags:
+      - customers
+  /customers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete customer
+      parameters:
+      - description: Customer id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted data
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: delete customer
+      tags:
+      - customers
+    get:
+      consumes:
+      - application/json
+      description: Get a customer by customer id
+      parameters:
+      - description: Customer id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Customer data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.customerResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get a customer
+      tags:
+      - customers
+    patch:
+      consumes:
+      - application/json
+      description: update customer
+      parameters:
+      - description: Customer id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update customer body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.updateCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated customer data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.customerResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: update customer
+      tags:
+      - customers
+  /rice:
+    get:
+      consumes:
+      - application/json
+      description: get list rice
+      parameters:
+      - description: Query
+        in: query
+        name: q
+        type: string
+      - default: 1
+        description: Skip
+        in: query
+        minimum: 1
+        name: skip
+        type: integer
+      - default: 5
+        description: Limit
+        in: query
+        minimum: 5
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rice data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.responseWithPagination'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/handlers.riceResponse'
+                  type: array
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: get list rice
+      tags:
+      - rice
+    post:
+      consumes:
+      - application/json
+      description: Create a new rice and get created rice data
+      parameters:
+      - description: Create rice body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createRiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created rice data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.riceResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Create a new rice and get created rice data
+      tags:
+      - rice
+  /rice/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete rice
+      parameters:
+      - description: Rice id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted data
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: delete rice
+      tags:
+      - rice
+    get:
+      consumes:
+      - application/json
+      description: Get a rice by user id
+      parameters:
+      - description: Rice id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rice data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.riceResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get a rice
+      tags:
+      - rice
+    patch:
+      consumes:
+      - application/json
+      description: update rice
+      parameters:
+      - description: Rice id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update rice body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.updateRiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated rice data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.riceResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: update rice
+      tags:
+      - rice
+  /storehouses:
+    get:
+      consumes:
+      - application/json
+      description: get storehouses
+      parameters:
+      - description: Query
+        in: query
+        name: q
+        type: string
+      - default: 1
+        description: Skip
+        in: query
+        minimum: 1
+        name: skip
+        type: integer
+      - default: 5
+        description: Limit
+        in: query
+        minimum: 5
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Storehouses data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.responseWithPagination'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/handlers.userResponse'
+                  type: array
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: get storehouses
+      tags:
+      - storehouses
+    post:
+      consumes:
+      - application/json
+      description: Create a new storehouse and get created storehouse data
+      parameters:
+      - description: Create storehouse body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createStorehouseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created storehouse data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.storehouseResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Create a new storehouse and get created user data
+      tags:
+      - storehouses
+  /storehouses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a storehouse
+      parameters:
+      - description: Storehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated storehouse data
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Delete a storehouse
+      tags:
+      - storehouses
+    get:
+      consumes:
+      - application/json
+      description: Get storehouse data by id
+      parameters:
+      - description: Storehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created storehouse data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.storehouseResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get storehouse data
+      tags:
+      - storehouses
+    patch:
+      consumes:
+      - application/json
+      description: Update a storehouse and get created storehouse data
+      parameters:
+      - description: Storehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update storehouse body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.updateStorehouseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated storehouse data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.storehouseResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Update a storehouse and get created user data
+      tags:
+      - storehouses
+  /upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload temporary images for creating other resources
+      parameters:
+      - description: Image file
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.uploadImageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Uploaded
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.uploadImageResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      summary: Upload image and get a file name
+      tags:
+      - upload
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: get users
+      parameters:
+      - description: Query
+        in: query
+        name: q
+        type: string
+      - default: 1
+        description: Skip
+        in: query
+        minimum: 1
+        name: skip
+        type: integer
+      - default: 5
+        description: Limit
+        in: query
+        minimum: 5
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.responseWithPagination'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/handlers.userResponse'
+                  type: array
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: get users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user and get created user data
+      parameters:
+      - description: Create user body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created user data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.userResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Create a new user and get created user data
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete user
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted data
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Get a user by user id
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.userResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get a user
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: update user
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update user body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.updateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated user data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.userResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: update user
+      tags:
+      - users
+schemes:
+- http
+- https
+securityDefinitions:
+  JWTAuth:
+    description: Type "JWT" followed by a space and the access token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

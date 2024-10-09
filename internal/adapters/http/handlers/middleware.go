@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
@@ -18,6 +19,7 @@ var (
 )
 
 func AuthMiddleware(token ports.ITokenService) gin.HandlerFunc {
+	v := validator.New()
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 
@@ -45,6 +47,13 @@ func AuthMiddleware(token ports.ITokenService) gin.HandlerFunc {
 		}
 
 		accessToken := fields[1]
+		err := v.Var(accessToken, "required,jwt")
+		if err != nil {
+			handleError(ctx, domain.ErrInvalidToken)
+			ctx.Abort()
+			return
+		}
+
 		payload, err := token.VerifyToken(accessToken)
 		if err != nil {
 			handleError(ctx, err)

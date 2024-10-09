@@ -203,7 +203,7 @@ func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 
 type updateStorehouseRequest struct {
 	Name     string    `json:"name" binding:"omitempty,min=3" example:"store 01"`
-	Location []float64 `json:"location" binding:"omitempty,location" example:"50.12,68.36"`
+	Location []float64 `json:"location" binding:"omitempty,location" example:"51.12,68.36"`
 	Image    string    `json:"image" binding:"omitempty,image_file" example:"2455.png"`
 	Capacity int       `json:"capacity" binding:"omitempty,min=1" example:"1200"`
 }

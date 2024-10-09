@@ -10,6 +10,7 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 )
 
+// pagination is a metadata for pagination
 type pagination struct {
 	TotalRecords int  `json:"total_records" example:"5"`
 	LimitRecords int  `json:"limit_records" example:"5"`
@@ -75,7 +76,7 @@ func newResponse(success bool, message string, data any) response {
 	}
 }
 
-// authResponse type to auth response for auth handler
+// authResponse represents a auth response body
 type authResponse struct {
 	Token string `json:"token" example:"eyJJ9.eyJpEzNDR9.fUjDw0"`
 }
@@ -123,7 +124,7 @@ func newUserResponse(user *domain.User) userResponse {
 type storehouseResponse struct {
 	ID       int       `json:"id"`
 	Name     string    `json:"name" example:"store 01"`
-	Location []float64 `json:"location" example:"[50.12,68.36]"`
+	Location []float64 `json:"location" example:"50.12,68.36"`
 	Image    string    `json:"image" example:"2455.png"`
 	Capacity int       `json:"capacity" example:"1200"`
 }
@@ -152,6 +153,26 @@ func newRiceResponse(rice *domain.Rice) riceResponse {
 	return riceResponse{
 		ID:   rice.ID,
 		Name: rice.Name,
+	}
+}
+
+// customerResponse represents a customer response body
+type customerResponse struct {
+	ID      int    `json:"id" example:"1"`
+	Name    string `json:"name" example:"Ascalon"`
+	Email   string `json:"email" example:"ascalon@exp.com"`
+	Phone   string `json:"phone" example:"+84123456789"`
+	Address string `json:"address" example:"abc, eyz"`
+}
+
+// newCustomerResponse is a helper function to create a response body for handling customer data
+func newCustomerResponse(customer *domain.Customer) customerResponse {
+	return customerResponse{
+		ID:      customer.ID,
+		Name:    customer.Name,
+		Email:   customer.Email,
+		Phone:   customer.Phone,
+		Address: customer.Address,
 	}
 }
 

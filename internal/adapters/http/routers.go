@@ -103,3 +103,20 @@ func RegisterRiceRoute(token ports.ITokenService, riceHandler *handlers.RiceHand
 		}
 	}
 }
+
+// RegisterCustomerRoute is a option function to return register customer router function
+func RegisterCustomerRoute(token ports.ITokenService, customerHandler *handlers.CustomerHandler) RegisterRouterFunc {
+	return func(e gin.IRouter) {
+		auth := e.Group("/customers", handlers.AuthMiddleware(token))
+		{
+			auth.GET("/", customerHandler.GetListCustomers)
+			auth.GET("/:id", customerHandler.GetCustomerByID)
+			root := auth.Group("/", handlers.RoleRootMiddleware())
+			{
+				root.POST("/", customerHandler.CreateCustomer)
+				root.PATCH("/:id", customerHandler.UpdateCustomer)
+				root.DELETE("/:id", customerHandler.DeleteCustomer)
+			}
+		}
+	}
+}

@@ -12,7 +12,7 @@ type User struct {
 	ID                    int             `gorm:"primaryKey;autoIncrement"`
 	Name                  string          `gorm:"type:VARCHAR(32);not null"`
 	Email                 string          `gorm:"type:VARCHAR(320);uniqueIndex;not null"`
-	Phone                 string          `gorm:"type:VARCHAR(15);not null"`
+	Phone                 string          `gorm:"type:VARCHAR(16);not null"`
 	Role                  domain.Role     `gorm:"type:VARCHAR(10);not null;default:'member'"`
 	Password              string          `gorm:"type:VARCHAR(320);not null"`
 	Key                   sql.NullString  `gorm:"type:VARCHAR(320)"`
@@ -46,7 +46,7 @@ type Customer struct {
 	ID             int             `gorm:"primaryKey;autoIncrement"`
 	Name           string          `gorm:"type:VARCHAR(255);not null"`
 	Email          string          `gorm:"type:VARCHAR(320);not null"`
-	Phone          string          `gorm:"type:VARCHAR(11);not null"`
+	Phone          string          `gorm:"type:VARCHAR(16);not null"`
 	Address        string          `gorm:"type:VARCHAR(255);not null"`
 	DeletedAt      gorm.DeletedAt  `gorm:"index"`
 	ExportInvoices []ExportInvoice `gorm:"foreignKey:CustomerID"`

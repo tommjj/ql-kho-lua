@@ -15,6 +15,7 @@ func newPtr[T any](v T) *T {
 	return &v
 }
 
+// checkPageOverflow is a helper func check page overflow, return true if overflow
 func checkPageOverflow(count int64, limit, skip int) bool {
 	start := limit * (skip - 1)
 

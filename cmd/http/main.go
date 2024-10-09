@@ -79,6 +79,7 @@ func main() {
 	storehouseRepository := repository.NewStorehouseRepository(db)
 	accessControlRepository := repository.NewAccessControlRepository(db)
 	riceRepository := repository.NewRiceRepository(db)
+	customerRepository := repository.NewCustomerRepository(db)
 
 	// |> Start Service
 	zap.L().Info("Start create service")
@@ -90,6 +91,7 @@ func main() {
 	accessControlService := services.NewAccessControlService(accessControlRepository)
 	storehouseService := services.NewStorehouseService(storehouseRepository, fileStorage)
 	riceService := services.NewRiceService(riceRepository)
+	customerService := services.NewCustomerService(customerRepository)
 
 	// |> Start Handler
 	zap.L().Info("Start create handler")
@@ -99,6 +101,7 @@ func main() {
 	userHandler := handlers.NewUserHandler(userService)
 	storeHouseHandler := handlers.NewStorehouseHandler(storehouseService, accessControlService)
 	riceHandler := handlers.NewRiceHandler(riceService)
+	customerHandler := handlers.NewCustomerHandler(customerService)
 
 	// |> Start HTTP Server
 	zap.L().Info("Start create http server")
@@ -111,6 +114,7 @@ func main() {
 			http.RegisterUsersRoute(tokenService, userHandler),
 			http.RegisterStorehouseRoute(tokenService, storeHouseHandler),
 			http.RegisterRiceRoute(tokenService, riceHandler),
+			http.RegisterCustomerRoute(tokenService, customerHandler),
 		),
 	)
 	if err != nil {

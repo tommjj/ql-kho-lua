@@ -11,7 +11,6 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type customerRepository struct {
@@ -102,7 +101,7 @@ func (cr *customerRepository) GetListCustomers(ctx context.Context, query string
 func (cr *customerRepository) UpdateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error) {
 	updatedData := &schema.Customer{}
 
-	result := cr.db.WithContext(ctx).Clauses(clause.Returning{}).Model(updatedData).Where("id = ?", customer.ID).
+	result := cr.db.WithContext(ctx).Model(updatedData).Where("id = ?", customer.ID).
 		Updates(&schema.Customer{
 			Name:    customer.Name,
 			Email:   customer.Email,
@@ -121,7 +120,7 @@ func (cr *customerRepository) UpdateCustomer(ctx context.Context, customer *doma
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return cr.GetCustomerByID(ctx, updatedData.ID)
+	return cr.GetCustomerByID(ctx, customer.ID)
 }
 
 func (cr *customerRepository) DeleteCustomer(ctx context.Context, id int) error {
