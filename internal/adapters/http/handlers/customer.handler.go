@@ -166,7 +166,7 @@ type updateCustomerRequest struct {
 	Name    string `json:"name" binding:"omitempty,min=3,max=255" example:"Sentenced"`
 	Email   string `json:"email" binding:"omitempty,email" example:"example@exp.com"`
 	Phone   string `json:"phone" binding:"omitempty,e164" example:"+84123456789"`
-	Address string `json:"address" binding:"omitempty,min=1" example:"abc, xyz"`
+	Address string `json:"address" binding:"omitempty,min=1,max=255" example:"abc, xyz"`
 }
 
 // UpdateCustomer ql-kho-lua
