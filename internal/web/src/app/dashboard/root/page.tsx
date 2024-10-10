@@ -1,4 +1,5 @@
 import { authz } from '@/auth';
+import MapContainer from '@/components/map/map';
 import {
     ResizableHandle,
     ResizablePanel,
@@ -28,19 +29,19 @@ async function RootPage() {
         <section className="flex w-full h-screen">
             <ResizablePanelGroup
                 direction="horizontal"
-                className="w-full rounded-lg border md:min-w-[450px]"
+                className="w-full rounded-none md:min-w-[450px]"
             >
                 <ResizablePanel
-                    className="relative min-w-[220px]"
+                    className="relative min-w-[220px] "
                     defaultSize={70}
                     minSize={50}
                     maxSize={80}
                 >
-                    <div>{JSON.stringify(store)}</div>
+                    <MapContainer></MapContainer>
                 </ResizablePanel>
                 <ResizableHandle withHandle />
                 <ResizablePanel defaultSize={30}>
-                    <div className="size-full">{}</div>
+                    <div className="size-full">{JSON.stringify(store)}</div>
                 </ResizablePanel>
             </ResizablePanelGroup>
         </section>

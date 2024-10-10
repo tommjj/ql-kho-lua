@@ -35,7 +35,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         <section className="relative w-screen h-screen overflow-x-hidden">
             <ResizablePanelGroup
                 direction="horizontal"
-                className="w-full rounded-lg border md:min-w-[450px]"
+                className="w-full rounded-none border md:min-w-[450px]"
             >
                 <ResizablePanel
                     className="relative min-w-[220px]"

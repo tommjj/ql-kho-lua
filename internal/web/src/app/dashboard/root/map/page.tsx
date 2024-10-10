@@ -1,5 +1,5 @@
 import { authz } from '@/auth';
-import MapContainer from '@/components/map/map';
+import MapContainer from '@/components/map/map_test';
 import NoSSR from '@/components/noSSR';
 import { ErrUnauthorized } from '@/lib/errors';
 import fetcher from '@/lib/http/fetcher';
