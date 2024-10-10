@@ -15,11 +15,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from '../session-context';
 import { Role } from '@/types/role';
-
-type Storehouse = {
-    id: number;
-    name: string;
-};
+import { Storehouse } from '@/lib/zod.schema';
 
 type Props = {
     storehouses: Storehouse[];
@@ -73,12 +69,12 @@ function StoreSelector({ storehouses }: Props) {
                             {items.map((storehouse) => (
                                 <CommandItem
                                     key={storehouse.id}
-                                    value={storehouse.id.toString()}
-                                    onSelect={(currentValue) => {
-                                        if (currentValue === '0') {
+                                    value={storehouse.name}
+                                    onSelect={() => {
+                                        if (storehouse.id === 0) {
                                             push(`/dashboard/root`);
                                         } else {
-                                            push(`/dashboard/${currentValue}`);
+                                            push(`/dashboard/${storehouse.id}`);
                                         }
                                         setOpen(false);
                                     }}

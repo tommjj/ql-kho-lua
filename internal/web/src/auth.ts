@@ -97,7 +97,7 @@ const { handlers, signIn, signOut, auth } = NextAuth({
 
                 const [res, err] = await fetcher.post.json<{
                     data: { token: string };
-                }>('/v1/api/auth/login', {
+                }>('/auth/login', {
                     email: parsedCredentials.data.email,
                     password: parsedCredentials.data.password,
                 });
