@@ -73,7 +73,8 @@ func RegisterUsersRoute(token ports.ITokenService, userHandler *handlers.UserHan
 // RegisterStorehouseRoute is a option function to return register storehouse router function
 func RegisterStorehouseRoute(token ports.ITokenService, storehouseHandler *handlers.StorehouseHandler) RegisterRouterFunc {
 	return func(e gin.IRouter) {
-		auth := e.Group("/storehouses", handlers.AuthMiddleware(token))
+		auth := e.Group("/storehouses")
+		auth.Use(handlers.AuthMiddleware(token))
 		{
 			auth.GET("/", storehouseHandler.GetListStorehouses)
 			auth.GET("/:id", storehouseHandler.GetStorehouseByID)

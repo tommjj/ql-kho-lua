@@ -1,51 +1,94 @@
 'use client';
-import Map, { MapRef, NavigationControl, Popup } from 'react-map-gl/maplibre';
-import {} from 'react-map-gl/maplibre';
+
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
-import { useEffect, useRef } from 'react';
+import './custom.css';
+
+import React, {
+    DetailedHTMLProps,
+    HTMLAttributes,
+    useCallback,
+    useRef,
+    useImperativeHandle,
+} from 'react';
+
+import Map, {
+    MapRef,
+    NavigationControl,
+    FullscreenControl,
+    ScaleControl,
+    GeolocateControl,
+} from 'react-map-gl/maplibre';
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 import maplibregl from 'maplibre-gl';
 import { geocoder } from '@/lib/map/geocoder';
+import { cn } from '@/lib/utils';
 
 const API_KEY = process.env.NEXT_PUBLIC_MAP_STYLE_API_KEY;
 
-function MapContainer() {
-    const mapRef = useRef<MapRef | undefined>(undefined);
+type PropsType = DetailedHTMLProps<
+    HTMLAttributes<HTMLDivElement>,
+    HTMLDivElement
+>;
+export type MapRefType = {
+    flyTo(options: maplibregl.FlyToOptions): void;
+};
 
-    useEffect(() => {}, []);
+const MapContainer = React.forwardRef<MapRefType, PropsType>(
+    function MapContainer({ children, className, ...props }: PropsType, ref) {
+        const mapRef = useRef<MapRef | undefined>(undefined);
 
-    return (
-        <div className="relative w-full h-screen ">
-            <Map
-                onLoad={() => {
-                    const map = mapRef.current;
-                    if (!map) {
-                        return;
-                    }
+        useImperativeHandle(ref, () => ({
+            flyTo(options) {
+                const map = mapRef.current;
+                if (!map) {
+                    return;
+                }
 
-                    const geo = new MaplibreGeocoder(geocoder, {
-                        maplibregl: maplibregl,
-                        zoom: 14,
-                    });
-                    map.addControl(geo, 'top-right');
-                }}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ref={mapRef as any}
-                initialViewState={{
-                    longitude: -100,
-                    latitude: 40,
-                    zoom: 3.5,
-                }}
-                mapStyle={`https://api.maptiler.com/maps/streets-v2/style.json?key=${API_KEY}`}
+                map.flyTo(options);
+            },
+        }));
+
+        const initMaplibreGeocoder = useCallback(() => {
+            const map = mapRef.current;
+            if (!map) {
+                return;
+            }
+
+            map.flyTo;
+
+            const geo = new MaplibreGeocoder(geocoder, {
+                maplibregl: maplibregl,
+                zoom: 14,
+            });
+            map.addControl(geo, 'top-right');
+        }, []);
+
+        return (
+            <div
+                className={cn('relative w-full h-screen', className)}
+                {...props}
             >
-                <NavigationControl position="top-left" />
-                <Popup longitude={-100} latitude={40} anchor="bottom">
-                    You are here
-                </Popup>
-            </Map>
-        </div>
-    );
-}
+                <Map
+                    onLoad={initMaplibreGeocoder}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ref={mapRef as any}
+                    initialViewState={{
+                        longitude: -100,
+                        latitude: 40,
+                        zoom: 3.5,
+                    }}
+                    mapStyle={`https://api.maptiler.com/maps/streets-v2/style.json?key=${API_KEY}`}
+                >
+                    <GeolocateControl position="top-left" />
+                    <FullscreenControl position="top-left" />
+                    <NavigationControl position="top-left" />
+                    <ScaleControl />
+                    {children}
+                </Map>
+            </div>
+        );
+    }
+);
 
 export default MapContainer;

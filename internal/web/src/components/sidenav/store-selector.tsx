@@ -16,6 +16,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSession } from '../session-context';
 import { Role } from '@/types/role';
 import { Storehouse } from '@/lib/zod.schema';
+import Link from 'next/link';
 
 type Props = {
     storehouses: Storehouse[];
@@ -37,29 +38,42 @@ function StoreSelector({ storehouses }: Props) {
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between"
-                >
-                    <div className="flex items-start justify-center">
-                        {storeID ? (
-                            <Box className="size-[18px] mr-2 opacity-80" />
-                        ) : (
-                            <Boxes className="size-[18px] mr-2 opacity-80" />
-                        )}
-                        {storeID
-                            ? storehouses.find(
-                                  (storehouse) =>
-                                      storehouse.id.toString() === storeID
-                              )?.name
-                            : 'Root'}
-                    </div>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
+            <div className="flex ">
+                {user.role === Role.ROOT && storeID ? (
+                    <Button className="px-3 mr-1" asChild>
+                        <Link href="/dashboard/root">
+                            <Boxes className="size-[18px]  opacity-80" />
+                        </Link>
+                    </Button>
+                ) : (
+                    <></>
+                )}
+
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-full justify-between"
+                    >
+                        <div className="flex items-start justify-center">
+                            {storeID ? (
+                                <Box className="size-[18px] mr-2 opacity-80" />
+                            ) : (
+                                <Boxes className="size-[18px] mr-2 opacity-80" />
+                            )}
+                            {storeID
+                                ? storehouses.find(
+                                      (storehouse) =>
+                                          storehouse.id.toString() === storeID
+                                  )?.name
+                                : 'Root'}
+                        </div>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+            </div>
+
             <PopoverContent className="w-[260px] p-0">
                 <Command>
                     <CommandInput placeholder="Search storehouse..." />

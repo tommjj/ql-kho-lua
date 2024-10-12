@@ -1,14 +1,23 @@
 .maplibregl-popup-content {
     border-radius: 6px !important;
-    padding-bottom: 0.4rem;
+    padding: 0;
 }
 
 .maplibregl-popup-close-button {
+    background-color: white;
+    position: absolute;
     margin-right: 1px;
     padding-right: 4px;
     margin-left: 1px;
     padding-left: 4px;
 
     font-size: 16px;
-    opacity: 85%;
+}
+
+.maplibregl-popup-close-button:hover {
+    background-color: white;
+}
+
+.maplibregl-ctrl-scale {
+    border-color: hsl(var(--primary));
 }
