@@ -12,7 +12,7 @@ const StorehousePopup = ({ storehouse }: { storehouse: Storehouse }) => {
                 <Image
                     className="max-h-36 w-auto overflow-hidden"
                     width={256}
-                    height={256}
+                    height={128}
                     src={storehouse.image}
                     alt={storehouse.name}
                 />

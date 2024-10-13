@@ -4,13 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 import './custom.css';
 
-import React, {
-    DetailedHTMLProps,
-    HTMLAttributes,
-    useCallback,
-    useRef,
-    useImperativeHandle,
-} from 'react';
+import React, { useCallback, useRef, useImperativeHandle } from 'react';
 
 import Map, {
     MapRef,
@@ -18,6 +12,7 @@ import Map, {
     FullscreenControl,
     ScaleControl,
     GeolocateControl,
+    MapProps,
 } from 'react-map-gl/maplibre';
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 import maplibregl from 'maplibre-gl';
@@ -26,10 +21,7 @@ import { cn } from '@/lib/utils';
 
 const API_KEY = process.env.NEXT_PUBLIC_MAP_STYLE_API_KEY;
 
-type PropsType = DetailedHTMLProps<
-    HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
->;
+type PropsType = { className?: string } & MapProps;
 export type MapRefType = {
     flyTo(options: maplibregl.FlyToOptions): void;
 };
@@ -65,10 +57,7 @@ const MapContainer = React.forwardRef<MapRefType, PropsType>(
         }, []);
 
         return (
-            <div
-                className={cn('relative w-full h-screen', className)}
-                {...props}
-            >
+            <div className={cn('relative w-full h-full', className)}>
                 <Map
                     onLoad={initMaplibreGeocoder}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,6 +68,8 @@ const MapContainer = React.forwardRef<MapRefType, PropsType>(
                         zoom: 3.5,
                     }}
                     mapStyle={`https://api.maptiler.com/maps/streets-v2/style.json?key=${API_KEY}`}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    {...(props as any)}
                 >
                     <GeolocateControl position="top-left" />
                     <FullscreenControl position="top-left" />

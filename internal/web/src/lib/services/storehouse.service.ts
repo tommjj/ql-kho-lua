@@ -122,7 +122,7 @@ export async function updateStorehouse(
 ): Promise<ResponseOrError<Res<Storehouse>>> {
     const [res, err] = await fetcher
         .set(...getAuthH(key))
-        .patch.json<Res<Storehouse>>(`/storehouses`, req);
+        .patch.json<Res<Storehouse>>(`/storehouses/${req.id}`, req);
 
     if (res) {
         return [res, undefined];

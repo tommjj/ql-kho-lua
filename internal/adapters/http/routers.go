@@ -40,6 +40,7 @@ func RegisterAuthRoute(authHandler *handlers.AuthHandler) RegisterRouterFunc {
 // RegisterUploadRoute is a option function to return register upload router function
 func RegisterUploadRoute(uploadHandler *handlers.UploadHandler) RegisterRouterFunc {
 	return func(e gin.IRouter) {
+
 		e.POST("/upload", uploadHandler.UploadImage)
 	}
 }
@@ -59,11 +60,10 @@ func RegisterUsersRoute(token ports.ITokenService, userHandler *handlers.UserHan
 			auth.GET("/:id", userHandler.GetUserByID)
 			auth.PATCH("/:id", userHandler.UpdateUser)
 
-			root := auth.Group("/", handlers.RoleRootMiddleware())
+			root := auth.Group("", handlers.RoleRootMiddleware())
 			{
-
-				root.GET("/", userHandler.GetListUsers)
-				root.POST("/", userHandler.CreateUser)
+				root.GET("", userHandler.GetListUsers)
+				root.POST("", userHandler.CreateUser)
 				root.DELETE("/:id", userHandler.DeleteUserByID)
 			}
 		}
@@ -76,12 +76,13 @@ func RegisterStorehouseRoute(token ports.ITokenService, storehouseHandler *handl
 		auth := e.Group("/storehouses")
 		auth.Use(handlers.AuthMiddleware(token))
 		{
-			auth.GET("/", storehouseHandler.GetListStorehouses)
+			auth.GET("", storehouseHandler.GetListStorehouses)
 			auth.GET("/:id", storehouseHandler.GetStorehouseByID)
 			auth.GET("/:id/used_capacity", storehouseHandler.GetUsedCapacityByID)
-			root := auth.Group("/", handlers.RoleRootMiddleware())
+
+			root := auth.Group("", handlers.RoleRootMiddleware())
 			{
-				root.POST("/", storehouseHandler.CreateStorehouse)
+				root.POST("", storehouseHandler.CreateStorehouse)
 				root.PATCH("/:id", storehouseHandler.UpdateStorehouse)
 				root.DELETE("/:id", storehouseHandler.DeleteStorehouse)
 			}
@@ -94,11 +95,11 @@ func RegisterRiceRoute(token ports.ITokenService, riceHandler *handlers.RiceHand
 	return func(e gin.IRouter) {
 		auth := e.Group("/rice", handlers.AuthMiddleware(token))
 		{
-			auth.GET("/", riceHandler.GetListRice)
+			auth.GET("", riceHandler.GetListRice)
 			auth.GET("/:id", riceHandler.GetRiceByID)
-			root := auth.Group("/", handlers.RoleRootMiddleware())
+			root := auth.Group("", handlers.RoleRootMiddleware())
 			{
-				root.POST("/", riceHandler.CreateRice)
+				root.POST("", riceHandler.CreateRice)
 				root.PATCH("/:id", riceHandler.UpdateRice)
 				root.DELETE("/:id", riceHandler.DeleteRice)
 			}
@@ -111,11 +112,11 @@ func RegisterCustomerRoute(token ports.ITokenService, customerHandler *handlers.
 	return func(e gin.IRouter) {
 		auth := e.Group("/customers", handlers.AuthMiddleware(token))
 		{
-			auth.GET("/", customerHandler.GetListCustomers)
+			auth.GET("", customerHandler.GetListCustomers)
 			auth.GET("/:id", customerHandler.GetCustomerByID)
-			root := auth.Group("/", handlers.RoleRootMiddleware())
+			root := auth.Group("", handlers.RoleRootMiddleware())
 			{
-				root.POST("/", customerHandler.CreateCustomer)
+				root.POST("", customerHandler.CreateCustomer)
 				root.PATCH("/:id", customerHandler.UpdateCustomer)
 				root.DELETE("/:id", customerHandler.DeleteCustomer)
 			}

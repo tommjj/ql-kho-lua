@@ -10,7 +10,7 @@ import MapContainer, { MapRefType } from '../../map/map';
 import { useRef, useState } from 'react';
 import { Marker, Popup } from 'react-map-gl/maplibre';
 import Pin from '../../map/pin';
-import StorehousePopup from '../../map/strorehouse';
+import StorehousePopup from '../../map/storehouse';
 
 import StorehouseList from './storehouse-list';
 

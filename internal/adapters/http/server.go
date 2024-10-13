@@ -48,7 +48,7 @@ func NewAdapter(conf *config.HTTP, options ...RegisterRouterFunc) (*router, erro
 	CORSConfig := cors.DefaultConfig()
 	CORSConfig.AllowOrigins = conf.AllowedOrigins
 	CORSConfig.AllowCredentials = true
-	CORSConfig.AllowHeaders = []string{"authorization"}
+	CORSConfig.AllowHeaders = []string{"authorization", "Content-Type"}
 	r.Use(cors.New(CORSConfig))
 
 	// Custom validators

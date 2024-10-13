@@ -65,7 +65,6 @@ function createMethods(dfPath: Path = '', init: RequestInit = {}) {
                 headers: {
                     ...init.headers,
                     ...requestInit.headers,
-                    'Content-Type': 'multipart/form-data',
                 },
                 body: body,
             });

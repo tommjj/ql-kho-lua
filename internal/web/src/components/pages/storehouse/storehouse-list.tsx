@@ -4,9 +4,10 @@ import { useSession } from '@/components/session-context';
 import { Button } from '@/components/shadcn-ui/button';
 import { Input } from '@/components/shadcn-ui/input';
 import { Progress } from '@/components/shadcn-ui/progress';
+import { CreateStorehouse } from '@/components/storehouse/create-storehouse';
 import { getUsedCapacity } from '@/lib/services/storehouse.service';
 import { Storehouse } from '@/lib/zod.schema';
-import { Box, Ellipsis, HousePlus, Search } from 'lucide-react';
+import { Box, Ellipsis, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
@@ -33,6 +34,14 @@ function StorehouseItem({
                 setUsed(res.data.used_capacity);
             }
         })();
+        const intervalID = setInterval(async () => {
+            const [res, err] = await getUsedCapacity(user.token, storehouse.id);
+            if (!err) {
+                setUsed(res.data.used_capacity);
+            }
+        }, 1000 * 60 * 5);
+
+        return () => clearInterval(intervalID);
     }, [storehouse.id, user.token]);
 
     const handleDoubleClick = useCallback(() => {
@@ -104,12 +113,8 @@ function StorehouseList({ storehouses, mapLocationControl }: Props) {
                     className=" pl-9 focus-visible:ring-none focus-visible:ring-0 mr-1"
                     placeholder="Search..."
                 ></Input>
-                <Button className="">
-                    <HousePlus className="size-5 mr-2 group-has-[input:focus]:mr-0 transition-all duration-150" />{' '}
-                    <span className="group-has-[input:focus]:hidden">
-                        Create
-                    </span>
-                </Button>
+
+                <CreateStorehouse />
             </div>
 
             <div className="relative flex-grow w-full h-full  p-2 max-h-screen">

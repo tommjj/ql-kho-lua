@@ -11,7 +11,7 @@ export const StorehouseSchema = z.object({
     name: z.string().min(3).max(255),
     location: z.array(z.number()).length(2),
     capacity: z.number().min(1),
-    image: z.string(),
+    image: z.string().min(4),
 });
 export type Storehouse = z.infer<typeof StorehouseSchema>;
 

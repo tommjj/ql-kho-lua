@@ -10,7 +10,7 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
 
-var imageExt = []string{".png", ".jpg", ".jpeg"}
+var imageExt = []string{".png", ".jpg", ".jpeg", ".jfif", ".gif"}
 
 type UploadHandler struct {
 	svc ports.IUploadService
