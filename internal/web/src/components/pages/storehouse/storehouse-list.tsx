@@ -161,9 +161,7 @@ function StorehouseList({ storehouses, mapLocationControl }: Props) {
                                 key={storehouse.id}
                                 storehouse={storehouse}
                             />
-                        ) : (
-                            <></>
-                        )
+                        ) : null
                     )}
                 </div>
             </div>

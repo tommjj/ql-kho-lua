@@ -2,7 +2,13 @@
 
 import NavItem from './nav-items';
 import { usePathname } from 'next/navigation';
-import { Home, LucideProps, Users } from 'lucide-react';
+import {
+    BriefcaseBusiness,
+    Home,
+    Leaf,
+    LucideProps,
+    Users,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -21,9 +27,19 @@ const rootPageNavItems: NavItem[] = [
         icon: Home,
     },
     {
-        path: '/dashboard/root/staff',
-        title: 'Staff',
+        path: '/dashboard/root/rice',
+        title: 'Rice',
+        icon: Leaf,
+    },
+    {
+        path: '/dashboard/root/customers',
+        title: 'Customers',
         icon: Users,
+    },
+    {
+        path: '/dashboard/root/root/staff',
+        title: 'Staff',
+        icon: BriefcaseBusiness,
     },
 ];
 

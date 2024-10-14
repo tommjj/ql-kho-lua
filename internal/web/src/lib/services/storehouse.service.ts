@@ -71,7 +71,7 @@ export async function getListStorehouse(
     const [res, err] = await fetcher
         .set(...getAuthH(key))
         .get<ResWithPagination<Storehouse>>(
-            `/storehouses?query=${query}&skip=${skip}&limit=${limit}`
+            `/storehouses?q=${query}&skip=${skip}&limit=${limit}`
         );
 
     if (res) {
