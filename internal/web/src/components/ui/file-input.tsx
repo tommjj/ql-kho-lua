@@ -12,9 +12,14 @@ import { cn } from '@/lib/utils';
 type Props = {
     className?: string;
     onUploaded?: (filename: string) => void;
+    defaultImage?: string;
 };
 
-export default function UploadImageSelect({ className, onUploaded }: Props) {
+export default function UploadImageSelect({
+    className,
+    onUploaded,
+    defaultImage,
+}: Props) {
     const [uploading, setUploading] = useState(false);
     const userSession = useSession();
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -68,7 +73,15 @@ export default function UploadImageSelect({ className, onUploaded }: Props) {
                         <Image
                             width={180}
                             height={120}
-                            src={`/temp/${selectedImage}`}
+                            src={`temp/${selectedImage}`}
+                            alt="Selected image preview"
+                            className="max-w-full max-h-28 h-28 object-contain rounded-md"
+                        />
+                    ) : defaultImage ? (
+                        <Image
+                            width={180}
+                            height={120}
+                            src={`${defaultImage}`}
                             alt="Selected image preview"
                             className="max-w-full max-h-28 h-28 object-contain rounded-md"
                         />

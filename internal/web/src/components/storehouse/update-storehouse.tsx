@@ -16,29 +16,43 @@ import { Label } from '../shadcn-ui/label';
 import UploadImageSelect from '../ui/file-input';
 import { MapLayerMouseEvent } from 'maplibre-gl';
 import { Marker } from 'react-map-gl/maplibre';
-import { AlertCircle, HousePlus } from 'lucide-react';
+import { AlertCircle, FilePenLine } from 'lucide-react';
 import Pin from '../map/pin';
 import { LngLat } from '@/types/data-types';
 import { isLocation, parseLocation } from '@/lib/validator/location';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import {
-    createStorehouse,
-    CreateStorehouseSchema,
+    updateStorehouse,
+    UpdateStorehouseSchema,
 } from '@/lib/services/storehouse.service';
 import { useSession } from '../session-context';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { Storehouse } from '@/lib/zod.schema';
 
-export function CreateStorehouse() {
+export function UpdateStorehouse({
+    storehouse,
+    onOpenChange,
+}: {
+    storehouse: Storehouse;
+    onOpenChange?: (open: boolean) => void;
+}) {
     const { refresh } = useRouter();
     const user = useSession();
     const [isOpen, setIsOpen] = useState(false);
 
-    const [location, setLocation] = useState<LngLat | null>(null);
-    const [locationString, setLocationString] = useState<string>('');
-    const [name, setName] = useState('');
-    const [capacity, setCapacity] = useState<null | number>();
-    const [image, setImage] = useState('');
+    const [location, setLocation] = useState<LngLat | null>({
+        lat: storehouse.location[0],
+        lng: storehouse.location[1],
+    });
+    const [locationString, setLocationString] = useState<string>(
+        `${storehouse.location[0]},${storehouse.location[1]}`
+    );
+    const [name, setName] = useState(storehouse.name);
+    const [capacity, setCapacity] = useState<null | number>(
+        storehouse.capacity
+    );
+    const [image, setImage] = useState<string | undefined>(undefined);
 
     const [error, setError] = useState<string | null>();
 
@@ -56,18 +70,19 @@ export function CreateStorehouse() {
             e.preventDefault();
 
             const createData = {
+                id: storehouse.id,
                 name: name,
                 location: [location?.lat, location?.lng],
                 capacity: capacity,
                 image: image,
             };
 
-            const parse = CreateStorehouseSchema.safeParse(createData);
+            const parse = UpdateStorehouseSchema.safeParse(createData);
 
             if (!parse.success) return;
 
             (async () => {
-                const [, err] = await createStorehouse(user.token, parse.data);
+                const [, err] = await updateStorehouse(user.token, parse.data);
                 if (!err) {
                     refresh();
                     setIsOpen(false);
@@ -85,6 +100,8 @@ export function CreateStorehouse() {
                         break;
                 }
             })();
+
+            setError(null);
         },
         [
             capacity,
@@ -93,15 +110,20 @@ export function CreateStorehouse() {
             location?.lng,
             name,
             refresh,
+            storehouse.id,
             user.token,
         ]
     );
 
     return (
-        <Dialog open={isOpen}>
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogTrigger asChild onClick={() => setIsOpen(true)}>
-                <Button className="">
-                    <HousePlus className="size-5 transition-all duration-150" />{' '}
+                <Button
+                    className="flex items-center justify-start w-full"
+                    variant={'ghost'}
+                >
+                    <FilePenLine className="size-5 mr-2 " />
+                    <span>Edit</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="flex min-w-[90vw] h-[85vh] bg-white">
@@ -113,7 +135,15 @@ export function CreateStorehouse() {
                     <span className="sr-only">Close</span>
                 </DialogClose>
                 <div className="w-[700px] h-full rounded overflow-hidden ">
-                    <MapContainer onClick={handleSelectLocation} minZoom={2}>
+                    <MapContainer
+                        initialViewState={{
+                            longitude: location?.lng,
+                            latitude: location?.lat,
+                            zoom: 3.5,
+                        }}
+                        onClick={handleSelectLocation}
+                        minZoom={2}
+                    >
                         {location ? (
                             <Marker
                                 longitude={location.lng}
@@ -128,10 +158,10 @@ export function CreateStorehouse() {
                 <div className="flex flex-col flex-grow">
                     <DialogHeader>
                         <DialogTitle className="text-2xl">
-                            Create storehouse
+                            Edit storehouse
                         </DialogTitle>
                         <DialogDescription>
-                            Create storehouse here. Click create when you are
+                            Edit info storehouse here. Click Save when you are
                             done.
                         </DialogDescription>
                         {error && (
@@ -208,14 +238,19 @@ export function CreateStorehouse() {
 
                         <div>
                             <UploadImageSelect
+                                defaultImage={storehouse.image}
                                 className="w-full"
-                                onUploaded={(filename) => setImage(filename)}
+                                onUploaded={(filename) =>
+                                    filename
+                                        ? setImage(filename)
+                                        : setImage(undefined)
+                                }
                             />
                         </div>
                     </div>
                     <DialogFooter>
                         <Button onClick={handleCreate} type="submit" asChild>
-                            <DialogClose>Create</DialogClose>
+                            <DialogClose>Save</DialogClose>
                         </Button>
                     </DialogFooter>
                 </div>

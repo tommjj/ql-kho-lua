@@ -32,6 +32,7 @@ export async function createStorehouse(
 
 /**
  * getStorehouseByID get storehouse by id
+ *
  * @param key string
  * @param id number
  * @returns Promise<ResponseOrError<Res<Storehouse>>>
@@ -58,6 +59,7 @@ export type GetListStorehouse = {
 
 /**
  * getListStorehouse get list storehouse
+ *
  * @param key string
  * @param req GetListStorehouse
  * @returns Promise<ResponseOrError<ResWithPagination<Storehouse>>>

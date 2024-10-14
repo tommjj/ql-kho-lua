@@ -57,7 +57,7 @@ func (rr *riceRepository) CountRice(ctx context.Context, query string) (int64, e
 	var count int64
 	var err error
 
-	q := rr.db.WithContext(ctx).Table("rice")
+	q := rr.db.WithContext(ctx).Table("rice").Where("deleted_at is NULL")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery != "" {
@@ -76,7 +76,7 @@ func (rr *riceRepository) GetListRice(ctx context.Context, query string, limit, 
 	rice := []domain.Rice{}
 	var err error
 
-	q := rr.db.WithContext(ctx).Table("rice").Limit(limit).Offset((skip - 1) * limit).Order("id desc")
+	q := rr.db.WithContext(ctx).Table("rice").Limit(limit).Offset((skip - 1) * limit).Order("id desc").Where("deleted_at is NULL")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery != "" {

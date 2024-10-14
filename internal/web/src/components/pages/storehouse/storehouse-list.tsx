@@ -2,9 +2,17 @@
 
 import { useSession } from '@/components/session-context';
 import { Button } from '@/components/shadcn-ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuTrigger,
+} from '@/components/shadcn-ui/dropdown-menu';
 import { Input } from '@/components/shadcn-ui/input';
 import { Progress } from '@/components/shadcn-ui/progress';
 import { CreateStorehouse } from '@/components/storehouse/create-storehouse';
+import { DeleteStorehouse } from '@/components/storehouse/delete-storehouse';
+import { UpdateStorehouse } from '@/components/storehouse/update-storehouse';
 import { getUsedCapacity } from '@/lib/services/storehouse.service';
 import { Storehouse } from '@/lib/zod.schema';
 import { Box, Ellipsis, Search } from 'lucide-react';
@@ -15,6 +23,32 @@ type Props = {
     storehouses: Storehouse[];
     mapLocationControl(longitude: number, latitude: number): void;
 };
+
+function MoreOption({ storehouse }: { storehouse: Storehouse }) {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button className="h-8 px-2" variant="ghost">
+                    <Ellipsis className="size-4 " />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+                className="w-56"
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
+                onDoubleClick={(e) => {
+                    e.stopPropagation();
+                }}
+            >
+                <DropdownMenuGroup>
+                    <UpdateStorehouse storehouse={storehouse} />
+                    <DeleteStorehouse storeID={storehouse.id} />
+                </DropdownMenuGroup>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
 
 function StorehouseItem({
     storehouse,
@@ -34,6 +68,7 @@ function StorehouseItem({
                 setUsed(res.data.used_capacity);
             }
         })();
+
         const intervalID = setInterval(async () => {
             const [res, err] = await getUsedCapacity(user.token, storehouse.id);
             if (!err) {
@@ -68,9 +103,7 @@ function StorehouseItem({
                                 <Box className="size-5 mr-2 opacity-80"></Box>
                                 {storehouse.name}
                             </div>
-                            <Button className="h-8 px-2" variant="ghost">
-                                <Ellipsis className="size-4 " />
-                            </Button>
+                            <MoreOption storehouse={storehouse}></MoreOption>
                         </div>
 
                         <Progress
@@ -120,7 +153,9 @@ function StorehouseList({ storehouses, mapLocationControl }: Props) {
             <div className="relative flex-grow w-full h-full  p-2 max-h-screen">
                 <div className="absolute inset-0 overflow-y-auto px-2 py-1.5">
                     {storehouses.map((storehouse) =>
-                        storehouse.name.includes(search.trim()) ? (
+                        storehouse.name
+                            .toLocaleLowerCase()
+                            .includes(search.trim().toLocaleLowerCase()) ? (
                             <StorehouseItem
                                 mapLocationControl={mapLocationControl}
                                 key={storehouse.id}

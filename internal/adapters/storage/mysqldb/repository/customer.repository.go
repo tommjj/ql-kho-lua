@@ -80,7 +80,7 @@ func (cr *customerRepository) GetListCustomers(ctx context.Context, query string
 	var err error
 
 	q := cr.db.WithContext(ctx).Table("customers").
-		Limit(limit).Offset((skip - 1) * limit).Order("name DESC")
+		Limit(limit).Offset((skip - 1) * limit).Order("name DESC").Where("deleted_at is NULL")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery != "" {

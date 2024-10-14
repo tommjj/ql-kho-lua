@@ -52,7 +52,7 @@ func main() {
 		zap.L().Fatal(err.Error())
 	}
 
-	fileStorage, err := files.NewFileStorage("./public", "./public/temp", time.Hour)
+	fileStorage, err := files.NewFileStorage("./public/", "./public/temp", time.Hour)
 	if err != nil {
 		zap.L().Fatal(err.Error())
 	}

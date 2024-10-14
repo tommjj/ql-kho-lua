@@ -63,8 +63,8 @@ const MapContainer = React.forwardRef<MapRefType, PropsType>(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ref={mapRef as any}
                     initialViewState={{
-                        longitude: -100,
-                        latitude: 40,
+                        longitude: 106,
+                        latitude: 10,
                         zoom: 3.5,
                     }}
                     mapStyle={`https://api.maptiler.com/maps/streets-v2/style.json?key=${API_KEY}`}

@@ -61,7 +61,7 @@ func (sr *storehouseRepository) CountStorehouses(ctx context.Context, query stri
 	var count int64
 	var err error
 
-	q := sr.db.WithContext(ctx).Table("storehouses")
+	q := sr.db.WithContext(ctx).Table("storehouses").Where("deleted_at is NULL")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery != "" {
@@ -84,7 +84,7 @@ func (sr *storehouseRepository) GetListStorehouses(ctx context.Context, query st
 
 	sql := sr.db.WithContext(ctx).Table("storehouses").
 		Select("id", "name", "location", "capacity", "image").
-		Limit(limit).Offset((skip - 1) * limit).Order("id desc")
+		Limit(limit).Offset((skip - 1) * limit).Order("id desc").Where("deleted_at is NULL")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery != "" {
@@ -122,7 +122,7 @@ func (ar *storehouseRepository) CountAuthorizedStorehouses(ctx context.Context, 
 	var err error
 
 	q := ar.db.WithContext(ctx).Table("storehouses").Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").
-		Where("authorized.user_id = ?", userID)
+		Where("authorized.user_id = ?", userID).Where("deleted_at is NULL")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery != "" {
@@ -144,7 +144,7 @@ func (ar *storehouseRepository) GetAuthorizedStorehouses(ctx context.Context, us
 	trimQuery := strings.TrimSpace(query)
 
 	q := ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.storehouse_id = storehouses.id").
-		Limit(limit).Offset((skip-1)*limit).Where("authorized.user_id = ?", userID).Order("id desc")
+		Limit(limit).Offset((skip-1)*limit).Where("authorized.user_id = ? AND deleted_at is NULL", userID).Order("id desc")
 
 	if trimQuery != "" {
 		q.Where("name LIKE ?", fmt.Sprintf("%%%v%%", trimQuery))
