@@ -1,13 +1,11 @@
 import { authz } from '@/auth';
 import { NotFound } from '@/components/pages/not-found';
-import { Button } from '@/components/shadcn-ui/button';
 import Header from '@/components/ui/header';
 import PaginationBar from '@/components/ui/pagination';
 import SearchBar from '@/components/ui/search';
 import { ErrUnauthorized } from '@/lib/errors';
 import { handleErr } from '@/lib/response';
 import { getListRice } from '@/lib/services/rice.service';
-import { Plus } from 'lucide-react';
 
 import {
     Table,
@@ -17,6 +15,14 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/shadcn-ui/table';
+import CreateRiceModal from '@/components/rice/create-rice';
+import UpdateRiceModal from '@/components/rice/update-rice';
+import { DeleteRice } from '@/components/rice/delete-rice';
+import { Metadata } from 'next/types';
+
+export const metadata: Metadata = {
+    title: 'Rice',
+};
 
 type Props = {
     searchParams: {
@@ -54,9 +60,7 @@ async function RicePage({ searchParams: { page = '1', q = '' } }: Props) {
     return (
         <section className="relative w-full h-screen max-h-screen">
             <Header title="Rice">
-                <Button>
-                    Create rice <Plus className="size-5 ml-1"></Plus>
-                </Button>
+                <CreateRiceModal />
             </Header>
             <div className="flex py-2 px-3">
                 <SearchBar className="flex-grow mr-2 w-full"></SearchBar>
@@ -98,7 +102,10 @@ async function RicePage({ searchParams: { page = '1', q = '' } }: Props) {
                                     <TableCell className="font-medium text-lg">
                                         {rice.name}
                                     </TableCell>
-                                    <TableCell className="text-right"></TableCell>
+                                    <TableCell className="text-right">
+                                        <UpdateRiceModal rice={rice} />
+                                        <DeleteRice rice={rice} />
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

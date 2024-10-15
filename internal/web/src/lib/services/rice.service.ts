@@ -96,7 +96,7 @@ export async function updateRice(
 ): Promise<ResponseOrError<Res<Rice>>> {
     const [res, err] = await fetcher
         .set(...getAuthH(key))
-        .patch.json<Res<Rice>>('/rice', req);
+        .patch.json<Res<Rice>>(`/rice/${req.id}`, { name: req.name });
 
     if (res) {
         return [res, undefined];
