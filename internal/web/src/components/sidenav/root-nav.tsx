@@ -37,7 +37,7 @@ const rootPageNavItems: NavItem[] = [
         icon: Users,
     },
     {
-        path: '/dashboard/root/root/staff',
+        path: '/dashboard/root/staff',
         title: 'Staff',
         icon: BriefcaseBusiness,
     },

@@ -92,7 +92,10 @@ export default function CreateRiceModal() {
                         </Label>
                         <Input
                             id="name"
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => {
+                                setError('');
+                                setName(e.target.value);
+                            }}
                             value={name}
                             className={cn('', {
                                 'focus-visible:ring-red-700': name.length < 3,

@@ -3,6 +3,11 @@ import StorehousePage from '@/components/pages/storehouse/storehouse';
 import { ErrUnauthorized } from '@/lib/errors';
 import { handleErr } from '@/lib/response';
 import { getListStorehouse } from '@/lib/services/storehouse.service';
+import { Metadata } from 'next/types';
+
+export const metadata: Metadata = {
+    title: 'Storehouse',
+};
 
 async function Page() {
     const user = await authz();

@@ -1,7 +1,9 @@
+import PhoneNumberInput from '@/components/ui/phone-numbers-input';
+
 function StaffPage() {
     return (
         <div>
-            <h1>staff</h1>
+            <PhoneNumberInput defaultValue="+8412345678" />
         </div>
     );
 }
