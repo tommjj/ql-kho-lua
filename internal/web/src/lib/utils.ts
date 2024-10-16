@@ -29,6 +29,28 @@ export function withError<T extends asyncFunc>(
 }
 
 /**
+ * catchErr is a helper func catch err and return error as second value
+ *
+ * @param promise Promise<T>
+ * @returns Promise<[T, undefined] | [undefined, Error]>
+ */
+export async function catchErr<T>(
+    promise: Promise<T>
+): Promise<[T, undefined] | [undefined, Error]> {
+    try {
+        const data = await promise;
+        return [data, undefined];
+    } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const wrappedError =
+            error instanceof Error
+                ? error
+                : new Error((error as object).toString());
+        return [undefined, wrappedError];
+    }
+}
+
+/**
  * noError is a decorator func to decorated func will return null if there is an error
  **/
 export function noError<T extends asyncFunc>(func: T): T {
