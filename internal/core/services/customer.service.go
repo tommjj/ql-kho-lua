@@ -80,6 +80,8 @@ func (c *customerService) UpdateCustomer(ctx context.Context, customer *domain.C
 		switch err {
 		case domain.ErrConflictingData:
 			return nil, err
+		case domain.ErrNoUpdatedData:
+			return nil, err
 		default:
 			return nil, domain.ErrInternal
 		}

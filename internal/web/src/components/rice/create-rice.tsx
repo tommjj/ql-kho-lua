@@ -38,7 +38,7 @@ export default function CreateRiceModal() {
         });
 
         if (!parse.success) {
-            setError('name must be longer than 3 characters');
+            setError('Name must contain at least 3 character(s)');
             return;
         }
 

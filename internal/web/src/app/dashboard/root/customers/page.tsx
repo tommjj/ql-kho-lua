@@ -1,4 +1,7 @@
 import { authz } from '@/auth';
+import CreateCustomerModal from '@/components/customer/create-customer';
+import { DeleteCustomer } from '@/components/customer/delete-customer';
+import UpdateCustomerModal from '@/components/customer/update-customer';
 import { NotFound } from '@/components/pages/not-found';
 import {
     Table,
@@ -55,7 +58,9 @@ async function RicePage({ searchParams: { page = '1', q = '' } }: Props) {
 
     return (
         <section className="relative w-full h-screen max-h-screen">
-            <Header title="Customer">{/* < /> */}</Header>
+            <Header title="Customer">
+                <CreateCustomerModal />
+            </Header>
             <div className="flex py-2 px-3">
                 <SearchBar className="flex-grow mr-2 w-full"></SearchBar>
                 <PaginationBar
@@ -112,7 +117,12 @@ async function RicePage({ searchParams: { page = '1', q = '' } }: Props) {
                                     <TableCell className="font-medium text-lg text-nowrap truncate ">
                                         {customer.address}
                                     </TableCell>
-                                    <TableCell className="text-right"></TableCell>
+                                    <TableCell className="text-right">
+                                        <UpdateCustomerModal
+                                            customer={customer}
+                                        />
+                                        <DeleteCustomer customer={customer} />
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

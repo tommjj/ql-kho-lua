@@ -35,6 +35,9 @@ export const CustomerSchema = z.object({
     name: z.string().min(3).max(255),
     email: z.string().email(),
     phone: phoneNumber,
-    address: z.string().min(1).max(255),
+    address: z
+        .string()
+        .min(1, 'Address must contain at least 1 character(s)')
+        .max(255),
 });
 export type Customer = z.infer<typeof CustomerSchema>;

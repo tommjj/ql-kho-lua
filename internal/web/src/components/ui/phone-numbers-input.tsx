@@ -1,6 +1,6 @@
 'use client';
 
-import { parsePhoneNumber, CountryCode, getPhoneCode } from 'libphonenumber-js';
+import { CountryCode, getPhoneCode } from 'libphonenumber-js';
 import { useLayoutEffect, useState } from 'react';
 import { Input } from '@/components/shadcn-ui/input';
 import {
@@ -11,23 +11,7 @@ import {
     SelectValue,
 } from '@/components/shadcn-ui/select';
 import { Label } from '@/components/shadcn-ui/label';
-
-function parseE164(
-    phoneNumber: string
-): [{ countryCode: string; nationalNumber: string }, boolean] {
-    try {
-        const parsedNumber = parsePhoneNumber(phoneNumber);
-        return [
-            {
-                countryCode: parsedNumber.countryCallingCode,
-                nationalNumber: parsedNumber.nationalNumber,
-            },
-            true,
-        ];
-    } catch (err) {
-        return [{ countryCode: '', nationalNumber: '' }, false];
-    }
-}
+import { parseE164 } from '@/lib/validator/e164';
 
 const countryCodeList: CountryCode[] = ['VN', 'AC', 'RU', 'LA'];
 
@@ -65,7 +49,7 @@ export default function PhoneNumberInput({
 
         onChanged &&
             onChanged(
-                `+${countryCode}${
+                `+${getPhoneCode(countryCode)}${
                     input.startsWith('0') ? input.substring(1) : input
                 }`
             );
@@ -76,14 +60,14 @@ export default function PhoneNumberInput({
 
         const [parsed, ok] = parseE164(defaultValue);
         if (ok) {
-            setCountryCode(parsed.countryCode as CountryCode);
+            setCountryCode(parsed.countryCode || 'VN');
             setPhoneNumber(parsed.nationalNumber);
         }
     }, [defaultValue]);
 
     return (
-        <div className="w-full max-w-sm space-y-4">
-            <div className="space-y-2">
+        <div className="w-full  space-y-4">
+            <div className="">
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="flex space-x-2">
                     <Select
@@ -97,7 +81,7 @@ export default function PhoneNumberInput({
                             {countryCodeList.map((code) => (
                                 <SelectItem
                                     key={code}
-                                    value={getPhoneCode(code)}
+                                    value={code}
                                 >{`${getPhoneCode(
                                     code
                                 )} (${code})`}</SelectItem>
@@ -110,12 +94,9 @@ export default function PhoneNumberInput({
                         placeholder="Phone number"
                         value={phoneNumber}
                         onChange={handlePhoneNumberChange}
-                        className="flex-1"
+                        className="flex-1 w-full"
                     />
                 </div>
-            </div>
-            <div className="text-sm text-muted-foreground">
-                Selected: {countryCode} {phoneNumber}
             </div>
         </div>
     );
