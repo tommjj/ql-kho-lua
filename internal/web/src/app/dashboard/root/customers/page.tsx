@@ -30,7 +30,7 @@ type Props = {
     };
 };
 
-async function RicePage({ searchParams: { page = '1', q = '' } }: Props) {
+async function CustomersPage({ searchParams: { page = '1', q = '' } }: Props) {
     const user = await authz();
     if (!user) {
         handleErr(ErrUnauthorized);
@@ -133,4 +133,4 @@ async function RicePage({ searchParams: { page = '1', q = '' } }: Props) {
     );
 }
 
-export default RicePage;
+export default CustomersPage;

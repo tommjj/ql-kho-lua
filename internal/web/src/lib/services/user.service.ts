@@ -5,7 +5,9 @@ import { Res, ResWithPagination } from '@/types/http';
 import fetcher from '../http/fetcher';
 import { getAuthH } from './helper';
 
-export const CreateUserSchema = UserSchema.omit({ id: true, role: true });
+export const CreateUserSchema = UserSchema.omit({ id: true, role: true }).merge(
+    z.object({ password: z.string().min(8) })
+);
 export type CreateUserRequest = z.infer<typeof CreateUserSchema>;
 
 /**
@@ -79,21 +81,24 @@ export async function getListUser(
     return [undefined, err];
 }
 
-export const UpdateUserSchema = UserSchema.omit({ role: true }).partial({
-    email: true,
-    name: true,
-    phone: true,
-});
+export const UpdateUserSchema = UserSchema.omit({ role: true })
+    .merge(z.object({ password: z.string().min(8) }))
+    .partial({
+        email: true,
+        name: true,
+        phone: true,
+        password: true,
+    });
 export type UpdateUserRequest = z.infer<typeof UpdateUserSchema>;
 
 /**
- * updateCustomer update user info
+ * updateUser update user info
  *
  * @param key string
  * @param req UpdateUserRequest
  * @returns Promise<ResponseOrError<Res<User>>>
  */
-export async function updateCustomer(
+export async function updateUser(
     key: string,
     req: UpdateUserRequest
 ): Promise<ResponseOrError<Res<User>>> {
