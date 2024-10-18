@@ -29,6 +29,7 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 		CustomerID:   invoice.CustomerID,
 		UserID:       invoice.UserID,
 		Details:      make([]schema.ImportInvoiceDetail, len(invoice.Details)),
+		TotalPrice:   invoice.TotalPrice,
 	}
 
 	for i, detail := range invoice.Details {
@@ -37,7 +38,6 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 			Price:    detail.Price,
 			Quantity: detail.Quantity,
 		}
-		createData.TotalPrice += detail.Price * float64(detail.Quantity)
 	}
 
 	err := eir.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -50,30 +50,13 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrForeignKeyViolated):
-			return nil, domain.ErrConflictingData
+			return nil, domain.ErrDataNotFound
 		default:
 			return nil, err
 		}
 	}
 
-	created := &domain.Invoice{
-		ID:           createData.ID,
-		UserID:       createData.UserID,
-		CustomerID:   createData.CustomerID,
-		StorehouseID: createData.CustomerID,
-		TotalPrice:   createData.TotalPrice,
-		Details:      make([]domain.InvoiceItem, len(createData.Details)),
-	}
-
-	for i, detail := range createData.Details {
-		created.Details[i] = domain.InvoiceItem{
-			Price:    detail.Price,
-			Quantity: detail.Quantity,
-			RiceID:   detail.RiceID,
-		}
-	}
-
-	return created, nil
+	return eir.GetImInvoiceWithAssociationsByID(ctx, createData.ID)
 }
 
 func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error) {
@@ -151,10 +134,18 @@ func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx contex
 	return invoice, nil
 }
 
-func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context) (int64, error) {
+func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, start *time.Time, end *time.Time) (int64, error) {
 	var count int64
 
-	err := eir.db.WithContext(ctx).Model(&schema.ImportInvoice{}).Count(&count).Error
+	q := eir.db.WithContext(ctx).Model(&schema.ImportInvoice{})
+	if start != nil {
+		q.Where("created_at >= ?", start)
+	}
+	if end != nil {
+		q.Where("created_at <= ?", end)
+	}
+
+	err := q.Count(&count).Error
 	if err != nil {
 		return 0, err
 	}
@@ -165,9 +156,18 @@ func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context) (int64
 func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
 	invoices := []domain.Invoice{}
 
-	rows, err := eir.db.WithContext(ctx).Select(
+	q := eir.db.WithContext(ctx).Select(
 		"id", "storehouse_id", "customer_id", "user_id", "created_at", "total_price",
-	).Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Order("id DESC").Rows()
+	).Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Order("id DESC")
+
+	if start != nil {
+		q.Where("created_at >= ?", start)
+	}
+	if end != nil {
+		q.Where("created_at <= ?", end)
+	}
+
+	rows, err := q.Rows()
 	if err != nil {
 		return nil, err
 	}

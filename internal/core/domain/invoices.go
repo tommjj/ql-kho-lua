@@ -21,3 +21,11 @@ type Invoice struct {
 	Customer     *Customer     `json:"customer"`
 	Storehouse   *Storehouse   `json:"storehouse"`
 }
+
+// CalcTotalPrice
+func (i *Invoice) CalcTotalPrice() float64 {
+	for _, v := range i.Details {
+		i.TotalPrice += v.Price * float64(v.Quantity)
+	}
+	return i.TotalPrice
+}

@@ -143,10 +143,10 @@ func newStorehouseResponse(store *domain.Storehouse) storehouseResponse {
 }
 
 type usedCapacityResponse struct {
-	UsedCapacity float64 `json:"used_capacity" example:"500"`
+	UsedCapacity int64 `json:"used_capacity" example:"500"`
 }
 
-func newUsedCapacityResponse(v float64) usedCapacityResponse {
+func newUsedCapacityResponse(v int64) usedCapacityResponse {
 	return usedCapacityResponse{
 		UsedCapacity: v,
 	}

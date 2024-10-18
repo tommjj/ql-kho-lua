@@ -20,7 +20,7 @@ type IStorehouseRepository interface {
 	// GetAuthorizedStorehouses
 	GetAuthorizedStorehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Storehouse, error)
 	// GetUsedCapacityByID get used capacity of storehouse
-	GetUsedCapacityByID(ctx context.Context, id int) (float64, error)
+	GetUsedCapacityByID(ctx context.Context, id int) (int64, error)
 	// UpdateStorehouse update a storehouse, only update non-zero fields by default
 	UpdateStorehouse(ctx context.Context, storehouses *domain.Storehouse) (*domain.Storehouse, error)
 	// DeleteStorehouse delete a storehouse
@@ -41,7 +41,7 @@ type IStorehouseService interface {
 	// GetAuthorizedStorehouses
 	GetAuthorizedStorehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Storehouse, error)
 	// GetUsedCapacityByID get used capacity of storehouse
-	GetUsedCapacityByID(ctx context.Context, id int) (float64, error)
+	GetUsedCapacityByID(ctx context.Context, id int) (int64, error)
 	// UpdateStorehouse update a storehouse, only update non-zero fields by default
 	UpdateStorehouse(ctx context.Context, storehouses *domain.Storehouse) (*domain.Storehouse, error)
 	// DeleteStorehouse delete a storehouse

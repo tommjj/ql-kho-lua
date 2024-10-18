@@ -150,6 +150,7 @@ export default function UpdateStaffModal({ staff }: { staff: User }) {
                                 setError('');
                                 setPhone(v);
                             }}
+                            defaultValue={staff.phone}
                             defaultCountryCode="VN"
                         />
                     </div>

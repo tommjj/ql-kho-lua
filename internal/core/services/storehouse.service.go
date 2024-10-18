@@ -104,7 +104,7 @@ func (ss *storehouseService) GetAuthorizedStorehouses(ctx context.Context, userI
 	return list, nil
 }
 
-func (ss *storehouseService) GetUsedCapacityByID(ctx context.Context, id int) (float64, error) {
+func (ss *storehouseService) GetUsedCapacityByID(ctx context.Context, id int) (int64, error) {
 	usedCapacity, err := ss.repo.GetUsedCapacityByID(ctx, id)
 	if err != nil {
 		if err == domain.ErrDataNotFound {
