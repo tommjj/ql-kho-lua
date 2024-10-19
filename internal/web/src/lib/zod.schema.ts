@@ -6,14 +6,14 @@ const phoneNumber = z.string().refine((v) => validateE164(v), {
     message: 'phone numbers is not valid',
 });
 
-export const StorehouseSchema = z.object({
+export const WarehouseSchema = z.object({
     id: z.number().int(),
     name: z.string().min(3).max(255),
     location: z.array(z.number()).length(2),
     capacity: z.number().min(1),
     image: z.string().min(4),
 });
-export type Storehouse = z.infer<typeof StorehouseSchema>;
+export type Warehouse = z.infer<typeof WarehouseSchema>;
 
 export const UserSchema = z.object({
     id: z.number().int(),

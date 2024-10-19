@@ -1,5 +1,5 @@
 import BottomBar from '@/components/sidenav/bottom-bar';
-import StorehousePageNavBar from '@/components/sidenav/store-nav';
+import WarehousePageNavBar from '@/components/sidenav/store-nav';
 import StoreSelector from '@/components/sidenav/store-selector';
 import {
     ResizableHandle,
@@ -8,7 +8,7 @@ import {
 } from '@/components/shadcn-ui/resizable';
 import { Separator } from '@/components/shadcn-ui/separator';
 import React from 'react';
-import { getListStorehouse } from '@/lib/services/storehouse.service';
+import { getListWarehouse } from '@/lib/services/warehouse.service';
 import { authz } from '@/auth';
 import { ErrUnauthorized } from '@/lib/errors';
 import { handleErr } from '@/lib/response';
@@ -19,7 +19,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         handleErr(ErrUnauthorized);
     }
 
-    const [res, err] = await getListStorehouse(user.token, { limit: 99999 });
+    const [res, err] = await getListWarehouse(user.token, { limit: 99999 });
     if (err) {
         if (!(err instanceof Response)) {
             handleErr(err);
@@ -44,11 +44,11 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
                     maxSize={23}
                 >
                     <div className="p-2">
-                        <StoreSelector storehouses={stores ? stores : []} />
+                        <StoreSelector warehouses={stores ? stores : []} />
                     </div>
                     <Separator />
                     <div>
-                        <StorehousePageNavBar />
+                        <WarehousePageNavBar />
                     </div>
                     <BottomBar />
                 </ResizablePanel>

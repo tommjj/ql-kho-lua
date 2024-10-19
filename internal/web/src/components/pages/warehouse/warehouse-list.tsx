@@ -10,21 +10,21 @@ import {
 } from '@/components/shadcn-ui/dropdown-menu';
 import { Input } from '@/components/shadcn-ui/input';
 import { Progress } from '@/components/shadcn-ui/progress';
-import { CreateStorehouse } from '@/components/storehouse/create-storehouse';
-import { DeleteStorehouse } from '@/components/storehouse/delete-storehouse';
-import { UpdateStorehouse } from '@/components/storehouse/update-storehouse';
-import { getUsedCapacity } from '@/lib/services/storehouse.service';
-import { Storehouse } from '@/lib/zod.schema';
+import { CreateWarehouse } from '@/components/warehouse/create-warehouse';
+import { DeleteWarehouse } from '@/components/warehouse/delete-warehouse';
+import { UpdateWarehouse } from '@/components/warehouse/update-warehouse';
+import { getUsedCapacity } from '@/lib/services/warehouse.service';
+import { Warehouse } from '@/lib/zod.schema';
 import { Box, Ellipsis, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 type Props = {
-    storehouses: Storehouse[];
+    warehouses: Warehouse[];
     mapLocationControl(longitude: number, latitude: number): void;
 };
 
-function MoreOption({ storehouse }: { storehouse: Storehouse }) {
+function MoreOption({ warehouse }: { warehouse: Warehouse }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -42,19 +42,19 @@ function MoreOption({ storehouse }: { storehouse: Storehouse }) {
                 }}
             >
                 <DropdownMenuGroup>
-                    <UpdateStorehouse storehouse={storehouse} />
-                    <DeleteStorehouse storeID={storehouse.id} />
+                    <UpdateWarehouse warehouse={warehouse} />
+                    <DeleteWarehouse storeID={warehouse.id} />
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>
     );
 }
 
-function StorehouseItem({
-    storehouse,
+function WarehouseItem({
+    warehouse,
     mapLocationControl,
 }: {
-    storehouse: Storehouse;
+    warehouse: Warehouse;
     mapLocationControl(longitude: number, latitude: number): void;
 }) {
     const { push } = useRouter();
@@ -63,29 +63,29 @@ function StorehouseItem({
 
     useEffect(() => {
         (async () => {
-            const [res, err] = await getUsedCapacity(user.token, storehouse.id);
+            const [res, err] = await getUsedCapacity(user.token, warehouse.id);
             if (!err) {
                 setUsed(res.data.used_capacity);
             }
         })();
 
         const intervalID = setInterval(async () => {
-            const [res, err] = await getUsedCapacity(user.token, storehouse.id);
+            const [res, err] = await getUsedCapacity(user.token, warehouse.id);
             if (!err) {
                 setUsed(res.data.used_capacity);
             }
         }, 1000 * 60 * 5);
 
         return () => clearInterval(intervalID);
-    }, [storehouse.id, user.token]);
+    }, [warehouse.id, user.token]);
 
     const handleDoubleClick = useCallback(() => {
-        push(`/dashboard/${storehouse.id}`);
-    }, [push, storehouse.id]);
+        push(`/dashboard/${warehouse.id}`);
+    }, [push, warehouse.id]);
 
     const handleClick = useCallback(() => {
-        mapLocationControl(storehouse.location[1], storehouse.location[0]);
-    }, [mapLocationControl, storehouse.location]);
+        mapLocationControl(warehouse.location[1], warehouse.location[0]);
+    }, [mapLocationControl, warehouse.location]);
 
     return (
         <Button
@@ -101,23 +101,23 @@ function StorehouseItem({
                         <div className="flex items-center text-lg pt-1">
                             <div className="flex items-center flex-grow">
                                 <Box className="size-5 mr-2 opacity-80"></Box>
-                                {storehouse.name}
+                                {warehouse.name}
                             </div>
-                            <MoreOption storehouse={storehouse}></MoreOption>
+                            <MoreOption warehouse={warehouse}></MoreOption>
                         </div>
 
                         <Progress
                             value={
-                                (used / storehouse.capacity) * 100 > 100
+                                (used / warehouse.capacity) * 100 > 100
                                     ? 100
-                                    : (used / storehouse.capacity) * 100
+                                    : (used / warehouse.capacity) * 100
                             }
                             className="w-full my-1"
                         />
                         <div className="flex">
                             <div className="flex-grow text-sm opacity-80">{`${
-                                storehouse.capacity - used
-                            } free of ${storehouse.capacity}`}</div>
+                                warehouse.capacity - used
+                            } free of ${warehouse.capacity}`}</div>
                         </div>
                     </div>
                 </div>
@@ -126,7 +126,7 @@ function StorehouseItem({
     );
 }
 
-function StorehouseList({ storehouses, mapLocationControl }: Props) {
+function WarehouseList({ warehouses, mapLocationControl }: Props) {
     const [search, setSearch] = useState('');
 
     const handleInputChange = useCallback(
@@ -147,19 +147,19 @@ function StorehouseList({ storehouses, mapLocationControl }: Props) {
                     placeholder="Search..."
                 ></Input>
 
-                <CreateStorehouse />
+                <CreateWarehouse />
             </div>
 
             <div className="relative flex-grow w-full h-full  p-2 max-h-screen">
                 <div className="absolute inset-0 overflow-y-auto px-2 py-1.5">
-                    {storehouses.map((storehouse) =>
-                        storehouse.name
+                    {warehouses.map((warehouse) =>
+                        warehouse.name
                             .toLocaleLowerCase()
                             .includes(search.trim().toLocaleLowerCase()) ? (
-                            <StorehouseItem
+                            <WarehouseItem
                                 mapLocationControl={mapLocationControl}
-                                key={storehouse.id}
-                                storehouse={storehouse}
+                                key={warehouse.id}
+                                warehouse={warehouse}
                             />
                         ) : null
                     )}
@@ -169,4 +169,4 @@ function StorehouseList({ storehouses, mapLocationControl }: Props) {
     );
 }
 
-export default StorehouseList;
+export default WarehouseList;

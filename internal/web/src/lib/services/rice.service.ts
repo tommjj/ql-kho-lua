@@ -58,7 +58,7 @@ export type GetListRice = {
 };
 
 /**
- * getListStorehouse get list rice
+ * getListRice get list rice
  *
  * @param key string
  * @param getListRiceReq GetListRice

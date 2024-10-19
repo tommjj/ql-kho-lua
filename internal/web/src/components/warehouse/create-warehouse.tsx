@@ -16,43 +16,29 @@ import { Label } from '../shadcn-ui/label';
 import UploadImageSelect from '../ui/file-input';
 import { MapLayerMouseEvent } from 'maplibre-gl';
 import { Marker } from 'react-map-gl/maplibre';
-import { AlertCircle, FilePenLine } from 'lucide-react';
+import { AlertCircle, HousePlus } from 'lucide-react';
 import Pin from '../map/pin';
 import { LngLat } from '@/types/data-types';
 import { isLocation, parseLocation } from '@/lib/validator/location';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import {
-    updateStorehouse,
-    UpdateStorehouseSchema,
-} from '@/lib/services/storehouse.service';
+    createWarehouse,
+    CreateWarehouseSchema,
+} from '@/lib/services/warehouse.service';
 import { useSession } from '../session-context';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { Storehouse } from '@/lib/zod.schema';
 
-export function UpdateStorehouse({
-    storehouse,
-    onOpenChange,
-}: {
-    storehouse: Storehouse;
-    onOpenChange?: (open: boolean) => void;
-}) {
+export function CreateWarehouse() {
     const { refresh } = useRouter();
     const user = useSession();
     const [isOpen, setIsOpen] = useState(false);
 
-    const [location, setLocation] = useState<LngLat | null>({
-        lat: storehouse.location[0],
-        lng: storehouse.location[1],
-    });
-    const [locationString, setLocationString] = useState<string>(
-        `${storehouse.location[0]},${storehouse.location[1]}`
-    );
-    const [name, setName] = useState(storehouse.name);
-    const [capacity, setCapacity] = useState<null | number>(
-        storehouse.capacity
-    );
-    const [image, setImage] = useState<string | undefined>(undefined);
+    const [location, setLocation] = useState<LngLat | null>(null);
+    const [locationString, setLocationString] = useState<string>('');
+    const [name, setName] = useState('');
+    const [capacity, setCapacity] = useState<null | number>();
+    const [image, setImage] = useState('');
 
     const [error, setError] = useState<string | null>();
 
@@ -70,19 +56,18 @@ export function UpdateStorehouse({
             e.preventDefault();
 
             const createData = {
-                id: storehouse.id,
                 name: name,
                 location: [location?.lat, location?.lng],
                 capacity: capacity,
                 image: image,
             };
 
-            const parse = UpdateStorehouseSchema.safeParse(createData);
+            const parse = CreateWarehouseSchema.safeParse(createData);
 
             if (!parse.success) return;
 
             (async () => {
-                const [, err] = await updateStorehouse(user.token, parse.data);
+                const [, err] = await createWarehouse(user.token, parse.data);
                 if (!err) {
                     refresh();
                     setIsOpen(false);
@@ -92,7 +77,7 @@ export function UpdateStorehouse({
 
                 switch (err.status) {
                     case 409:
-                        setError('storehouse name is exist');
+                        setError('warehouse name is exist');
                         break;
                     case 400:
                         const data = await err.json();
@@ -100,8 +85,6 @@ export function UpdateStorehouse({
                         break;
                 }
             })();
-
-            setError(null);
         },
         [
             capacity,
@@ -110,20 +93,15 @@ export function UpdateStorehouse({
             location?.lng,
             name,
             refresh,
-            storehouse.id,
             user.token,
         ]
     );
 
     return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <Dialog open={isOpen}>
             <DialogTrigger asChild onClick={() => setIsOpen(true)}>
-                <Button
-                    className="flex items-center justify-start w-full"
-                    variant={'ghost'}
-                >
-                    <FilePenLine className="size-5 mr-2 " />
-                    <span>Edit</span>
+                <Button className="">
+                    <HousePlus className="size-5 transition-all duration-150" />{' '}
                 </Button>
             </DialogTrigger>
             <DialogContent className="flex min-w-[90vw] h-[85vh] bg-white">
@@ -135,15 +113,7 @@ export function UpdateStorehouse({
                     <span className="sr-only">Close</span>
                 </DialogClose>
                 <div className="w-[700px] h-full rounded overflow-hidden ">
-                    <MapContainer
-                        initialViewState={{
-                            longitude: location?.lng,
-                            latitude: location?.lat,
-                            zoom: 3.5,
-                        }}
-                        onClick={handleSelectLocation}
-                        minZoom={2}
-                    >
+                    <MapContainer onClick={handleSelectLocation} minZoom={2}>
                         {location ? (
                             <Marker
                                 longitude={location.lng}
@@ -158,10 +128,10 @@ export function UpdateStorehouse({
                 <div className="flex flex-col flex-grow">
                     <DialogHeader>
                         <DialogTitle className="text-2xl">
-                            Edit storehouse
+                            Create warehouse
                         </DialogTitle>
                         <DialogDescription>
-                            Edit info storehouse here. Click Save when you are
+                            Create warehouse here. Click create when you are
                             done.
                         </DialogDescription>
                         {error && (
@@ -238,19 +208,14 @@ export function UpdateStorehouse({
 
                         <div>
                             <UploadImageSelect
-                                defaultImage={storehouse.image}
                                 className="w-full"
-                                onUploaded={(filename) =>
-                                    filename
-                                        ? setImage(filename)
-                                        : setImage(undefined)
-                                }
+                                onUploaded={(filename) => setImage(filename)}
                             />
                         </div>
                     </div>
                     <DialogFooter>
                         <Button onClick={handleCreate} type="submit" asChild>
-                            <DialogClose>Save</DialogClose>
+                            <DialogClose>Create</DialogClose>
                         </Button>
                     </DialogFooter>
                 </div>

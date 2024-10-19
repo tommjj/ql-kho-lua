@@ -15,14 +15,14 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from '../session-context';
 import { Role } from '@/types/role';
-import { Storehouse } from '@/lib/zod.schema';
+import { Warehouse } from '@/lib/zod.schema';
 import Link from 'next/link';
 
 type Props = {
-    storehouses: Storehouse[];
+    warehouses: Warehouse[];
 };
 
-function StoreSelector({ storehouses }: Props) {
+function StoreSelector({ warehouses }: Props) {
     const user = useSession();
     const { push } = useRouter();
     const { storeID } = useParams<{ storeID: string }>();
@@ -31,9 +31,9 @@ function StoreSelector({ storehouses }: Props) {
     const items = useMemo(
         () =>
             user.role === Role.ROOT
-                ? [{ id: 0, name: 'Root' }, ...storehouses]
-                : [...storehouses],
-        [storehouses, user.role]
+                ? [{ id: 0, name: 'Root' }, ...warehouses]
+                : [...warehouses],
+        [warehouses, user.role]
     );
 
     return (
@@ -63,9 +63,9 @@ function StoreSelector({ storehouses }: Props) {
                                 <Boxes className="size-[18px] mr-2 opacity-80" />
                             )}
                             {storeID
-                                ? storehouses.find(
-                                      (storehouse) =>
-                                          storehouse.id.toString() === storeID
+                                ? warehouses.find(
+                                      (warehouse) =>
+                                          warehouse.id.toString() === storeID
                                   )?.name
                                 : 'Root'}
                         </div>
@@ -76,29 +76,29 @@ function StoreSelector({ storehouses }: Props) {
 
             <PopoverContent className="w-[260px] p-0">
                 <Command>
-                    <CommandInput placeholder="Search storehouse..." />
+                    <CommandInput placeholder="Search warehouse..." />
                     <CommandList>
-                        <CommandEmpty>No storehouse found.</CommandEmpty>
+                        <CommandEmpty>No warehouse found.</CommandEmpty>
                         <CommandGroup>
-                            {items.map((storehouse) => (
+                            {items.map((warehouse) => (
                                 <CommandItem
-                                    key={storehouse.id}
-                                    value={storehouse.name}
+                                    key={warehouse.id}
+                                    value={warehouse.name}
                                     onSelect={() => {
-                                        if (storehouse.id === 0) {
+                                        if (warehouse.id === 0) {
                                             push(`/dashboard/root`);
                                         } else {
-                                            push(`/dashboard/${storehouse.id}`);
+                                            push(`/dashboard/${warehouse.id}`);
                                         }
                                         setOpen(false);
                                     }}
                                 >
-                                    {storehouse.id ? (
+                                    {warehouse.id ? (
                                         <Box className="size-[18px] mr-2 opacity-80" />
                                     ) : (
                                         <Boxes className="size-[18px] mr-2 opacity-80" />
                                     )}
-                                    {storehouse.name}
+                                    {warehouse.name}
                                 </CommandItem>
                             ))}
                         </CommandGroup>

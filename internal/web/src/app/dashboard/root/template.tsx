@@ -10,7 +10,7 @@ import { Separator } from '@/components/shadcn-ui/separator';
 import React from 'react';
 import { authz } from '@/auth';
 import { handleErr } from '@/lib/response';
-import { getListStorehouse } from '@/lib/services/storehouse.service';
+import { getListWarehouse } from '@/lib/services/warehouse.service';
 import { ErrUnauthorized } from '@/lib/errors';
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
@@ -19,12 +19,12 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         handleErr(ErrUnauthorized);
     }
 
-    const [res, err] = await getListStorehouse(user.token, { limit: 99999 });
+    const [res, err] = await getListWarehouse(user.token, { limit: 99999 });
     if (err) {
         if (!(err instanceof Response)) {
             handleErr(err);
         }
-        if (err.status !== 400) {
+        if (err.status !== 404) {
             handleErr(err);
         }
     }
@@ -44,7 +44,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
                     maxSize={23}
                 >
                     <div className="p-2">
-                        <StoreSelector storehouses={stores ? stores : []} />
+                        <StoreSelector warehouses={stores ? stores : []} />
                     </div>
                     <Separator />
                     <div>

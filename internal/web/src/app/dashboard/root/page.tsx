@@ -1,12 +1,12 @@
 import { authz } from '@/auth';
-import StorehousePage from '@/components/pages/storehouse/storehouse';
+import WarehousePage from '@/components/pages/warehouse/warehouse';
 import { ErrUnauthorized } from '@/lib/errors';
 import { handleErr } from '@/lib/response';
-import { getListStorehouse } from '@/lib/services/storehouse.service';
+import { getListWarehouse } from '@/lib/services/warehouse.service';
 import { Metadata } from 'next/types';
 
 export const metadata: Metadata = {
-    title: 'Storehouse',
+    title: 'Warehouse',
 };
 
 async function Page() {
@@ -15,19 +15,16 @@ async function Page() {
         handleErr(ErrUnauthorized);
     }
 
-    const [res, err] = await getListStorehouse(user.token, { limit: 99999 });
+    const [res, err] = await getListWarehouse(user.token, { limit: 99999 });
     if (err) {
-        if (!(err instanceof Response)) {
-            handleErr(err);
-        }
-        if (err.status !== 400) {
+        if (!(err instanceof Response) || err.status !== 404) {
             handleErr(err);
         }
     }
 
     const stores = res?.data;
 
-    return <StorehousePage stores={stores ? stores : []} />;
+    return <WarehousePage stores={stores ? stores : []} />;
 }
 
 export default Page;

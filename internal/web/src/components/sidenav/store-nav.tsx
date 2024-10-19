@@ -35,7 +35,7 @@ function getStorePageNavItems(storeID: string): NavItem[] {
     }));
 }
 
-function StorehousePageNavBar() {
+function WarehousePageNavBar() {
     const { storeID } = useParams<{ storeID: string }>();
     const pathname = usePathname();
     const navList = useMemo(() => getStorePageNavItems(storeID), [storeID]);
@@ -61,4 +61,4 @@ function StorehousePageNavBar() {
     );
 }
 
-export default StorehousePageNavBar;
+export default WarehousePageNavBar;

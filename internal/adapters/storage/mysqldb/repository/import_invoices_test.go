@@ -33,9 +33,9 @@ func TestImInvoices_createInvoice(t *testing.T) {
 	}
 
 	data, err := repo.CreateImInvoice(context.TODO(), &domain.Invoice{
-		UserID:       1,
-		CustomerID:   1,
-		StorehouseID: 2,
+		UserID:      1,
+		CustomerID:  1,
+		WarehouseID: 2,
 		Details: []domain.InvoiceItem{
 			{
 				RiceID:   1,

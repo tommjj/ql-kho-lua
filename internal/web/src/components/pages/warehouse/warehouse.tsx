@@ -1,6 +1,6 @@
 'use client';
 
-import { Storehouse } from '@/lib/zod.schema';
+import { Warehouse } from '@/lib/zod.schema';
 import {
     ResizableHandle,
     ResizablePanel,
@@ -10,17 +10,17 @@ import MapContainer, { MapRefType } from '../../map/map';
 import { useRef, useState } from 'react';
 import { Marker, Popup } from 'react-map-gl/maplibre';
 import Pin from '../../map/pin';
-import StorehousePopup from '../../map/storehouse';
+import WarehousePopup from '../../map/warehouse';
 
-import StorehouseList from './storehouse-list';
+import WarehouseList from './warehouse-list';
 
 type Props = {
-    stores: Storehouse[];
+    stores: Warehouse[];
 };
 
-function StorehousePage({ stores }: Props) {
+function WarehousePage({ stores }: Props) {
     const mapRef = useRef<MapRefType>();
-    const [storeInfo, setStoreInfo] = useState<Storehouse | null>(null);
+    const [storeInfo, setStoreInfo] = useState<Warehouse | null>(null);
 
     return (
         <section className="flex w-full h-screen">
@@ -62,15 +62,15 @@ function StorehousePage({ stores }: Props) {
                                 anchor="bottom"
                                 onClose={() => setStoreInfo(null)}
                             >
-                                <StorehousePopup storehouse={storeInfo} />
+                                <WarehousePopup warehouse={storeInfo} />
                             </Popup>
                         ) : null}
                     </MapContainer>
                 </ResizablePanel>
                 <ResizableHandle withHandle />
                 <ResizablePanel defaultSize={20}>
-                    <StorehouseList
-                        storehouses={stores}
+                    <WarehouseList
+                        warehouses={stores}
                         mapLocationControl={(longitude, latitude) => {
                             const map = mapRef.current;
                             if (!map) return;
@@ -87,4 +87,4 @@ function StorehousePage({ stores }: Props) {
     );
 }
 
-export default StorehousePage;
+export default WarehousePage;

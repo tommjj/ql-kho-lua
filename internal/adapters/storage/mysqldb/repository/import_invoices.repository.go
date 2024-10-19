@@ -25,11 +25,11 @@ func NewImInvoicesRepository(db *mysqldb.MysqlDB) ports.IImportInvoicesRepositor
 
 func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error) {
 	createData := &schema.ImportInvoice{
-		StorehouseID: invoice.StorehouseID,
-		CustomerID:   invoice.CustomerID,
-		UserID:       invoice.UserID,
-		Details:      make([]schema.ImportInvoiceDetail, len(invoice.Details)),
-		TotalPrice:   invoice.TotalPrice,
+		WarehouseID: invoice.WarehouseID,
+		CustomerID:  invoice.CustomerID,
+		UserID:      invoice.UserID,
+		Details:     make([]schema.ImportInvoiceDetail, len(invoice.Details)),
+		TotalPrice:  invoice.TotalPrice,
 	}
 
 	for i, detail := range invoice.Details {
@@ -73,12 +73,12 @@ func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id in
 	}
 
 	invoice := &domain.Invoice{
-		ID:           data.ID,
-		UserID:       data.UserID,
-		CustomerID:   data.CustomerID,
-		StorehouseID: data.StorehouseID,
-		TotalPrice:   data.TotalPrice,
-		Details:      make([]domain.InvoiceItem, len(data.Details)),
+		ID:          data.ID,
+		UserID:      data.UserID,
+		CustomerID:  data.CustomerID,
+		WarehouseID: data.WarehouseID,
+		TotalPrice:  data.TotalPrice,
+		Details:     make([]domain.InvoiceItem, len(data.Details)),
 	}
 
 	for i, detail := range data.Details {
@@ -105,21 +105,21 @@ func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx contex
 	}
 
 	invoice := &domain.Invoice{
-		ID:           data.ID,
-		UserID:       data.UserID,
-		CustomerID:   data.CustomerID,
-		StorehouseID: data.StorehouseID,
-		TotalPrice:   data.TotalPrice,
-		CreatedAt:    data.CreatedAt,
-		Details:      make([]domain.InvoiceItem, len(data.Details)),
+		ID:          data.ID,
+		UserID:      data.UserID,
+		CustomerID:  data.CustomerID,
+		WarehouseID: data.WarehouseID,
+		TotalPrice:  data.TotalPrice,
+		CreatedAt:   data.CreatedAt,
+		Details:     make([]domain.InvoiceItem, len(data.Details)),
 	}
 
 	if data.Customer.ID != 0 {
 		invoice.Customer = convertToCustomer(&data.Customer)
 	}
 
-	if data.Storehouse.ID != 0 {
-		invoice.Storehouse = convertToStorehouse(&data.Storehouse)
+	if data.Warehouse.ID != 0 {
+		invoice.Warehouse = convertToWarehouse(&data.Warehouse)
 	}
 
 	if data.User.ID != 0 {
@@ -141,7 +141,7 @@ func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx contex
 	return invoice, nil
 }
 
-func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time) (int64, error) {
+func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error) {
 	var count int64
 
 	q := eir.db.WithContext(ctx).Model(&schema.ImportInvoice{})
@@ -151,8 +151,8 @@ func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, storeh
 	if end != nil {
 		q.Where("created_at <= ?", end)
 	}
-	if storehouseID != 0 {
-		q.Where("storehouse_id = ?", storehouseID)
+	if warehouseID != 0 {
+		q.Where("warehouse_id = ?", warehouseID)
 	}
 
 	err := q.Count(&count).Error
@@ -163,11 +163,11 @@ func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, storeh
 	return count, nil
 }
 
-func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
+func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
 	invoices := []domain.Invoice{}
 
 	q := eir.db.WithContext(ctx).Select(
-		"id", "storehouse_id", "customer_id", "user_id", "created_at", "total_price",
+		"id", "warehouse_id", "customer_id", "user_id", "created_at", "total_price",
 	).Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Order("id DESC")
 
 	if start != nil {
@@ -176,8 +176,8 @@ func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, stor
 	if end != nil {
 		q.Where("created_at <= ?", end)
 	}
-	if storehouseID != 0 {
-		q.Where("storehouse_id = ?", storehouseID)
+	if warehouseID != 0 {
+		q.Where("warehouse_id = ?", warehouseID)
 	}
 
 	rows, err := q.Rows()
@@ -190,7 +190,7 @@ func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, stor
 		invoice := domain.Invoice{}
 		rows.Scan(
 			&invoice.ID,
-			&invoice.StorehouseID,
+			&invoice.WarehouseID,
 			&invoice.CustomerID,
 			&invoice.UserID,
 			&invoice.CreatedAt,

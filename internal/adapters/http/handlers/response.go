@@ -121,8 +121,8 @@ func newUserResponse(user *domain.User) userResponse {
 	}
 }
 
-// storehouseResponse represents a storehouse response body
-type storehouseResponse struct {
+// warehouseResponse represents a warehouse response body
+type warehouseResponse struct {
 	ID       int       `json:"id"`
 	Name     string    `json:"name" example:"store 01"`
 	Location []float64 `json:"location" example:"50.12,68.36"`
@@ -130,11 +130,11 @@ type storehouseResponse struct {
 	Capacity int       `json:"capacity" example:"1200"`
 }
 
-// newStorehouseResponse is a helper function to create a response body for handling storehouse data
-func newStorehouseResponse(store *domain.Storehouse) storehouseResponse {
+// newWarehouseResponse is a helper function to create a response body for handling warehouse data
+func newWarehouseResponse(store *domain.Warehouse) warehouseResponse {
 	latitude, longitude, _ := store.ParseLocation()
 
-	return storehouseResponse{
+	return warehouseResponse{
 		ID:       store.ID,
 		Name:     store.Name,
 		Location: []float64{latitude, longitude},
@@ -211,28 +211,28 @@ func newInvoiceDetail(invoiceDetail *domain.InvoiceItem) invoiceDetailResponse {
 
 // invoiceResponse is a helper function to create a response body for handling invoice data
 type invoiceResponse struct {
-	ID             int                     `json:"id"`
-	CustomerID     int                     `json:"customer_id"`
-	CustomerName   string                  `json:"customer_name,omitempty"`
-	StorehouseID   int                     `json:"storehouse_id"`
-	StorehouseName string                  `json:"storehouse_name,omitempty"`
-	UserID         int                     `json:"user_id"`
-	UserName       string                  `json:"user_name,omitempty"`
-	CreatedAt      time.Time               `json:"created_at"`
-	TotalPrice     float64                 `json:"total_price"`
-	Details        []invoiceDetailResponse `json:"details,omitempty"`
+	ID            int                     `json:"id"`
+	CustomerID    int                     `json:"customer_id"`
+	CustomerName  string                  `json:"customer_name,omitempty"`
+	WarehouseID   int                     `json:"warehouse_id"`
+	WarehouseName string                  `json:"warehouse_name,omitempty"`
+	UserID        int                     `json:"user_id"`
+	UserName      string                  `json:"user_name,omitempty"`
+	CreatedAt     time.Time               `json:"created_at"`
+	TotalPrice    float64                 `json:"total_price"`
+	Details       []invoiceDetailResponse `json:"details,omitempty"`
 }
 
 // newInvoiceResponse is a helper function to create a invoice response for handling invoice data
 func newInvoiceResponse(invoice *domain.Invoice) invoiceResponse {
 	res := invoiceResponse{
-		ID:           invoice.ID,
-		CustomerID:   invoice.CustomerID,
-		StorehouseID: invoice.StorehouseID,
-		UserID:       invoice.UserID,
-		CreatedAt:    invoice.CreatedAt,
-		TotalPrice:   invoice.TotalPrice,
-		Details:      make([]invoiceDetailResponse, 0, len(invoice.Details)),
+		ID:          invoice.ID,
+		CustomerID:  invoice.CustomerID,
+		WarehouseID: invoice.WarehouseID,
+		UserID:      invoice.UserID,
+		CreatedAt:   invoice.CreatedAt,
+		TotalPrice:  invoice.TotalPrice,
+		Details:     make([]invoiceDetailResponse, 0, len(invoice.Details)),
 	}
 
 	if invoice.CreatedBy != nil {
@@ -241,8 +241,8 @@ func newInvoiceResponse(invoice *domain.Invoice) invoiceResponse {
 	if invoice.Customer != nil {
 		res.CustomerName = invoice.Customer.Name
 	}
-	if invoice.Storehouse != nil {
-		res.StorehouseName = invoice.Storehouse.Name
+	if invoice.Warehouse != nil {
+		res.WarehouseName = invoice.Warehouse.Name
 	}
 
 	for _, v := range invoice.Details {
@@ -265,7 +265,7 @@ var errorStatusMap = map[error]int{
 	domain.ErrExpiredToken:               http.StatusUnauthorized,
 	domain.ErrForbidden:                  http.StatusForbidden,
 	domain.ErrNoUpdatedData:              http.StatusBadRequest,
-	domain.ErrStorehouseFull:             http.StatusBadRequest,
+	domain.ErrWarehouseFull:              http.StatusBadRequest,
 }
 
 // handleSuccess write success response with status code 200 mess Success and data

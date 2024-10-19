@@ -5,22 +5,22 @@ import (
 	"strings"
 )
 
-type StorehouseItem struct {
+type WarehouseItem struct {
 	Type     Rice `json:"type"`
 	Quantity int  `json:"quantity"`
 }
 
-type Storehouse struct {
-	ID           int               `json:"id"`
-	Name         string            `json:"name"`
-	Location     string            `json:"location"`
-	Capacity     int               `json:"capacity"`
-	UsedCapacity *int              `json:"used_capacity,omitempty"`
-	Image        string            `json:"image"`
-	Items        *[]StorehouseItem `json:"items,omitempty"`
+type Warehouse struct {
+	ID           int              `json:"id"`
+	Name         string           `json:"name"`
+	Location     string           `json:"location"`
+	Capacity     int              `json:"capacity"`
+	UsedCapacity *int             `json:"used_capacity,omitempty"`
+	Image        string           `json:"image"`
+	Items        *[]WarehouseItem `json:"items,omitempty"`
 }
 
-func (s *Storehouse) ParseLocation() (float64, float64, error) {
+func (s *Warehouse) ParseLocation() (float64, float64, error) {
 	before, after, found := strings.Cut(s.Location, ",")
 	if !found {
 		return 0, 0, ErrInvalidLocation

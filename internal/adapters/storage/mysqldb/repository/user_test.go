@@ -39,10 +39,10 @@ func TestUserRepo_Create(t *testing.T) {
 
 	user, err := repo.CreateUser(context.TODO(), &domain.User{
 		Name:     "fiammetta",
-		Phone:    "012345678",
-		Email:    "fiammetta@gmail.com",
+		Phone:    "+84123456789",
+		Email:    "fiammetta@mail.com",
 		Password: hashed,
-		Role:     domain.Member,
+		Role:     domain.Root,
 	})
 	if err != nil {
 		t.Fatal(err)

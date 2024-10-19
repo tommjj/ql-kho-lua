@@ -14,15 +14,15 @@ import { Button } from '../shadcn-ui/button';
 import { useSession } from '../session-context';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
-import { deleteStorehouse } from '@/lib/services/storehouse.service';
+import { deleteWarehouse } from '@/lib/services/warehouse.service';
 
-export function DeleteStorehouse({ storeID }: { storeID: number }) {
+export function DeleteWarehouse({ storeID }: { storeID: number }) {
     const { refresh } = useRouter();
     const user = useSession();
 
     const handleDelete = useCallback(() => {
         (async () => {
-            const [, err] = await deleteStorehouse(user.token, storeID);
+            const [, err] = await deleteWarehouse(user.token, storeID);
             if (!err) {
                 refresh();
                 return;

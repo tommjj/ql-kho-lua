@@ -23,7 +23,7 @@ type NavItem = {
 const rootPageNavItems: NavItem[] = [
     {
         path: '/dashboard/root',
-        title: 'Storehouses',
+        title: 'Warehouses',
         icon: Home,
     },
     {

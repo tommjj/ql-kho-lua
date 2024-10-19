@@ -17,9 +17,9 @@ func convertToUser(u *schema.User) *domain.User {
 	}
 }
 
-// convertToStorehouse is a helper to convert schema storehouse to domain storehouse type
-func convertToStorehouse(s *schema.Storehouse) *domain.Storehouse {
-	return &domain.Storehouse{
+// convertToWarehouse is a helper to convert schema warehouse to domain warehouse type
+func convertToWarehouse(s *schema.Warehouse) *domain.Warehouse {
+	return &domain.Warehouse{
 		ID:       s.ID,
 		Name:     s.Name,
 		Location: s.Location,

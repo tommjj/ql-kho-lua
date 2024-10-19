@@ -36,7 +36,7 @@ func NewMysqlDB(conf config.DB) (*MysqlDB, error) {
 
 	err = db.AutoMigrate(
 		&schema.User{},
-		&schema.Storehouse{},
+		&schema.Warehouse{},
 		&schema.Customer{},
 		&schema.Rice{},
 		&schema.ExportInvoice{},

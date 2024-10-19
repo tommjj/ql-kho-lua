@@ -13,7 +13,7 @@ async function MapPage() {
 
     const [data, err] = await fetcher
         .set('authorization', `jwt ${user.token}`)
-        .get('/v1/api/storehouses?limit=999');
+        .get('/v1/api/warehouses?limit=999');
 
     if (err) {
         handleErr(err);

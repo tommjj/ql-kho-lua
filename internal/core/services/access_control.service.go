@@ -17,8 +17,8 @@ func NewAccessControlService(repo ports.IAccessControlRepository) ports.IAccessC
 	}
 }
 
-func (acs *accessControlService) HasAccess(ctx context.Context, storeHouseID int, userID int) error {
-	err := acs.repo.HasAccess(ctx, storeHouseID, userID)
+func (acs *accessControlService) HasAccess(ctx context.Context, warehouseID int, userID int) error {
+	err := acs.repo.HasAccess(ctx, warehouseID, userID)
 	if err != nil {
 		switch err {
 		case domain.ErrForbidden:
@@ -33,8 +33,8 @@ func (acs *accessControlService) HasAccess(ctx context.Context, storeHouseID int
 	return nil
 }
 
-func (acs *accessControlService) SetAccess(ctx context.Context, storeHouseID int, userID int) error {
-	err := acs.repo.SetAccess(ctx, storeHouseID, userID)
+func (acs *accessControlService) SetAccess(ctx context.Context, warehouseID int, userID int) error {
+	err := acs.repo.SetAccess(ctx, warehouseID, userID)
 	if err != nil {
 		switch err {
 		case domain.ErrConflictingData:
@@ -47,8 +47,8 @@ func (acs *accessControlService) SetAccess(ctx context.Context, storeHouseID int
 	return nil
 }
 
-func (acs *accessControlService) DelAccess(ctx context.Context, storeHouseID int, userID int) error {
-	err := acs.repo.DelAccess(ctx, storeHouseID, userID)
+func (acs *accessControlService) DelAccess(ctx context.Context, warehouseID int, userID int) error {
+	err := acs.repo.DelAccess(ctx, warehouseID, userID)
 	if err != nil {
 		return domain.ErrInternal
 	}

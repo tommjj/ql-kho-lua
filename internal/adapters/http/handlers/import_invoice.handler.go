@@ -29,9 +29,9 @@ type DetailInvoiceRequest struct {
 }
 
 type CreateInvoiceRequest struct {
-	StorehouseID int                    `json:"storehouse_id" binding:"required"`
-	CustomerID   int                    `json:"customer_id" binding:"required"`
-	Details      []DetailInvoiceRequest `json:"details" binding:"required,min=1,unique=RiceID"`
+	WarehouseID int                    `json:"warehouse_id" binding:"required"`
+	CustomerID  int                    `json:"customer_id" binding:"required"`
+	Details     []DetailInvoiceRequest `json:"details" binding:"required,min=1,unique=RiceID"`
 }
 
 // CreateImInvoice ql-kho-lua
@@ -63,7 +63,7 @@ func (i *ImportInvoiceHandler) CreateImInvoice(ctx *gin.Context) {
 
 	isRootUser := token.Role == domain.Root
 	if !isRootUser {
-		err := i.acc.HasAccess(ctx, req.StorehouseID, token.ID)
+		err := i.acc.HasAccess(ctx, req.WarehouseID, token.ID)
 		if err != nil {
 			handleError(ctx, err)
 			return
@@ -71,10 +71,10 @@ func (i *ImportInvoiceHandler) CreateImInvoice(ctx *gin.Context) {
 	}
 
 	createInvData := &domain.Invoice{
-		StorehouseID: req.StorehouseID,
-		CustomerID:   req.CustomerID,
-		UserID:       token.ID,
-		Details:      make([]domain.InvoiceItem, 0, len(req.Details)),
+		WarehouseID: req.WarehouseID,
+		CustomerID:  req.CustomerID,
+		UserID:      token.ID,
+		Details:     make([]domain.InvoiceItem, 0, len(req.Details)),
 	}
 	for _, v := range req.Details {
 		createInvData.Details = append(createInvData.Details, domain.InvoiceItem{
@@ -129,7 +129,7 @@ func (i *ImportInvoiceHandler) GetImInvoiceByID(ctx *gin.Context) {
 
 	isRootUser := token.Role == domain.Root
 	if !isRootUser {
-		err := i.acc.HasAccess(ctx, inv.StorehouseID, token.ID)
+		err := i.acc.HasAccess(ctx, inv.WarehouseID, token.ID)
 		if err != nil {
 			handleError(ctx, err)
 			return
@@ -141,11 +141,11 @@ func (i *ImportInvoiceHandler) GetImInvoiceByID(ctx *gin.Context) {
 }
 
 type getListImInvoiceRequest struct {
-	StorehouseID int        `form:"storehouse_id" binding:"omitempty,min=0"`
-	Start        *time.Time `form:"start" binding:"omitempty"`
-	End          *time.Time `form:"end" binding:"omitempty"`
-	Skip         int        `form:"skip" binding:"min=1" example:"1"`
-	Limit        int        `form:"limit" binding:"min=5" example:"5"`
+	WarehouseID int        `form:"warehouse_id" binding:"omitempty,min=0"`
+	Start       *time.Time `form:"start" binding:"omitempty"`
+	End         *time.Time `form:"end" binding:"omitempty"`
+	Skip        int        `form:"skip" binding:"min=1" example:"1"`
+	Limit       int        `form:"limit" binding:"min=5" example:"5"`
 }
 
 // GetListImInvoices ql-kho-lua
@@ -155,7 +155,7 @@ type getListImInvoiceRequest struct {
 //	@Tags			importInvoices
 //	@Accept			json
 //	@Produce		json
-//	@Param			storehouse_id	query		int												false	"Storehouse id"
+//	@Param			warehouse_id	query		int												false	"Warehouse id"
 //	@Param			skip			query		int												false	"Skip"	default(1)	minimum(1)
 //	@Param			limit			query		int												false	"Limit"	default(5)	minimum(5)
 //	@Param			start			query		string											false	"Start"	format(date-time)
@@ -183,18 +183,18 @@ func (i *ImportInvoiceHandler) GetListImInvoices(ctx *gin.Context) {
 
 	isRootUser := token.Role == domain.Root
 	if !isRootUser {
-		if req.StorehouseID == 0 {
+		if req.WarehouseID == 0 {
 			handleError(ctx, domain.ErrForbidden)
 			return
 		}
-		err := i.acc.HasAccess(ctx, req.StorehouseID, token.ID)
+		err := i.acc.HasAccess(ctx, req.WarehouseID, token.ID)
 		if err != nil {
 			handleError(ctx, err)
 			return
 		}
 	}
 
-	count, err := i.svc.CountImInvoices(ctx, req.StorehouseID, req.Start, req.End)
+	count, err := i.svc.CountImInvoices(ctx, req.WarehouseID, req.Start, req.End)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -205,7 +205,7 @@ func (i *ImportInvoiceHandler) GetListImInvoices(ctx *gin.Context) {
 		return
 	}
 
-	ivcs, err := i.svc.GetListImInvoices(ctx, req.StorehouseID, req.Start, req.End, req.Skip, req.Limit)
+	ivcs, err := i.svc.GetListImInvoices(ctx, req.WarehouseID, req.Start, req.End, req.Skip, req.Limit)
 	if err != nil {
 		handleError(ctx, err)
 		return

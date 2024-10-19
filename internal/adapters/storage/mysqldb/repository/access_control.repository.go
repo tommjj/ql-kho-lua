@@ -21,14 +21,14 @@ func NewAccessControlRepository(db *mysqldb.MysqlDB) ports.IAccessControlReposit
 	}
 }
 
-func (ar *accessControlRepository) HasAccess(ctx context.Context, storeHouseID int, userID int) error {
+func (ar *accessControlRepository) HasAccess(ctx context.Context, warehouseID int, userID int) error {
 	result := struct {
-		StorehouseID int
-		UserID       int
+		warehouseID int
+		UserID      int
 	}{UserID: -1}
 
 	err := ar.db.WithContext(ctx).
-		Raw("SELECT * FROM authorized WHERE storehouse_id = ? AND user_id = ?", storeHouseID, userID).
+		Raw("SELECT * FROM authorized WHERE warehouse_id = ? AND user_id = ?", warehouseID, userID).
 		Scan(&result).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -44,8 +44,8 @@ func (ar *accessControlRepository) HasAccess(ctx context.Context, storeHouseID i
 
 }
 
-func (ar *accessControlRepository) SetAccess(ctx context.Context, storeHouseID int, userID int) error {
-	err := ar.db.WithContext(ctx).Model(&schema.User{ID: userID}).Association("AuthorizedStorehouses").Append(&schema.Storehouse{ID: storeHouseID})
+func (ar *accessControlRepository) SetAccess(ctx context.Context, warehouseID int, userID int) error {
+	err := ar.db.WithContext(ctx).Model(&schema.User{ID: userID}).Association("AuthorizedWarehouses").Append(&schema.Warehouse{ID: warehouseID})
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {
@@ -56,8 +56,8 @@ func (ar *accessControlRepository) SetAccess(ctx context.Context, storeHouseID i
 	return nil
 }
 
-func (ar *accessControlRepository) DelAccess(ctx context.Context, storeHouseID int, userID int) error {
-	err := ar.db.WithContext(ctx).Model(&schema.User{ID: userID}).Association("AuthorizedStorehouses").Delete(&schema.Storehouse{ID: storeHouseID})
+func (ar *accessControlRepository) DelAccess(ctx context.Context, warehouseID int, userID int) error {
+	err := ar.db.WithContext(ctx).Model(&schema.User{ID: userID}).Association("AuthorizedWarehouses").Delete(&schema.Warehouse{ID: warehouseID})
 	if err != nil {
 		return err
 	}

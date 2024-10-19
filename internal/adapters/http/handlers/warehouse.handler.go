@@ -10,43 +10,43 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
 
-type StorehouseHandler struct {
-	scv ports.IStorehouseService
+type WarehouseHandler struct {
+	scv ports.IWarehouseService
 	acc ports.IAccessControlRepository
 }
 
-func NewStorehouseHandler(storehouseService ports.IStorehouseService, accessControl ports.IAccessControlRepository) *StorehouseHandler {
-	return &StorehouseHandler{
-		scv: storehouseService,
+func NewWarehouseHandler(warehouseService ports.IWarehouseService, accessControl ports.IAccessControlRepository) *WarehouseHandler {
+	return &WarehouseHandler{
+		scv: warehouseService,
 		acc: accessControl,
 	}
 }
 
-type createStorehouseRequest struct {
+type createWarehouseRequest struct {
 	Name     string    `json:"name" binding:"required,min=3,max=255" example:"store 01"`
 	Location []float64 `json:"location" binding:"required,location" example:"50.12,68.36"`
 	Image    string    `json:"image" binding:"required,image_file" example:"2455.png"`
 	Capacity int       `json:"capacity" binding:"required,min=1" example:"1200"`
 }
 
-// CreateStorehouse ql-kho-lua
+// CreateWarehouse ql-kho-lua
 //
-//	@Summary		Create a new storehouse and get created user data
-//	@Description	Create a new storehouse and get created storehouse data
-//	@Tags			storehouses
+//	@Summary		Create a new warehouse and get created warehouse data
+//	@Description	Create a new warehouse and get created warehouse data
+//	@Tags			warehouses
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		createStorehouseRequest				true	"Create storehouse body"
-//	@Success		200		{object}	response{data=storehouseResponse}	"Created storehouse data"
+//	@Param			request	body		createWarehouseRequest				true	"Create warehouse body"
+//	@Success		200		{object}	response{data=warehouseResponse}	"Created warehouse data"
 //	@Failure		400		{object}	errorResponse						"Validation error"
 //	@Failure		401		{object}	errorResponse						"Unauthorized error"
 //	@Failure		403		{object}	errorResponse						"Forbidden error"
 //	@Failure		409		{object}	errorResponse						"Conflicting data error"
 //	@Failure		500		{object}	errorResponse						"Internal server error"
-//	@Router			/storehouses  [post]
+//	@Router			/warehouses  [post]
 //	@Security		JWTAuth
-func (s *StorehouseHandler) CreateStorehouse(ctx *gin.Context) {
-	var req createStorehouseRequest
+func (s *WarehouseHandler) CreateWarehouse(ctx *gin.Context) {
+	var req createWarehouseRequest
 
 	err := ctx.BindJSON(&req)
 	if err != nil {
@@ -54,7 +54,7 @@ func (s *StorehouseHandler) CreateStorehouse(ctx *gin.Context) {
 		return
 	}
 
-	createdStore, err := s.scv.CreateStorehouse(ctx, &domain.Storehouse{
+	createdStore, err := s.scv.CreateWarehouse(ctx, &domain.Warehouse{
 		Name:     req.Name,
 		Location: fmt.Sprintf("%v, %v", req.Location[0], req.Location[1]),
 		Capacity: req.Capacity,
@@ -70,28 +70,28 @@ func (s *StorehouseHandler) CreateStorehouse(ctx *gin.Context) {
 		return
 	}
 
-	res := newStorehouseResponse(createdStore)
+	res := newWarehouseResponse(createdStore)
 
 	handleSuccess(ctx, res)
 }
 
-// GetStorehouseByID ql-kho-lua
+// GetWarehouseByID ql-kho-lua
 //
-//	@Summary		Get storehouse data
-//	@Description	Get storehouse data by id
-//	@Tags			storehouses
+//	@Summary		Get warehouse data
+//	@Description	Get warehouse data by id
+//	@Tags			warehouses
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int									true	"Storehouse id"
-//	@Success		200	{object}	response{data=storehouseResponse}	"Storehouse data"
+//	@Param			id	path		int									true	"Warehouse id"
+//	@Success		200	{object}	response{data=warehouseResponse}	"Warehouse data"
 //	@Failure		400	{object}	errorResponse						"Validation error"
 //	@Failure		401	{object}	errorResponse						"Unauthorized error"
 //	@Failure		403	{object}	errorResponse						"Forbidden error"
 //	@Failure		404	{object}	errorResponse						"Data not found error"
 //	@Failure		500	{object}	errorResponse						"Internal server error"
-//	@Router			/storehouses/{id}  [get]
+//	@Router			/warehouses/{id}  [get]
 //	@Security		JWTAuth
-func (s *StorehouseHandler) GetStorehouseByID(ctx *gin.Context) {
+func (s *WarehouseHandler) GetWarehouseByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	numID, err := strconv.Atoi(id)
@@ -112,42 +112,42 @@ func (s *StorehouseHandler) GetStorehouseByID(ctx *gin.Context) {
 		}
 	}
 
-	store, err := s.scv.GetStorehouseByID(ctx, numID)
+	store, err := s.scv.GetWarehouseByID(ctx, numID)
 	if err != nil {
 		handleError(ctx, err)
 		return
 	}
 
-	res := newStorehouseResponse(store)
+	res := newWarehouseResponse(store)
 	handleSuccess(ctx, res)
 }
 
-type getListStorehouseRequest struct {
+type getListWarehouseRequest struct {
 	Query string `form:"q" binding:"" example:"store 01"`
 	Skip  int    `form:"skip" binding:"min=1" example:"1"`
 	Limit int    `form:"limit" binding:"min=5" example:"5"`
 }
 
-// GetListStorehouses ql-kho-lua
+// GetListWarehouses ql-kho-lua
 //
-//	@Summary		get storehouses
-//	@Description	get storehouses
-//	@Tags			storehouses
+//	@Summary		get warehouses
+//	@Description	get warehouses
+//	@Tags			warehouses
 //	@Accept			json
 //	@Produce		json
 //	@Param			q		query		string										false	"Query"
 //	@Param			skip	query		int											false	"Skip"	default(1)	minimum(1)
 //	@Param			limit	query		int											false	"Limit"	default(5)	minimum(5)
-//	@Success		200		{object}	responseWithPagination{data=[]userResponse}	"Storehouses data"
+//	@Success		200		{object}	responseWithPagination{data=[]userResponse}	"Warehouses data"
 //	@Failure		400		{object}	errorResponse								"Validation error"
 //	@Failure		401		{object}	errorResponse								"Unauthorized error"
 //	@Failure		403		{object}	errorResponse								"Forbidden error"
 //	@Failure		404		{object}	errorResponse								"Data not found error"
 //	@Failure		500		{object}	errorResponse								"Internal server error"
-//	@Router			/storehouses [get]
+//	@Router			/warehouses [get]
 //	@Security		JWTAuth
-func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
-	req := getListStorehouseRequest{
+func (s *WarehouseHandler) GetListWarehouses(ctx *gin.Context) {
+	req := getListWarehouseRequest{
 		Limit: 5,
 		Skip:  1,
 	}
@@ -164,9 +164,9 @@ func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 	var count int64
 
 	if isRoot {
-		count, err = s.scv.CountStorehouses(ctx, req.Query)
+		count, err = s.scv.CountWarehouses(ctx, req.Query)
 	} else {
-		count, err = s.scv.CountAuthorizedStorehouses(ctx, token.ID, req.Query)
+		count, err = s.scv.CountAuthorizedWarehouses(ctx, token.ID, req.Query)
 	}
 	if err != nil {
 		handleError(ctx, err)
@@ -178,12 +178,12 @@ func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 		return
 	}
 
-	var stores []domain.Storehouse
+	var stores []domain.Warehouse
 
 	if isRoot {
-		stores, err = s.scv.GetListStorehouses(ctx, req.Query, req.Limit, req.Skip)
+		stores, err = s.scv.GetListWarehouses(ctx, req.Query, req.Limit, req.Skip)
 	} else {
-		stores, err = s.scv.GetAuthorizedStorehouses(ctx, token.ID, req.Query, req.Limit, req.Skip)
+		stores, err = s.scv.GetAuthorizedWarehouses(ctx, token.ID, req.Query, req.Limit, req.Skip)
 	}
 
 	if err != nil {
@@ -191,10 +191,10 @@ func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 		return
 	}
 
-	res := make([]storehouseResponse, 0, len(stores))
+	res := make([]warehouseResponse, 0, len(stores))
 
 	for _, store := range stores {
-		res = append(res, newStorehouseResponse(&store))
+		res = append(res, newWarehouseResponse(&store))
 	}
 
 	pagination := newPagination(count, len(stores), req.Limit, req.Skip)
@@ -204,20 +204,20 @@ func (s *StorehouseHandler) GetListStorehouses(ctx *gin.Context) {
 // GetUsedCapacityByID ql-kho-lua
 //
 //	@Summary		Get used capacity
-//	@Description	Get used capacity of storehouse by id
-//	@Tags			storehouses
+//	@Description	Get used capacity of warehouse by id
+//	@Tags			warehouses
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int									true	"Storehouse id"
+//	@Param			id	path		int									true	"Warehouse id"
 //	@Success		200	{object}	response{data=usedCapacityResponse}	"used capacity data"
 //	@Failure		400	{object}	errorResponse						"Validation error"
 //	@Failure		401	{object}	errorResponse						"Unauthorized error"
 //	@Failure		403	{object}	errorResponse						"Forbidden error"
 //	@Failure		404	{object}	errorResponse						"Data not found error"
 //	@Failure		500	{object}	errorResponse						"Internal server error"
-//	@Router			/storehouses/{id}/used_capacity  [get]
+//	@Router			/warehouses/{id}/used_capacity  [get]
 //	@Security		JWTAuth
-func (s *StorehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
+func (s *WarehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	numID, err := strconv.Atoi(id)
@@ -248,33 +248,33 @@ func (s *StorehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
 	handleSuccess(ctx, res)
 }
 
-type updateStorehouseRequest struct {
+type updateWarehouseRequest struct {
 	Name     string    `json:"name" binding:"omitempty,min=3,max=255" example:"store 01"`
 	Location []float64 `json:"location" binding:"omitempty,location" example:"51.12,68.36"`
 	Image    string    `json:"image" binding:"omitempty,image_file" example:"2455.png"`
 	Capacity int       `json:"capacity" binding:"omitempty,min=1" example:"1200"`
 }
 
-// UpdateStorehouse ql-kho-lua
+// UpdateWarehouse ql-kho-lua
 //
-//	@Summary		Update a storehouse and get created user data
-//	@Description	Update a storehouse and get created storehouse data
-//	@Tags			storehouses
+//	@Summary		Update a warehouse and get created user data
+//	@Description	Update a warehouse and get created warehouse data
+//	@Tags			warehouses
 //	@Accept			json
 //	@Produce		json
-//	@Param			id		path		int									true	"Storehouse id"
-//	@Param			request	body		updateStorehouseRequest				true	"Update storehouse body"
-//	@Success		200		{object}	response{data=storehouseResponse}	"Updated storehouse data"
+//	@Param			id		path		int									true	"Warehouse id"
+//	@Param			request	body		updateWarehouseRequest				true	"Update warehouse body"
+//	@Success		200		{object}	response{data=warehouseResponse}	"Updated warehouse data"
 //	@Failure		400		{object}	errorResponse						"Validation error"
 //	@Failure		401		{object}	errorResponse						"Unauthorized error"
 //	@Failure		403		{object}	errorResponse						"Forbidden error"
 //	@Failure		404		{object}	errorResponse						"Data not found error"
 //	@Failure		409		{object}	errorResponse						"Conflicting data error"
 //	@Failure		500		{object}	errorResponse						"Internal server error"
-//	@Router			/storehouses/{id}  [patch]
+//	@Router			/warehouses/{id}  [patch]
 //	@Security		JWTAuth
-func (s *StorehouseHandler) UpdateStorehouse(ctx *gin.Context) {
-	var req updateStorehouseRequest
+func (s *WarehouseHandler) UpdateWarehouse(ctx *gin.Context) {
+	var req updateWarehouseRequest
 
 	id := ctx.Param("id")
 
@@ -300,7 +300,7 @@ func (s *StorehouseHandler) UpdateStorehouse(ctx *gin.Context) {
 		location = fmt.Sprintf("%v, %v", req.Location[0], req.Location[1])
 	}
 
-	store, err := s.scv.UpdateStorehouse(ctx, &domain.Storehouse{
+	store, err := s.scv.UpdateWarehouse(ctx, &domain.Warehouse{
 		ID:       numID,
 		Name:     req.Name,
 		Location: location,
@@ -312,27 +312,27 @@ func (s *StorehouseHandler) UpdateStorehouse(ctx *gin.Context) {
 		return
 	}
 
-	res := newStorehouseResponse(store)
+	res := newWarehouseResponse(store)
 	handleSuccess(ctx, res)
 }
 
-// DeleteStorehouse ql-kho-lua
+// DeleteWarehouse ql-kho-lua
 //
-//	@Summary		Delete a storehouse
-//	@Description	Delete a storehouse
-//	@Tags			storehouses
+//	@Summary		Delete a warehouse
+//	@Description	Delete a warehouse
+//	@Tags			warehouses
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int				true	"Storehouse id"
+//	@Param			id	path		int				true	"Warehouse id"
 //	@Success		200	{object}	response		"deleted"
 //	@Failure		400	{object}	errorResponse	"Validation error"
 //	@Failure		401	{object}	errorResponse	"Unauthorized error"
 //	@Failure		403	{object}	errorResponse	"Forbidden error"
 //	@Failure		404	{object}	errorResponse	"Data not found error"
 //	@Failure		500	{object}	errorResponse	"Internal server error"
-//	@Router			/storehouses/{id}  [delete]
+//	@Router			/warehouses/{id}  [delete]
 //	@Security		JWTAuth
-func (s *StorehouseHandler) DeleteStorehouse(ctx *gin.Context) {
+func (s *WarehouseHandler) DeleteWarehouse(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	numID, err := strconv.Atoi(id)
@@ -341,7 +341,7 @@ func (s *StorehouseHandler) DeleteStorehouse(ctx *gin.Context) {
 		return
 	}
 
-	err = s.scv.DeleteStorehouse(ctx, numID)
+	err = s.scv.DeleteWarehouse(ctx, numID)
 	if err != nil {
 		handleError(ctx, err)
 		return

@@ -70,21 +70,21 @@ func RegisterUsersRoute(token ports.ITokenService, userHandler *handlers.UserHan
 	}
 }
 
-// RegisterStorehouseRoute is a option function to return register storehouse router function
-func RegisterStorehouseRoute(token ports.ITokenService, storehouseHandler *handlers.StorehouseHandler) RegisterRouterFunc {
+// RegisterWarehouseRoute is a option function to return register warehouse router function
+func RegisterWarehouseRoute(token ports.ITokenService, warehouseHandler *handlers.WarehouseHandler) RegisterRouterFunc {
 	return func(e gin.IRouter) {
-		auth := e.Group("/storehouses")
+		auth := e.Group("/warehouses")
 		auth.Use(handlers.AuthMiddleware(token))
 		{
-			auth.GET("", storehouseHandler.GetListStorehouses)
-			auth.GET("/:id", storehouseHandler.GetStorehouseByID)
-			auth.GET("/:id/used_capacity", storehouseHandler.GetUsedCapacityByID)
+			auth.GET("", warehouseHandler.GetListWarehouses)
+			auth.GET("/:id", warehouseHandler.GetWarehouseByID)
+			auth.GET("/:id/used_capacity", warehouseHandler.GetUsedCapacityByID)
 
 			root := auth.Group("", handlers.RoleRootMiddleware())
 			{
-				root.POST("", storehouseHandler.CreateStorehouse)
-				root.PATCH("/:id", storehouseHandler.UpdateStorehouse)
-				root.DELETE("/:id", storehouseHandler.DeleteStorehouse)
+				root.POST("", warehouseHandler.CreateWarehouse)
+				root.PATCH("/:id", warehouseHandler.UpdateWarehouse)
+				root.DELETE("/:id", warehouseHandler.DeleteWarehouse)
 			}
 		}
 	}

@@ -77,7 +77,7 @@ func main() {
 
 	keyRepository := repository.NewKeyRepository(db)
 	userRepository := repository.NewUserRepository(db)
-	storehouseRepository := repository.NewStorehouseRepository(db)
+	storehouseRepository := repository.NewWarehouseRepository(db)
 	accessControlRepository := repository.NewAccessControlRepository(db)
 	riceRepository := repository.NewRiceRepository(db)
 	customerRepository := repository.NewCustomerRepository(db)
@@ -91,7 +91,7 @@ func main() {
 	authService := services.NewAuthService(userRepository, tokenService)
 	userService := services.NewUserService(userRepository)
 	accessControlService := services.NewAccessControlService(accessControlRepository)
-	storehouseService := services.NewStorehouseService(storehouseRepository, fileStorage)
+	storehouseService := services.NewWarehouseService(storehouseRepository, fileStorage)
 	riceService := services.NewRiceService(riceRepository)
 	customerService := services.NewCustomerService(customerRepository)
 	imInvoiceService := services.NewImInvoicesService(imInvoiceRepository, storehouseRepository, &mapmutex.Mapmutex{})
@@ -102,7 +102,7 @@ func main() {
 	uploadHandler := handlers.NewUploadHandler(uploadService)
 	authHandler := handlers.NewAuthHandler(authService)
 	userHandler := handlers.NewUserHandler(userService)
-	storeHouseHandler := handlers.NewStorehouseHandler(storehouseService, accessControlService)
+	storeHouseHandler := handlers.NewWarehouseHandler(storehouseService, accessControlService)
 	riceHandler := handlers.NewRiceHandler(riceService)
 	customerHandler := handlers.NewCustomerHandler(customerService)
 	imInvoiceHandler := handlers.NewImportInvoiceHandler(imInvoiceService, accessControlService)
@@ -116,7 +116,7 @@ func main() {
 			http.RegisterUploadRoute(uploadHandler),
 			http.RegisterAuthRoute(authHandler),
 			http.RegisterUsersRoute(tokenService, userHandler),
-			http.RegisterStorehouseRoute(tokenService, storeHouseHandler),
+			http.RegisterWarehouseRoute(tokenService, storeHouseHandler),
 			http.RegisterRiceRoute(tokenService, riceHandler),
 			http.RegisterCustomerRoute(tokenService, customerHandler),
 			http.RegisterImportInvoiceRoute(tokenService, imInvoiceHandler),

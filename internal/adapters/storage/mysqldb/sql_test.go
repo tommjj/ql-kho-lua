@@ -77,7 +77,7 @@ func TestDown(t *testing.T) {
 		"authorized",
 		&schema.User{},
 		&schema.Rice{},
-		&schema.Storehouse{},
+		&schema.Warehouse{},
 	)
 }
 
@@ -96,7 +96,7 @@ func TestUp(t *testing.T) {
 	m := db.Migrator()
 	m.AutoMigrate(
 		&schema.User{},
-		&schema.Storehouse{},
+		&schema.Warehouse{},
 		&schema.Customer{},
 		&schema.Rice{},
 		&schema.ExportInvoice{},

@@ -18,12 +18,12 @@ definitions:
         minItems: 1
         type: array
         uniqueItems: true
-      storehouse_id:
+      warehouse_id:
         type: integer
     required:
     - customer_id
     - details
-    - storehouse_id
+    - warehouse_id
     type: object
   handlers.DetailInvoiceRequest:
     properties:
@@ -77,7 +77,30 @@ definitions:
     required:
     - name
     type: object
-  handlers.createStorehouseRequest:
+  handlers.createUserRequest:
+    properties:
+      email:
+        example: example@exm.com
+        type: string
+      name:
+        example: vertin
+        maxLength: 32
+        minLength: 3
+        type: string
+      password:
+        example: password
+        minLength: 8
+        type: string
+      phone:
+        example: "+84123456788"
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    type: object
+  handlers.createWarehouseRequest:
     properties:
       capacity:
         example: 1200
@@ -103,29 +126,6 @@ definitions:
     - image
     - location
     - name
-    type: object
-  handlers.createUserRequest:
-    properties:
-      email:
-        example: example@exm.com
-        type: string
-      name:
-        example: vertin
-        maxLength: 32
-        minLength: 3
-        type: string
-      password:
-        example: password
-        minLength: 8
-        type: string
-      phone:
-        example: "+84123456788"
-        type: string
-    required:
-    - email
-    - name
-    - password
-    - phone
     type: object
   handlers.customerResponse:
     properties:
@@ -182,15 +182,15 @@ definitions:
         type: array
       id:
         type: integer
-      storehouse_id:
-        type: integer
-      storehouse_name:
-        type: string
       total_price:
         type: number
       user_id:
         type: integer
       user_name:
+        type: string
+      warehouse_id:
+        type: integer
+      warehouse_name:
         type: string
     type: object
   handlers.loginRequest:
@@ -257,27 +257,6 @@ definitions:
       name:
         type: string
     type: object
-  handlers.storehouseResponse:
-    properties:
-      capacity:
-        example: 1200
-        type: integer
-      id:
-        type: integer
-      image:
-        example: 2455.png
-        type: string
-      location:
-        example:
-        - 50.12
-        - 68.36
-        items:
-          type: number
-        type: array
-      name:
-        example: store 01
-        type: string
-    type: object
   handlers.updateCustomerRequest:
     properties:
       address:
@@ -306,7 +285,26 @@ definitions:
     required:
     - name
     type: object
-  handlers.updateStorehouseRequest:
+  handlers.updateUserRequest:
+    properties:
+      email:
+        example: example@exm.com
+        type: string
+      name:
+        example: vertin
+        maxLength: 32
+        minLength: 3
+        type: string
+      password:
+        example: password
+        maxLength: 64
+        minLength: 8
+        type: string
+      phone:
+        example: "+84123456788"
+        type: string
+    type: object
+  handlers.updateWarehouseRequest:
     properties:
       capacity:
         example: 1200
@@ -326,25 +324,6 @@ definitions:
         example: store 01
         maxLength: 255
         minLength: 3
-        type: string
-    type: object
-  handlers.updateUserRequest:
-    properties:
-      email:
-        example: example@exm.com
-        type: string
-      name:
-        example: vertin
-        maxLength: 32
-        minLength: 3
-        type: string
-      password:
-        example: password
-        maxLength: 64
-        minLength: 8
-        type: string
-      phone:
-        example: "+84123456788"
         type: string
     type: object
   handlers.uploadImageRequest:
@@ -379,6 +358,27 @@ definitions:
         allOf:
         - $ref: '#/definitions/domain.Role'
         example: member
+    type: object
+  handlers.warehouseResponse:
+    properties:
+      capacity:
+        example: 1200
+        type: integer
+      id:
+        type: integer
+      image:
+        example: 2455.png
+        type: string
+      location:
+        example:
+        - 50.12
+        - 68.36
+        items:
+          type: number
+        type: array
+      name:
+        example: store 01
+        type: string
     type: object
 info:
   contact: {}
@@ -684,9 +684,9 @@ paths:
       - application/json
       description: Get a list import invoices
       parameters:
-      - description: Storehouse id
+      - description: Warehouse id
         in: query
-        name: storehouse_id
+        name: warehouse_id
         type: integer
       - default: 1
         description: Skip
@@ -1097,310 +1097,6 @@ paths:
       summary: update rice
       tags:
       - rice
-  /storehouses:
-    get:
-      consumes:
-      - application/json
-      description: get storehouses
-      parameters:
-      - description: Query
-        in: query
-        name: q
-        type: string
-      - default: 1
-        description: Skip
-        in: query
-        minimum: 1
-        name: skip
-        type: integer
-      - default: 5
-        description: Limit
-        in: query
-        minimum: 5
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Storehouses data
-          schema:
-            allOf:
-            - $ref: '#/definitions/handlers.responseWithPagination'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/handlers.userResponse'
-                  type: array
-              type: object
-        "400":
-          description: Validation error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "401":
-          description: Unauthorized error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "403":
-          description: Forbidden error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "404":
-          description: Data not found error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      security:
-      - JWTAuth: []
-      summary: get storehouses
-      tags:
-      - storehouses
-    post:
-      consumes:
-      - application/json
-      description: Create a new storehouse and get created storehouse data
-      parameters:
-      - description: Create storehouse body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.createStorehouseRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Created storehouse data
-          schema:
-            allOf:
-            - $ref: '#/definitions/handlers.response'
-            - properties:
-                data:
-                  $ref: '#/definitions/handlers.storehouseResponse'
-              type: object
-        "400":
-          description: Validation error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "401":
-          description: Unauthorized error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "403":
-          description: Forbidden error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "409":
-          description: Conflicting data error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      security:
-      - JWTAuth: []
-      summary: Create a new storehouse and get created user data
-      tags:
-      - storehouses
-  /storehouses/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a storehouse
-      parameters:
-      - description: Storehouse id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: deleted
-          schema:
-            $ref: '#/definitions/handlers.response'
-        "400":
-          description: Validation error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "401":
-          description: Unauthorized error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "403":
-          description: Forbidden error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "404":
-          description: Data not found error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      security:
-      - JWTAuth: []
-      summary: Delete a storehouse
-      tags:
-      - storehouses
-    get:
-      consumes:
-      - application/json
-      description: Get storehouse data by id
-      parameters:
-      - description: Storehouse id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Storehouse data
-          schema:
-            allOf:
-            - $ref: '#/definitions/handlers.response'
-            - properties:
-                data:
-                  $ref: '#/definitions/handlers.storehouseResponse'
-              type: object
-        "400":
-          description: Validation error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "401":
-          description: Unauthorized error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "403":
-          description: Forbidden error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "404":
-          description: Data not found error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      security:
-      - JWTAuth: []
-      summary: Get storehouse data
-      tags:
-      - storehouses
-    patch:
-      consumes:
-      - application/json
-      description: Update a storehouse and get created storehouse data
-      parameters:
-      - description: Storehouse id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update storehouse body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.updateStorehouseRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Updated storehouse data
-          schema:
-            allOf:
-            - $ref: '#/definitions/handlers.response'
-            - properties:
-                data:
-                  $ref: '#/definitions/handlers.storehouseResponse'
-              type: object
-        "400":
-          description: Validation error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "401":
-          description: Unauthorized error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "403":
-          description: Forbidden error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "404":
-          description: Data not found error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "409":
-          description: Conflicting data error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      security:
-      - JWTAuth: []
-      summary: Update a storehouse and get created user data
-      tags:
-      - storehouses
-  /storehouses/{id}/used_capacity:
-    get:
-      consumes:
-      - application/json
-      description: Get used capacity of storehouse by id
-      parameters:
-      - description: Storehouse id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: used capacity data
-          schema:
-            allOf:
-            - $ref: '#/definitions/handlers.response'
-            - properties:
-                data:
-                  $ref: '#/definitions/handlers.usedCapacityResponse'
-              type: object
-        "400":
-          description: Validation error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "401":
-          description: Unauthorized error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "403":
-          description: Forbidden error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "404":
-          description: Data not found error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/handlers.errorResponse'
-      security:
-      - JWTAuth: []
-      summary: Get used capacity
-      tags:
-      - storehouses
   /upload:
     post:
       consumes:
@@ -1696,6 +1392,310 @@ paths:
       summary: update user
       tags:
       - users
+  /warehouses:
+    get:
+      consumes:
+      - application/json
+      description: get warehouses
+      parameters:
+      - description: Query
+        in: query
+        name: q
+        type: string
+      - default: 1
+        description: Skip
+        in: query
+        minimum: 1
+        name: skip
+        type: integer
+      - default: 5
+        description: Limit
+        in: query
+        minimum: 5
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Warehouses data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.responseWithPagination'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/handlers.userResponse'
+                  type: array
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: get warehouses
+      tags:
+      - warehouses
+    post:
+      consumes:
+      - application/json
+      description: Create a new warehouse and get created warehouse data
+      parameters:
+      - description: Create warehouse body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createWarehouseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created warehouse data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.warehouseResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Create a new warehouse and get created warehouse data
+      tags:
+      - warehouses
+  /warehouses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a warehouse
+      parameters:
+      - description: Warehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: deleted
+          schema:
+            $ref: '#/definitions/handlers.response'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Delete a warehouse
+      tags:
+      - warehouses
+    get:
+      consumes:
+      - application/json
+      description: Get warehouse data by id
+      parameters:
+      - description: Warehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Warehouse data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.warehouseResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get warehouse data
+      tags:
+      - warehouses
+    patch:
+      consumes:
+      - application/json
+      description: Update a warehouse and get created warehouse data
+      parameters:
+      - description: Warehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update warehouse body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.updateWarehouseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated warehouse data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.warehouseResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Update a warehouse and get created user data
+      tags:
+      - warehouses
+  /warehouses/{id}/used_capacity:
+    get:
+      consumes:
+      - application/json
+      description: Get used capacity of warehouse by id
+      parameters:
+      - description: Warehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: used capacity data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.usedCapacityResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get used capacity
+      tags:
+      - warehouses
 schemes:
 - http
 - https
