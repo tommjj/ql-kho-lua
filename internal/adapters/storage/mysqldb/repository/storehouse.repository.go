@@ -71,6 +71,7 @@ func (sr *storehouseRepository) CountStorehouses(ctx context.Context, query stri
 	err = q.Count(&count).Error
 
 	if err != nil {
+
 		return 0, err
 	}
 

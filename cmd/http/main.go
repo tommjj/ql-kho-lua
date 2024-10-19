@@ -11,6 +11,7 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/adapters/storage/mysqldb/repository"
 	"github.com/tommjj/ql-kho-lua/internal/config"
 	"github.com/tommjj/ql-kho-lua/internal/core/auth"
+	"github.com/tommjj/ql-kho-lua/internal/core/mapmutex"
 	"github.com/tommjj/ql-kho-lua/internal/core/services"
 	"github.com/tommjj/ql-kho-lua/internal/logger"
 	"go.uber.org/zap"
@@ -80,6 +81,7 @@ func main() {
 	accessControlRepository := repository.NewAccessControlRepository(db)
 	riceRepository := repository.NewRiceRepository(db)
 	customerRepository := repository.NewCustomerRepository(db)
+	imInvoiceRepository := repository.NewImInvoicesRepository(db)
 
 	// |> Start Service
 	zap.L().Info("Start create service")
@@ -92,6 +94,7 @@ func main() {
 	storehouseService := services.NewStorehouseService(storehouseRepository, fileStorage)
 	riceService := services.NewRiceService(riceRepository)
 	customerService := services.NewCustomerService(customerRepository)
+	imInvoiceService := services.NewImInvoicesService(imInvoiceRepository, storehouseRepository, &mapmutex.Mapmutex{})
 
 	// |> Start Handler
 	zap.L().Info("Start create handler")
@@ -102,6 +105,7 @@ func main() {
 	storeHouseHandler := handlers.NewStorehouseHandler(storehouseService, accessControlService)
 	riceHandler := handlers.NewRiceHandler(riceService)
 	customerHandler := handlers.NewCustomerHandler(customerService)
+	imInvoiceHandler := handlers.NewImportInvoiceHandler(imInvoiceService, accessControlService)
 
 	// |> Start HTTP Server
 	zap.L().Info("Start create http server")
@@ -115,6 +119,7 @@ func main() {
 			http.RegisterStorehouseRoute(tokenService, storeHouseHandler),
 			http.RegisterRiceRoute(tokenService, riceHandler),
 			http.RegisterCustomerRoute(tokenService, customerHandler),
+			http.RegisterImportInvoiceRoute(tokenService, imInvoiceHandler),
 		),
 	)
 	if err != nil {

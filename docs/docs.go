@@ -485,6 +485,281 @@ const docTemplate = `{
                 }
             }
         },
+        "/import_invoices": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "description": "Get a list import invoices",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "importInvoices"
+                ],
+                "summary": "Get a list import invoices",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Storehouse id",
+                        "name": "storehouse_id",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Skip",
+                        "name": "skip",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 5,
+                        "type": "integer",
+                        "default": 5,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Start",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "End",
+                        "name": "end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invoice data",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.responseWithPagination"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/handlers.invoiceResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "description": "Create a new import invoice and get created invoice data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "importInvoices"
+                ],
+                "summary": "Create a new import invoice and get created invoice data",
+                "parameters": [
+                    {
+                        "description": "Create invoice body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateInvoiceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Created invoice data",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/handlers.invoiceResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflicting data error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/import_invoices/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "description": "Get a import invoice by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "importInvoices"
+                ],
+                "summary": "Get a import invoice by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Invoice id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invoice data",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handlers.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/handlers.invoiceResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rice": {
             "get": {
                 "security": [
@@ -1865,6 +2140,51 @@ const docTemplate = `{
                 "Member"
             ]
         },
+        "handlers.CreateInvoiceRequest": {
+            "type": "object",
+            "required": [
+                "customer_id",
+                "details",
+                "storehouse_id"
+            ],
+            "properties": {
+                "customer_id": {
+                    "type": "integer"
+                },
+                "details": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/handlers.DetailInvoiceRequest"
+                    }
+                },
+                "storehouse_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.DetailInvoiceRequest": {
+            "type": "object",
+            "required": [
+                "price",
+                "quantity",
+                "rice_id"
+            ],
+            "properties": {
+                "price": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "rice_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.authResponse": {
             "type": "object",
             "properties": {
@@ -1893,6 +2213,7 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 255,
                     "minLength": 3,
                     "example": "Sentenced"
                 },
@@ -1909,7 +2230,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 3
                 }
             }
         },
@@ -1943,6 +2266,7 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 255,
                     "minLength": 3,
                     "example": "store 01"
                 }
@@ -1963,6 +2287,7 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 32,
                     "minLength": 3,
                     "example": "vertin"
                 },
@@ -2017,6 +2342,61 @@ const docTemplate = `{
                 "success": {
                     "type": "boolean",
                     "example": false
+                }
+            }
+        },
+        "handlers.invoiceDetailResponse": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "rice_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.invoiceResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "integer"
+                },
+                "customer_name": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.invoiceDetailResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "storehouse_id": {
+                    "type": "integer"
+                },
+                "storehouse_name": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "user_name": {
+                    "type": "string"
                 }
             }
         },
@@ -2145,6 +2525,7 @@ const docTemplate = `{
             "properties": {
                 "address": {
                     "type": "string",
+                    "maxLength": 255,
                     "minLength": 1,
                     "example": "abc, xyz"
                 },
@@ -2154,6 +2535,7 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 255,
                     "minLength": 3,
                     "example": "Sentenced"
                 },
@@ -2170,7 +2552,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 3
                 }
             }
         },
@@ -2198,6 +2582,7 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 255,
                     "minLength": 3,
                     "example": "store 01"
                 }
@@ -2212,11 +2597,13 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
+                    "maxLength": 32,
                     "minLength": 3,
                     "example": "vertin"
                 },
                 "password": {
                     "type": "string",
+                    "maxLength": 64,
                     "minLength": 8,
                     "example": "password"
                 },
@@ -2242,7 +2629,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "used_capacity": {
-                    "type": "number",
+                    "type": "integer",
                     "example": 500
                 }
             }

@@ -51,6 +51,8 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 		switch {
 		case errors.Is(err, gorm.ErrForeignKeyViolated):
 			return nil, domain.ErrDataNotFound
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			return nil, domain.ErrDataNotFound
 		default:
 			return nil, err
 		}
@@ -108,6 +110,7 @@ func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx contex
 		CustomerID:   data.CustomerID,
 		StorehouseID: data.StorehouseID,
 		TotalPrice:   data.TotalPrice,
+		CreatedAt:    data.CreatedAt,
 		Details:      make([]domain.InvoiceItem, len(data.Details)),
 	}
 
@@ -117,6 +120,10 @@ func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx contex
 
 	if data.Storehouse.ID != 0 {
 		invoice.Storehouse = convertToStorehouse(&data.Storehouse)
+	}
+
+	if data.User.ID != 0 {
+		invoice.CreatedBy = convertToUser(&data.User)
 	}
 
 	for i, detail := range data.Details {
@@ -134,7 +141,7 @@ func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx contex
 	return invoice, nil
 }
 
-func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, start *time.Time, end *time.Time) (int64, error) {
+func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time) (int64, error) {
 	var count int64
 
 	q := eir.db.WithContext(ctx).Model(&schema.ImportInvoice{})
@@ -143,6 +150,9 @@ func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, start 
 	}
 	if end != nil {
 		q.Where("created_at <= ?", end)
+	}
+	if storehouseID != 0 {
+		q.Where("storehouse_id = ?", storehouseID)
 	}
 
 	err := q.Count(&count).Error
@@ -153,7 +163,7 @@ func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, start 
 	return count, nil
 }
 
-func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
+func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
 	invoices := []domain.Invoice{}
 
 	q := eir.db.WithContext(ctx).Select(
@@ -165,6 +175,9 @@ func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, star
 	}
 	if end != nil {
 		q.Where("created_at <= ?", end)
+	}
+	if storehouseID != 0 {
+		q.Where("storehouse_id = ?", storehouseID)
 	}
 
 	rows, err := q.Rows()

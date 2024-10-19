@@ -15,9 +15,9 @@ type IImportInvoicesRepository interface {
 	// GetImInvoiceWithAssociationsByID select a invoice with user, storehouse, customer, rice by id
 	GetImInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error)
 	// CountImInvoices
-	CountImInvoices(ctx context.Context, start *time.Time, end *time.Time) (int64, error)
+	CountImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time) (int64, error)
 	// GetListImInvoices select invoices
-	GetListImInvoices(ctx context.Context, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error)
+	GetListImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error)
 }
 
 type IImportInvoicesService interface {
@@ -26,7 +26,7 @@ type IImportInvoicesService interface {
 	// GetImInvoiceByID select a invoice by id
 	GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
 	// CountImInvoices
-	CountImInvoices(ctx context.Context, start *time.Time, end *time.Time) (int64, error)
+	CountImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time) (int64, error)
 	// GetListImInvoices select invoices
-	GetListImInvoices(ctx context.Context, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error)
+	GetListImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error)
 }

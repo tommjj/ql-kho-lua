@@ -35,7 +35,7 @@ func (i *imInvoiceService) CreateImInvoice(ctx context.Context, invoice *domain.
 		if err != domain.ErrDataNotFound {
 			return nil, err
 		}
-		return nil, domain.ErrInternal
+		return nil, err
 	}
 
 	used, err := i.storehouseRepo.GetUsedCapacityByID(ctx, invoice.StorehouseID)
@@ -69,7 +69,7 @@ func (i *imInvoiceService) CreateImInvoice(ctx context.Context, invoice *domain.
 }
 
 func (i *imInvoiceService) GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error) {
-	invoice, err := i.imInvoiceRepo.GetImInvoiceByID(ctx, id)
+	invoice, err := i.imInvoiceRepo.GetImInvoiceWithAssociationsByID(ctx, id)
 	if err != nil {
 		switch err {
 		case domain.ErrDataNotFound:
@@ -82,8 +82,8 @@ func (i *imInvoiceService) GetImInvoiceByID(ctx context.Context, id int) (*domai
 	return invoice, nil
 }
 
-func (i *imInvoiceService) CountImInvoices(ctx context.Context, start *time.Time, end *time.Time) (int64, error) {
-	count, err := i.imInvoiceRepo.CountImInvoices(ctx, start, end)
+func (i *imInvoiceService) CountImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time) (int64, error) {
+	count, err := i.imInvoiceRepo.CountImInvoices(ctx, storehouseID, start, end)
 	if err != nil {
 		return 0, domain.ErrInternal
 	}
@@ -91,8 +91,8 @@ func (i *imInvoiceService) CountImInvoices(ctx context.Context, start *time.Time
 	return count, nil
 }
 
-func (i *imInvoiceService) GetListImInvoices(ctx context.Context, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
-	invoice, err := i.imInvoiceRepo.GetListImInvoices(ctx, start, end, skip, limit)
+func (i *imInvoiceService) GetListImInvoices(ctx context.Context, storehouseID int, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
+	invoice, err := i.imInvoiceRepo.GetListImInvoices(ctx, storehouseID, start, end, skip, limit)
 	if err != nil {
 		switch err {
 		case domain.ErrDataNotFound:

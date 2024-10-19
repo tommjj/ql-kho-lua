@@ -23,6 +23,8 @@ func (acs *accessControlService) HasAccess(ctx context.Context, storeHouseID int
 		switch err {
 		case domain.ErrForbidden:
 			return err
+		case domain.ErrDataNotFound:
+			return err
 		default:
 			return domain.ErrInternal
 		}

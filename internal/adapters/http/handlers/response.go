@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -186,6 +187,70 @@ func newCustomerResponse(customer *domain.Customer) customerResponse {
 	}
 }
 
+// invoiceDetailResponse represents a invoice detail response body
+type invoiceDetailResponse struct {
+	RiceID   int     `json:"rice_id"`
+	Name     string  `json:"name"`
+	Price    float64 `json:"price"`
+	Quantity int     `json:"quantity"`
+}
+
+// NewInvoiceDetail is a helper function to create a invoice Detail response for handling invoice data
+func newInvoiceDetail(invoiceDetail *domain.InvoiceItem) invoiceDetailResponse {
+	res := invoiceDetailResponse{
+		RiceID:   invoiceDetail.RiceID,
+		Price:    invoiceDetail.Price,
+		Quantity: invoiceDetail.Quantity,
+	}
+
+	if invoiceDetail.Rice != nil {
+		res.Name = invoiceDetail.Rice.Name
+	}
+	return res
+}
+
+// invoiceResponse is a helper function to create a response body for handling invoice data
+type invoiceResponse struct {
+	ID             int                     `json:"id"`
+	CustomerID     int                     `json:"customer_id"`
+	CustomerName   string                  `json:"customer_name,omitempty"`
+	StorehouseID   int                     `json:"storehouse_id"`
+	StorehouseName string                  `json:"storehouse_name,omitempty"`
+	UserID         int                     `json:"user_id"`
+	UserName       string                  `json:"user_name,omitempty"`
+	CreatedAt      time.Time               `json:"created_at"`
+	TotalPrice     float64                 `json:"total_price"`
+	Details        []invoiceDetailResponse `json:"details,omitempty"`
+}
+
+// newInvoiceResponse is a helper function to create a invoice response for handling invoice data
+func newInvoiceResponse(invoice *domain.Invoice) invoiceResponse {
+	res := invoiceResponse{
+		ID:           invoice.ID,
+		CustomerID:   invoice.CustomerID,
+		StorehouseID: invoice.StorehouseID,
+		UserID:       invoice.UserID,
+		CreatedAt:    invoice.CreatedAt,
+		TotalPrice:   invoice.TotalPrice,
+		Details:      make([]invoiceDetailResponse, 0, len(invoice.Details)),
+	}
+
+	if invoice.CreatedBy != nil {
+		res.UserName = invoice.CreatedBy.Name
+	}
+	if invoice.Customer != nil {
+		res.CustomerName = invoice.Customer.Name
+	}
+	if invoice.Storehouse != nil {
+		res.StorehouseName = invoice.Storehouse.Name
+	}
+
+	for _, v := range invoice.Details {
+		res.Details = append(res.Details, newInvoiceDetail(&v))
+	}
+	return res
+}
+
 // errorStatusMap is a map of defined error messages and their corresponding http status codes
 var errorStatusMap = map[error]int{
 	domain.ErrInternal:                   http.StatusInternalServerError,
@@ -200,6 +265,7 @@ var errorStatusMap = map[error]int{
 	domain.ErrExpiredToken:               http.StatusUnauthorized,
 	domain.ErrForbidden:                  http.StatusForbidden,
 	domain.ErrNoUpdatedData:              http.StatusBadRequest,
+	domain.ErrStorehouseFull:             http.StatusBadRequest,
 }
 
 // handleSuccess write success response with status code 200 mess Success and data

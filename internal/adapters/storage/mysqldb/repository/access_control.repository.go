@@ -31,6 +31,9 @@ func (ar *accessControlRepository) HasAccess(ctx context.Context, storeHouseID i
 		Raw("SELECT * FROM authorized WHERE storehouse_id = ? AND user_id = ?", storeHouseID, userID).
 		Scan(&result).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return domain.ErrDataNotFound
+		}
 		return err
 	}
 
