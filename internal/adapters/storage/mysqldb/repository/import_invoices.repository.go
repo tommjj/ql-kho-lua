@@ -13,17 +13,17 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-type importInvoicesRepository struct {
+type importInvoiceRepository struct {
 	db *mysqldb.MysqlDB
 }
 
 func NewImInvoicesRepository(db *mysqldb.MysqlDB) ports.IImportInvoicesRepository {
-	return &importInvoicesRepository{
+	return &importInvoiceRepository{
 		db: db,
 	}
 }
 
-func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error) {
+func (i *importInvoiceRepository) CreateImInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error) {
 	createData := &schema.ImportInvoice{
 		WarehouseID: invoice.WarehouseID,
 		CustomerID:  invoice.CustomerID,
@@ -40,7 +40,7 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 		}
 	}
 
-	err := eir.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	err := i.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err := tx.Preload("Details").Create(createData).Error
 		if err != nil {
 			return err
@@ -58,13 +58,13 @@ func (eir *importInvoicesRepository) CreateImInvoice(ctx context.Context, invoic
 		}
 	}
 
-	return eir.GetImInvoiceWithAssociationsByID(ctx, createData.ID)
+	return i.GetImInvoiceWithAssociationsByID(ctx, createData.ID)
 }
 
-func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error) {
+func (i *importInvoiceRepository) GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error) {
 	data := &schema.ImportInvoice{}
 
-	err := eir.db.WithContext(ctx).Preload("Details").Where("id = ?", id).First(data).Error
+	err := i.db.WithContext(ctx).Preload("Details").Where("id = ?", id).First(data).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrDataNotFound
@@ -92,10 +92,10 @@ func (eir *importInvoicesRepository) GetImInvoiceByID(ctx context.Context, id in
 	return invoice, nil
 }
 
-func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error) {
+func (i *importInvoiceRepository) GetImInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error) {
 	data := &schema.ImportInvoice{}
 
-	err := eir.db.WithContext(ctx).Preload("Details.Rice").
+	err := i.db.WithContext(ctx).Preload("Details.Rice").
 		Preload(clause.Associations).Where("id = ?", id).First(data).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -141,10 +141,10 @@ func (eir *importInvoicesRepository) GetImInvoiceWithAssociationsByID(ctx contex
 	return invoice, nil
 }
 
-func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error) {
+func (i *importInvoiceRepository) CountImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error) {
 	var count int64
 
-	q := eir.db.WithContext(ctx).Model(&schema.ImportInvoice{})
+	q := i.db.WithContext(ctx).Model(&schema.ImportInvoice{})
 	if start != nil {
 		q.Where("created_at >= ?", start)
 	}
@@ -163,10 +163,10 @@ func (eir *importInvoicesRepository) CountImInvoices(ctx context.Context, wareho
 	return count, nil
 }
 
-func (eir *importInvoicesRepository) GetListImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
+func (i *importInvoiceRepository) GetListImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip, limit int) ([]domain.Invoice, error) {
 	invoices := []domain.Invoice{}
 
-	q := eir.db.WithContext(ctx).Select(
+	q := i.db.WithContext(ctx).Select(
 		"id", "warehouse_id", "customer_id", "user_id", "created_at", "total_price",
 	).Model(&schema.ImportInvoice{}).Limit(limit).Offset((skip - 1) * limit).Order("id DESC")
 
