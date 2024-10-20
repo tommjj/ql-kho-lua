@@ -359,6 +359,18 @@ definitions:
         - $ref: '#/definitions/domain.Role'
         example: member
     type: object
+  handlers.warehouseItemResponse:
+    properties:
+      capacity:
+        example: 500
+        type: integer
+      id:
+        example: 1
+        type: integer
+      rice_name:
+        example: name
+        type: string
+    type: object
   handlers.warehouseResponse:
     properties:
       capacity:
@@ -1646,6 +1658,56 @@ paths:
       security:
       - JWTAuth: []
       summary: Update a warehouse and get created user data
+      tags:
+      - warehouses
+  /warehouses/{id}/inventory:
+    get:
+      consumes:
+      - application/json
+      description: Get inventory by warehouse id
+      parameters:
+      - description: Warehouse id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Inventory data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/handlers.warehouseItemResponse'
+                  type: array
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get inventory
       tags:
       - warehouses
   /warehouses/{id}/used_capacity:

@@ -6,8 +6,9 @@ import (
 )
 
 type WarehouseItem struct {
-	Type     Rice `json:"type"`
-	Quantity int  `json:"quantity"`
+	RiceID   int   `json:"rice_id"`
+	Rice     *Rice `json:"rice,omitempty"`
+	Quantity int   `json:"quantity"`
 }
 
 type Warehouse struct {

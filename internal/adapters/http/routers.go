@@ -79,6 +79,7 @@ func RegisterWarehouseRoute(token ports.ITokenService, warehouseHandler *handler
 			auth.GET("", warehouseHandler.GetListWarehouses)
 			auth.GET("/:id", warehouseHandler.GetWarehouseByID)
 			auth.GET("/:id/used_capacity", warehouseHandler.GetUsedCapacityByID)
+			auth.GET("/:id/inventory", warehouseHandler.GetInventory)
 
 			root := auth.Group("", handlers.RoleRootMiddleware())
 			{
@@ -132,9 +133,6 @@ func RegisterImportInvoiceRoute(token ports.ITokenService, imInvHandler *handler
 			auth.POST("", imInvHandler.CreateImInvoice)
 			auth.GET("", imInvHandler.GetListImInvoices)
 			auth.GET("/:id", imInvHandler.GetImInvoiceByID)
-			// root := auth.Group("", handlers.RoleRootMiddleware())
-			// {
-			// }
 		}
 	}
 }

@@ -19,8 +19,8 @@ func NewWarehouseService(repo ports.IWarehouseRepository, fileStorage ports.IFil
 	}
 }
 
-func (ss *warehouseService) CreateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error) {
-	err := ss.file.SavePermanentFile(warehouse.Image)
+func (w *warehouseService) CreateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error) {
+	err := w.file.SavePermanentFile(warehouse.Image)
 	if err != nil {
 		if err == domain.ErrFileIsNotExist {
 			return nil, err
@@ -28,9 +28,9 @@ func (ss *warehouseService) CreateWarehouse(ctx context.Context, warehouse *doma
 		return nil, domain.ErrInternal
 	}
 
-	created, err := ss.repo.CreateWarehouse(ctx, warehouse)
+	created, err := w.repo.CreateWarehouse(ctx, warehouse)
 	if err != nil {
-		_ = ss.file.DeleteFile(warehouse.Image)
+		_ = w.file.DeleteFile(warehouse.Image)
 
 		switch err {
 		case domain.ErrConflictingData:
@@ -39,13 +39,13 @@ func (ss *warehouseService) CreateWarehouse(ctx context.Context, warehouse *doma
 			return nil, domain.ErrInternal
 		}
 	}
-	ss.file.DeleteTempFile(warehouse.Image)
+	w.file.DeleteTempFile(warehouse.Image)
 
 	return created, nil
 }
 
-func (ss *warehouseService) GetWarehouseByID(ctx context.Context, id int) (*domain.Warehouse, error) {
-	store, err := ss.repo.GetWarehouseByID(ctx, id)
+func (w *warehouseService) GetWarehouseByID(ctx context.Context, id int) (*domain.Warehouse, error) {
+	store, err := w.repo.GetWarehouseByID(ctx, id)
 	if err != nil {
 		switch err {
 		case domain.ErrDataNotFound:
@@ -58,8 +58,8 @@ func (ss *warehouseService) GetWarehouseByID(ctx context.Context, id int) (*doma
 	return store, nil
 }
 
-func (ss *warehouseService) CountWarehouses(ctx context.Context, query string) (int64, error) {
-	count, err := ss.repo.CountWarehouses(ctx, query)
+func (w *warehouseService) CountWarehouses(ctx context.Context, query string) (int64, error) {
+	count, err := w.repo.CountWarehouses(ctx, query)
 	if err != nil {
 		return 0, domain.ErrInternal
 	}
@@ -67,8 +67,8 @@ func (ss *warehouseService) CountWarehouses(ctx context.Context, query string) (
 	return count, nil
 }
 
-func (ss *warehouseService) GetListWarehouses(ctx context.Context, query string, limit, skip int) ([]domain.Warehouse, error) {
-	list, err := ss.repo.GetListWarehouses(ctx, query, limit, skip)
+func (w *warehouseService) GetListWarehouses(ctx context.Context, query string, limit, skip int) ([]domain.Warehouse, error) {
+	list, err := w.repo.GetListWarehouses(ctx, query, limit, skip)
 	if err != nil {
 		switch err {
 		case domain.ErrDataNotFound:
@@ -81,8 +81,8 @@ func (ss *warehouseService) GetListWarehouses(ctx context.Context, query string,
 	return list, nil
 }
 
-func (ss *warehouseService) CountAuthorizedWarehouses(ctx context.Context, userID int, query string) (int64, error) {
-	count, err := ss.repo.CountAuthorizedWarehouses(ctx, userID, query)
+func (w *warehouseService) CountAuthorizedWarehouses(ctx context.Context, userID int, query string) (int64, error) {
+	count, err := w.repo.CountAuthorizedWarehouses(ctx, userID, query)
 	if err != nil {
 		return 0, domain.ErrInternal
 	}
@@ -90,8 +90,8 @@ func (ss *warehouseService) CountAuthorizedWarehouses(ctx context.Context, userI
 	return count, nil
 }
 
-func (ss *warehouseService) GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit int, skip int) ([]domain.Warehouse, error) {
-	list, err := ss.repo.GetAuthorizedWarehouses(ctx, userID, query, limit, skip)
+func (w *warehouseService) GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit int, skip int) ([]domain.Warehouse, error) {
+	list, err := w.repo.GetAuthorizedWarehouses(ctx, userID, query, limit, skip)
 	if err != nil {
 		switch err {
 		case domain.ErrDataNotFound:
@@ -104,8 +104,8 @@ func (ss *warehouseService) GetAuthorizedWarehouses(ctx context.Context, userID 
 	return list, nil
 }
 
-func (ss *warehouseService) GetUsedCapacityByID(ctx context.Context, id int) (int64, error) {
-	usedCapacity, err := ss.repo.GetUsedCapacityByID(ctx, id)
+func (w *warehouseService) GetUsedCapacityByID(ctx context.Context, id int) (int64, error) {
+	usedCapacity, err := w.repo.GetUsedCapacityByID(ctx, id)
 	if err != nil {
 		if err == domain.ErrDataNotFound {
 			return 0, err
@@ -116,8 +116,19 @@ func (ss *warehouseService) GetUsedCapacityByID(ctx context.Context, id int) (in
 	return usedCapacity, nil
 }
 
-func (ss *warehouseService) UpdateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error) {
-	current, err := ss.repo.GetWarehouseByID(ctx, warehouse.ID)
+func (w *warehouseService) GetInventory(ctx context.Context, id int) ([]domain.WarehouseItem, error) {
+	inventory, err := w.repo.GetInventory(ctx, id)
+	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return nil, err
+		}
+		return nil, domain.ErrInternal
+	}
+	return inventory, nil
+}
+
+func (w *warehouseService) UpdateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error) {
+	current, err := w.repo.GetWarehouseByID(ctx, warehouse.ID)
 	if err != nil {
 		if err == domain.ErrDataNotFound {
 			return nil, err
@@ -127,7 +138,7 @@ func (ss *warehouseService) UpdateWarehouse(ctx context.Context, warehouse *doma
 
 	isChangeImage := warehouse.Image != "" && warehouse.Image != current.Image
 	if isChangeImage {
-		err := ss.file.SavePermanentFile(warehouse.Image)
+		err := w.file.SavePermanentFile(warehouse.Image)
 		if err != nil {
 			if err == domain.ErrFileIsNotExist {
 				return nil, err
@@ -136,9 +147,9 @@ func (ss *warehouseService) UpdateWarehouse(ctx context.Context, warehouse *doma
 		}
 	}
 
-	updated, err := ss.repo.UpdateWarehouse(ctx, warehouse)
+	updated, err := w.repo.UpdateWarehouse(ctx, warehouse)
 	if err != nil {
-		ss.file.DeleteFile(warehouse.Image)
+		w.file.DeleteFile(warehouse.Image)
 
 		switch err {
 		case domain.ErrNoUpdatedData:
@@ -151,15 +162,15 @@ func (ss *warehouseService) UpdateWarehouse(ctx context.Context, warehouse *doma
 	}
 
 	if isChangeImage {
-		ss.file.DeleteFile(current.Image)
-		ss.file.DeleteTempFile(updated.Image)
+		w.file.DeleteFile(current.Image)
+		w.file.DeleteTempFile(updated.Image)
 	}
 
 	return updated, nil
 }
 
-func (ss *warehouseService) DeleteWarehouse(ctx context.Context, id int) error {
-	err := ss.repo.DeleteWarehouse(ctx, id)
+func (w *warehouseService) DeleteWarehouse(ctx context.Context, id int) error {
+	err := w.repo.DeleteWarehouse(ctx, id)
 	if err != nil {
 		switch err {
 		case domain.ErrDataNotFound:

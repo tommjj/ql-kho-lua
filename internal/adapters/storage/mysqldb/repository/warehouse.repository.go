@@ -24,7 +24,7 @@ func NewWarehouseRepository(db *mysqldb.MysqlDB) ports.IWarehouseRepository {
 	}
 }
 
-func (sr *warehouseRepository) CreateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error) {
+func (w *warehouseRepository) CreateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error) {
 	createData := &schema.Warehouse{
 		Name:     warehouses.Name,
 		Location: warehouses.Location,
@@ -32,7 +32,7 @@ func (sr *warehouseRepository) CreateWarehouse(ctx context.Context, warehouses *
 		Image:    warehouses.Image,
 	}
 
-	err := sr.db.WithContext(ctx).Create(createData).Error
+	err := w.db.WithContext(ctx).Create(createData).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return nil, domain.ErrConflictingData
@@ -43,10 +43,10 @@ func (sr *warehouseRepository) CreateWarehouse(ctx context.Context, warehouses *
 	return convertToWarehouse(createData), nil
 }
 
-func (sr *warehouseRepository) GetWarehouseByID(ctx context.Context, id int) (*domain.Warehouse, error) {
+func (w *warehouseRepository) GetWarehouseByID(ctx context.Context, id int) (*domain.Warehouse, error) {
 	store := &schema.Warehouse{}
 
-	err := sr.db.WithContext(ctx).Where("id = ?", id).First(store).Error
+	err := w.db.WithContext(ctx).Where("id = ?", id).First(store).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, domain.ErrDataNotFound
@@ -57,11 +57,11 @@ func (sr *warehouseRepository) GetWarehouseByID(ctx context.Context, id int) (*d
 	return convertToWarehouse(store), nil
 }
 
-func (sr *warehouseRepository) CountWarehouses(ctx context.Context, query string) (int64, error) {
+func (w *warehouseRepository) CountWarehouses(ctx context.Context, query string) (int64, error) {
 	var count int64
 	var err error
 
-	q := sr.db.WithContext(ctx).Table("warehouses").Where("deleted_at is NULL")
+	q := w.db.WithContext(ctx).Table("warehouses").Where("deleted_at is NULL")
 
 	trimQuery := strings.TrimSpace(query)
 	if trimQuery != "" {
@@ -78,12 +78,12 @@ func (sr *warehouseRepository) CountWarehouses(ctx context.Context, query string
 	return count, nil
 }
 
-func (sr *warehouseRepository) GetListWarehouses(ctx context.Context, query string, limit, skip int) ([]domain.Warehouse, error) {
+func (w *warehouseRepository) GetListWarehouses(ctx context.Context, query string, limit, skip int) ([]domain.Warehouse, error) {
 	stores := []domain.Warehouse{}
 	var err error
 	var rows *sql.Rows
 
-	sql := sr.db.WithContext(ctx).Table("warehouses").
+	sql := w.db.WithContext(ctx).Table("warehouses").
 		Select("id", "name", "location", "capacity", "image").
 		Limit(limit).Offset((skip - 1) * limit).Order("id desc").Where("deleted_at is NULL")
 
@@ -118,11 +118,11 @@ func (sr *warehouseRepository) GetListWarehouses(ctx context.Context, query stri
 	return stores, nil
 }
 
-func (ar *warehouseRepository) CountAuthorizedWarehouses(ctx context.Context, userID int, query string) (int64, error) {
+func (w *warehouseRepository) CountAuthorizedWarehouses(ctx context.Context, userID int, query string) (int64, error) {
 	var count int64
 	var err error
 
-	q := ar.db.WithContext(ctx).Table("warehouses").Joins("LEFT JOIN authorized on authorized.warehouse_id = warehouses.id").
+	q := w.db.WithContext(ctx).Table("warehouses").Joins("LEFT JOIN authorized on authorized.warehouse_id = warehouses.id").
 		Where("authorized.user_id = ?", userID).Where("deleted_at is NULL")
 
 	trimQuery := strings.TrimSpace(query)
@@ -138,13 +138,13 @@ func (ar *warehouseRepository) CountAuthorizedWarehouses(ctx context.Context, us
 	return count, nil
 }
 
-func (ar *warehouseRepository) GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Warehouse, error) {
+func (w *warehouseRepository) GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Warehouse, error) {
 	list := []schema.Warehouse{}
 	var err error
 
 	trimQuery := strings.TrimSpace(query)
 
-	q := ar.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.warehouse_id = warehouses.id").
+	q := w.db.WithContext(ctx).Joins("LEFT JOIN authorized on authorized.warehouse_id = warehouses.id").
 		Limit(limit).Offset((skip-1)*limit).Where("authorized.user_id = ? AND deleted_at is NULL", userID).Order("id desc")
 
 	if trimQuery != "" {
@@ -169,8 +169,8 @@ func (ar *warehouseRepository) GetAuthorizedWarehouses(ctx context.Context, user
 	return warehouse, nil
 }
 
-func (sr *warehouseRepository) GetUsedCapacityByID(ctx context.Context, id int) (int64, error) {
-	err := sr.db.WithContext(ctx).First(&schema.Warehouse{ID: id}).Error
+func (w *warehouseRepository) GetUsedCapacityByID(ctx context.Context, id int) (int64, error) {
+	err := w.db.WithContext(ctx).First(&schema.Warehouse{ID: id}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return 0, domain.ErrDataNotFound
@@ -182,7 +182,7 @@ func (sr *warehouseRepository) GetUsedCapacityByID(ctx context.Context, id int) 
 		Total int64
 	}{}
 
-	err = sr.db.WithContext(ctx).
+	err = w.db.WithContext(ctx).
 		Raw(`SELECT (SUM(IF(t.type = "i", t.total, 0)) - SUM(IF(t.type = "e", t.total, 0))) as "total"
 			FROM 
 				(SELECT SUM( export_invoice_details.quantity) as total, "e" as type
@@ -199,8 +199,79 @@ func (sr *warehouseRepository) GetUsedCapacityByID(ctx context.Context, id int) 
 	return total.Total, nil
 }
 
-func (sr *warehouseRepository) UpdateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error) {
-	result := sr.db.WithContext(ctx).
+func (w *warehouseRepository) GetInventory(ctx context.Context, id int) ([]domain.WarehouseItem, error) {
+	err := w.db.WithContext(ctx).First(&schema.Warehouse{ID: id}).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domain.ErrDataNotFound
+		}
+		return nil, err
+	}
+
+	rows, err := w.db.Raw(`SELECT rice.id, rice.name, (t.total_import - t.total_export) as total
+		FROM 
+			(SELECT 
+    			COALESCE(im.rice_id, ex.rice_id) AS rice_id,
+    			COALESCE(im.total_im, 0) AS total_import,
+    			COALESCE(ex.total_ex, 0) AS total_export
+			FROM 
+    			(SELECT import_invoice_details.rice_id AS rice_id, SUM(import_invoice_details.quantity) as total_im
+				FROM import_invoices LEFT JOIN import_invoice_details on import_invoice_details.invoice_id = import_invoices.id 
+				WHERE import_invoices.warehouse_id = @id
+				GROUP BY import_invoice_details.rice_id) im
+			LEFT JOIN 
+    			(SELECT export_invoice_details.rice_id AS rice_id, SUM(export_invoice_details.quantity) as total_ex
+				FROM export_invoices LEFT JOIN export_invoice_details on export_invoice_details.invoice_id = export_invoices.id 
+				WHERE export_invoices.warehouse_id = @id
+				GROUP BY export_invoice_details.rice_id) ex 
+				ON im.rice_id = ex.rice_id
+		UNION ALL
+			SELECT 
+    			COALESCE(im.rice_id, ex.rice_id) AS rice_id,
+    			COALESCE(im.total_im, 0) AS total_import,
+    			COALESCE(ex.total_ex, 0) AS total_export
+			FROM 
+    			(SELECT import_invoice_details.rice_id AS rice_id, SUM(import_invoice_details.quantity) as total_im
+				FROM import_invoices LEFT JOIN import_invoice_details on import_invoice_details.invoice_id = import_invoices.id 
+				WHERE import_invoices.warehouse_id = @id
+				GROUP BY import_invoice_details.rice_id) im
+			RIGHT JOIN 
+    			(SELECT export_invoice_details.rice_id AS rice_id, SUM(export_invoice_details.quantity) as total_ex
+				FROM export_invoices LEFT JOIN export_invoice_details on export_invoice_details.invoice_id = export_invoices.id 
+				WHERE export_invoices.warehouse_id = @id
+				GROUP BY export_invoice_details.rice_id) ex 
+				ON im.rice_id = ex.rice_id
+			WHERE im.rice_id IS NULL) t JOIN rice on t.rice_id = rice.id
+  		WHERE (t.total_import - t.total_export) > 0
+		ORDER BY rice.id DESC`, sql.Named("id", id)).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]domain.WarehouseItem, 0)
+
+	defer rows.Close()
+	for rows.Next() {
+		item := domain.WarehouseItem{Rice: &domain.Rice{}}
+		err := rows.Scan(
+			&item.RiceID,
+			&item.Rice.Name,
+			&item.Quantity,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		item.Rice.ID = item.RiceID
+
+		result = append(result, item)
+	}
+
+	return result, nil
+}
+
+func (w *warehouseRepository) UpdateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error) {
+	result := w.db.WithContext(ctx).
 		Model(&schema.Warehouse{}).Where("id = ?", warehouse.ID).
 		Updates(&schema.Warehouse{
 			Name:     warehouse.Name,
@@ -221,11 +292,11 @@ func (sr *warehouseRepository) UpdateWarehouse(ctx context.Context, warehouse *d
 		return nil, domain.ErrNoUpdatedData
 	}
 
-	return sr.GetWarehouseByID(ctx, warehouse.ID)
+	return w.GetWarehouseByID(ctx, warehouse.ID)
 }
 
-func (sr *warehouseRepository) DeleteWarehouse(ctx context.Context, id int) error {
-	result := sr.db.WithContext(ctx).Where("id = ?", id).Delete(&schema.Warehouse{})
+func (w *warehouseRepository) DeleteWarehouse(ctx context.Context, id int) error {
+	result := w.db.WithContext(ctx).Where("id = ?", id).Delete(&schema.Warehouse{})
 	if result.Error != nil {
 		return result.Error
 	}

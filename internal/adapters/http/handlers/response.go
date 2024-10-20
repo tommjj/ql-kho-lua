@@ -153,6 +153,27 @@ func newUsedCapacityResponse(v int64) usedCapacityResponse {
 	}
 }
 
+// warehouseItemResponse represents a item in warehouse
+type warehouseItemResponse struct {
+	ID       int    `json:"id" example:"1"`
+	RiceName string `json:"rice_name" example:"name"`
+	Capacity int    `json:"capacity" example:"500"`
+}
+
+// newWarehouseItemResponse is a helper function to create a response body for handling warehouse item data
+func newWarehouseItemResponse(v *domain.WarehouseItem) warehouseItemResponse {
+	w := warehouseItemResponse{
+		ID:       v.RiceID,
+		Capacity: v.Quantity,
+	}
+
+	if v.Rice != nil {
+		w.RiceName = v.Rice.Name
+	}
+
+	return w
+}
+
 // riceResponse represents a rice response body
 type riceResponse struct {
 	ID   int    `json:"id"`

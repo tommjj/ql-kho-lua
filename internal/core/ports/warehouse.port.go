@@ -21,6 +21,8 @@ type IWarehouseRepository interface {
 	GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Warehouse, error)
 	// GetUsedCapacityByID get used capacity of warehouse
 	GetUsedCapacityByID(ctx context.Context, id int) (int64, error)
+	// GetInventory get warehouse inventory by warehouse id
+	GetInventory(ctx context.Context, id int) ([]domain.WarehouseItem, error)
 	// UpdateWarehouse update a warehouse, only update non-zero fields by default
 	UpdateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error)
 	// DeleteWarehouse delete a warehouse
@@ -42,6 +44,8 @@ type IWarehouseService interface {
 	GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit, skip int) ([]domain.Warehouse, error)
 	// GetUsedCapacityByID get used capacity of warehouse
 	GetUsedCapacityByID(ctx context.Context, id int) (int64, error)
+	// GetInventory get warehouse inventory by warehouse id
+	GetInventory(ctx context.Context, id int) ([]domain.WarehouseItem, error)
 	// UpdateWarehouse update a warehouse, only update non-zero fields by default
 	UpdateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error)
 	// DeleteWarehouse delete a warehouse

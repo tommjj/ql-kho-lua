@@ -45,7 +45,7 @@ type createWarehouseRequest struct {
 //	@Failure		500		{object}	errorResponse						"Internal server error"
 //	@Router			/warehouses  [post]
 //	@Security		JWTAuth
-func (s *WarehouseHandler) CreateWarehouse(ctx *gin.Context) {
+func (w *WarehouseHandler) CreateWarehouse(ctx *gin.Context) {
 	var req createWarehouseRequest
 
 	err := ctx.BindJSON(&req)
@@ -54,7 +54,7 @@ func (s *WarehouseHandler) CreateWarehouse(ctx *gin.Context) {
 		return
 	}
 
-	createdStore, err := s.scv.CreateWarehouse(ctx, &domain.Warehouse{
+	createdStore, err := w.scv.CreateWarehouse(ctx, &domain.Warehouse{
 		Name:     req.Name,
 		Location: fmt.Sprintf("%v, %v", req.Location[0], req.Location[1]),
 		Capacity: req.Capacity,
@@ -91,7 +91,7 @@ func (s *WarehouseHandler) CreateWarehouse(ctx *gin.Context) {
 //	@Failure		500	{object}	errorResponse						"Internal server error"
 //	@Router			/warehouses/{id}  [get]
 //	@Security		JWTAuth
-func (s *WarehouseHandler) GetWarehouseByID(ctx *gin.Context) {
+func (w *WarehouseHandler) GetWarehouseByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	numID, err := strconv.Atoi(id)
@@ -105,14 +105,14 @@ func (s *WarehouseHandler) GetWarehouseByID(ctx *gin.Context) {
 	isRoot := token.Role == domain.Root
 
 	if !isRoot {
-		err := s.acc.HasAccess(ctx, numID, token.ID)
+		err := w.acc.HasAccess(ctx, numID, token.ID)
 		if err != nil {
 			handleError(ctx, err)
 			return
 		}
 	}
 
-	store, err := s.scv.GetWarehouseByID(ctx, numID)
+	store, err := w.scv.GetWarehouseByID(ctx, numID)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -146,7 +146,7 @@ type getListWarehouseRequest struct {
 //	@Failure		500		{object}	errorResponse								"Internal server error"
 //	@Router			/warehouses [get]
 //	@Security		JWTAuth
-func (s *WarehouseHandler) GetListWarehouses(ctx *gin.Context) {
+func (w *WarehouseHandler) GetListWarehouses(ctx *gin.Context) {
 	req := getListWarehouseRequest{
 		Limit: 5,
 		Skip:  1,
@@ -164,9 +164,9 @@ func (s *WarehouseHandler) GetListWarehouses(ctx *gin.Context) {
 	var count int64
 
 	if isRoot {
-		count, err = s.scv.CountWarehouses(ctx, req.Query)
+		count, err = w.scv.CountWarehouses(ctx, req.Query)
 	} else {
-		count, err = s.scv.CountAuthorizedWarehouses(ctx, token.ID, req.Query)
+		count, err = w.scv.CountAuthorizedWarehouses(ctx, token.ID, req.Query)
 	}
 	if err != nil {
 		handleError(ctx, err)
@@ -181,9 +181,9 @@ func (s *WarehouseHandler) GetListWarehouses(ctx *gin.Context) {
 	var stores []domain.Warehouse
 
 	if isRoot {
-		stores, err = s.scv.GetListWarehouses(ctx, req.Query, req.Limit, req.Skip)
+		stores, err = w.scv.GetListWarehouses(ctx, req.Query, req.Limit, req.Skip)
 	} else {
-		stores, err = s.scv.GetAuthorizedWarehouses(ctx, token.ID, req.Query, req.Limit, req.Skip)
+		stores, err = w.scv.GetAuthorizedWarehouses(ctx, token.ID, req.Query, req.Limit, req.Skip)
 	}
 
 	if err != nil {
@@ -217,7 +217,7 @@ func (s *WarehouseHandler) GetListWarehouses(ctx *gin.Context) {
 //	@Failure		500	{object}	errorResponse						"Internal server error"
 //	@Router			/warehouses/{id}/used_capacity  [get]
 //	@Security		JWTAuth
-func (s *WarehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
+func (w *WarehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	numID, err := strconv.Atoi(id)
@@ -231,20 +231,70 @@ func (s *WarehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
 	isRoot := token.Role == domain.Root
 
 	if !isRoot {
-		err := s.acc.HasAccess(ctx, numID, token.ID)
+		err := w.acc.HasAccess(ctx, numID, token.ID)
 		if err != nil {
 			handleError(ctx, err)
 			return
 		}
 	}
 
-	usedCapacity, err := s.scv.GetUsedCapacityByID(ctx, numID)
+	usedCapacity, err := w.scv.GetUsedCapacityByID(ctx, numID)
 	if err != nil {
 		handleError(ctx, err)
 		return
 	}
 
 	res := newUsedCapacityResponse(usedCapacity)
+	handleSuccess(ctx, res)
+}
+
+// GetInventory ql-kho-lua
+//
+//	@Summary		Get inventory
+//	@Description	Get inventory by warehouse id
+//	@Tags			warehouses
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int										true	"Warehouse id"
+//	@Success		200	{object}	response{data=[]warehouseItemResponse}	"Inventory data"
+//	@Failure		400	{object}	errorResponse							"Validation error"
+//	@Failure		401	{object}	errorResponse							"Unauthorized error"
+//	@Failure		403	{object}	errorResponse							"Forbidden error"
+//	@Failure		404	{object}	errorResponse							"Data not found error"
+//	@Failure		500	{object}	errorResponse							"Internal server error"
+//	@Router			/warehouses/{id}/inventory  [get]
+//	@Security		JWTAuth
+func (w *WarehouseHandler) GetInventory(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	numID, err := strconv.Atoi(id)
+	if err != nil {
+		validationError(ctx, errors.New("id must be a number"))
+		return
+	}
+
+	token := getAuthPayload(ctx, authorizationPayloadKey)
+
+	isRoot := token.Role == domain.Root
+	if !isRoot {
+		err := w.acc.HasAccess(ctx, numID, token.ID)
+		if err != nil {
+			handleError(ctx, err)
+			return
+		}
+	}
+
+	inventory, err := w.scv.GetInventory(ctx, numID)
+	if err != nil {
+		handleError(ctx, err)
+		return
+	}
+
+	res := make([]warehouseItemResponse, 0, len(inventory))
+	for _, v := range inventory {
+		res = append(res, newWarehouseItemResponse(&v))
+	}
+
 	handleSuccess(ctx, res)
 }
 
@@ -273,7 +323,7 @@ type updateWarehouseRequest struct {
 //	@Failure		500		{object}	errorResponse						"Internal server error"
 //	@Router			/warehouses/{id}  [patch]
 //	@Security		JWTAuth
-func (s *WarehouseHandler) UpdateWarehouse(ctx *gin.Context) {
+func (w *WarehouseHandler) UpdateWarehouse(ctx *gin.Context) {
 	var req updateWarehouseRequest
 
 	id := ctx.Param("id")
@@ -300,7 +350,7 @@ func (s *WarehouseHandler) UpdateWarehouse(ctx *gin.Context) {
 		location = fmt.Sprintf("%v, %v", req.Location[0], req.Location[1])
 	}
 
-	store, err := s.scv.UpdateWarehouse(ctx, &domain.Warehouse{
+	store, err := w.scv.UpdateWarehouse(ctx, &domain.Warehouse{
 		ID:       numID,
 		Name:     req.Name,
 		Location: location,
@@ -332,7 +382,7 @@ func (s *WarehouseHandler) UpdateWarehouse(ctx *gin.Context) {
 //	@Failure		500	{object}	errorResponse	"Internal server error"
 //	@Router			/warehouses/{id}  [delete]
 //	@Security		JWTAuth
-func (s *WarehouseHandler) DeleteWarehouse(ctx *gin.Context) {
+func (w *WarehouseHandler) DeleteWarehouse(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	numID, err := strconv.Atoi(id)
@@ -341,7 +391,7 @@ func (s *WarehouseHandler) DeleteWarehouse(ctx *gin.Context) {
 		return
 	}
 
-	err = s.scv.DeleteWarehouse(ctx, numID)
+	err = w.scv.DeleteWarehouse(ctx, numID)
 	if err != nil {
 		handleError(ctx, err)
 		return

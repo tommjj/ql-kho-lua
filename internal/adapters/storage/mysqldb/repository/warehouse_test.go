@@ -121,3 +121,17 @@ func TestWarehouseRepo_GetWarehouseUsedCapacityByID(t *testing.T) {
 
 	t.Logf("%+v\n", data)
 }
+
+func TestWarehouseRepo_GetInventory(t *testing.T) {
+	repo, err := NewDefaultWarehouseRepo()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := repo.GetInventory(context.TODO(), 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v\n", data)
+}
