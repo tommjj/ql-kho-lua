@@ -8,13 +8,13 @@ definitions:
     x-enum-varnames:
     - Root
     - Member
-  handlers.CreateInvoiceRequest:
+  handlers.CreateExInvoiceRequest:
     properties:
       customer_id:
         type: integer
       details:
         items:
-          $ref: '#/definitions/handlers.DetailInvoiceRequest'
+          $ref: '#/definitions/handlers.DetailExInvoiceRequest'
         minItems: 1
         type: array
         uniqueItems: true
@@ -25,7 +25,39 @@ definitions:
     - details
     - warehouse_id
     type: object
-  handlers.DetailInvoiceRequest:
+  handlers.CreateImInvoiceRequest:
+    properties:
+      customer_id:
+        type: integer
+      details:
+        items:
+          $ref: '#/definitions/handlers.DetailImInvoiceRequest'
+        minItems: 1
+        type: array
+        uniqueItems: true
+      warehouse_id:
+        type: integer
+    required:
+    - customer_id
+    - details
+    - warehouse_id
+    type: object
+  handlers.DetailExInvoiceRequest:
+    properties:
+      price:
+        minimum: 1
+        type: number
+      quantity:
+        minimum: 1
+        type: integer
+      rice_id:
+        type: integer
+    required:
+    - price
+    - quantity
+    - rice_id
+    type: object
+  handlers.DetailImInvoiceRequest:
     properties:
       price:
         minimum: 1
@@ -690,6 +722,177 @@ paths:
       summary: update customer
       tags:
       - customers
+  /export_invoices:
+    get:
+      consumes:
+      - application/json
+      description: Get a list export invoices
+      parameters:
+      - description: Warehouse id
+        in: query
+        name: warehouse_id
+        type: integer
+      - default: 1
+        description: Skip
+        in: query
+        minimum: 1
+        name: skip
+        type: integer
+      - default: 5
+        description: Limit
+        in: query
+        minimum: 5
+        name: limit
+        type: integer
+      - description: Start
+        format: date-time
+        in: query
+        name: start
+        type: string
+      - description: End
+        format: date-time
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invoice data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.responseWithPagination'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/handlers.invoiceResponse'
+                  type: array
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get a list export invoices
+      tags:
+      - exportInvoices
+    post:
+      consumes:
+      - application/json
+      description: Create a new export invoice and get created invoice data
+      parameters:
+      - description: Create invoice body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateExInvoiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created invoice data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.invoiceResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "409":
+          description: Conflicting data error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Create a new export invoice and get created invoice data
+      tags:
+      - exportInvoices
+  /export_invoices/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a export invoice by id
+      parameters:
+      - description: Invoice id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invoice data
+          schema:
+            allOf:
+            - $ref: '#/definitions/handlers.response'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.invoiceResponse'
+              type: object
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "401":
+          description: Unauthorized error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "403":
+          description: Forbidden error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "404":
+          description: Data not found error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handlers.errorResponse'
+      security:
+      - JWTAuth: []
+      summary: Get a export invoice by id
+      tags:
+      - exportInvoices
   /import_invoices:
     get:
       consumes:
@@ -771,7 +974,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateInvoiceRequest'
+          $ref: '#/definitions/handlers.CreateImInvoiceRequest'
       produces:
       - application/json
       responses:

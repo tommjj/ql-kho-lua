@@ -82,6 +82,7 @@ func main() {
 	riceRepository := repository.NewRiceRepository(db)
 	customerRepository := repository.NewCustomerRepository(db)
 	imInvoiceRepository := repository.NewImInvoicesRepository(db)
+	exInvoiceRepository := repository.NewExInvoicesRepository(db)
 
 	// |> Start Service
 	zap.L().Info("Start create service")
@@ -95,6 +96,7 @@ func main() {
 	riceService := services.NewRiceService(riceRepository)
 	customerService := services.NewCustomerService(customerRepository)
 	imInvoiceService := services.NewImInvoicesService(imInvoiceRepository, storehouseRepository, &mapmutex.Mapmutex{})
+	exInvoiceService := services.NewExInvoicesService(exInvoiceRepository, storehouseRepository, &mapmutex.Mapmutex{})
 
 	// |> Start Handler
 	zap.L().Info("Start create handler")
@@ -106,6 +108,7 @@ func main() {
 	riceHandler := handlers.NewRiceHandler(riceService)
 	customerHandler := handlers.NewCustomerHandler(customerService)
 	imInvoiceHandler := handlers.NewImportInvoiceHandler(imInvoiceService, accessControlService)
+	exInvoiceHandler := handlers.NewExportInvoiceHandler(exInvoiceService, accessControlService)
 
 	// |> Start HTTP Server
 	zap.L().Info("Start create http server")
@@ -120,6 +123,7 @@ func main() {
 			http.RegisterRiceRoute(tokenService, riceHandler),
 			http.RegisterCustomerRoute(tokenService, customerHandler),
 			http.RegisterImportInvoiceRoute(tokenService, imInvoiceHandler),
+			http.RegisterExportInvoiceRoute(tokenService, exInvoiceHandler),
 		),
 	)
 	if err != nil {

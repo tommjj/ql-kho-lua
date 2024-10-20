@@ -32,7 +32,7 @@ func (i *imInvoiceService) CreateImInvoice(ctx context.Context, invoice *domain.
 
 	store, err := i.warehouseRepo.GetWarehouseByID(ctx, invoice.WarehouseID)
 	if err != nil {
-		if err != domain.ErrDataNotFound {
+		if err == domain.ErrDataNotFound {
 			return nil, err
 		}
 		return nil, err

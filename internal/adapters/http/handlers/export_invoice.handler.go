@@ -10,38 +10,38 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
 
-type ImportInvoiceHandler struct {
-	svc ports.IImportInvoicesService
+type ExportInvoiceHandler struct {
+	svc ports.IExportInvoiceService
 	acc ports.IAccessControlService
 }
 
-func NewImportInvoiceHandler(svc ports.IImportInvoicesService, acc ports.IAccessControlService) *ImportInvoiceHandler {
-	return &ImportInvoiceHandler{
+func NewExportInvoiceHandler(svc ports.IExportInvoiceService, acc ports.IAccessControlService) *ExportInvoiceHandler {
+	return &ExportInvoiceHandler{
 		svc: svc,
 		acc: acc,
 	}
 }
 
-type DetailImInvoiceRequest struct {
+type DetailExInvoiceRequest struct {
 	RiceID   int     `json:"rice_id" binding:"required"`
 	Price    float64 `json:"price" binding:"required,min=1"`
 	Quantity int     `json:"quantity" binding:"required,min=1"`
 }
 
-type CreateImInvoiceRequest struct {
+type CreateExInvoiceRequest struct {
 	WarehouseID int                      `json:"warehouse_id" binding:"required"`
 	CustomerID  int                      `json:"customer_id" binding:"required"`
-	Details     []DetailImInvoiceRequest `json:"details" binding:"required,min=1,unique=RiceID"`
+	Details     []DetailExInvoiceRequest `json:"details" binding:"required,min=1,unique=RiceID"`
 }
 
-// CreateImInvoice ql-kho-lua
+// CreateExInvoice ql-kho-lua
 //
-//	@Summary		Create a new import invoice and get created invoice data
-//	@Description	Create a new import invoice and get created invoice data
-//	@Tags			importInvoices
+//	@Summary		Create a new export invoice and get created invoice data
+//	@Description	Create a new export invoice and get created invoice data
+//	@Tags			exportInvoices
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		CreateImInvoiceRequest			true	"Create invoice body"
+//	@Param			request	body		CreateExInvoiceRequest			true	"Create invoice body"
 //	@Success		200		{object}	response{data=invoiceResponse}	"Created invoice data"
 //	@Failure		400		{object}	errorResponse					"Validation error"
 //	@Failure		401		{object}	errorResponse					"Unauthorized error"
@@ -49,10 +49,10 @@ type CreateImInvoiceRequest struct {
 //	@Failure		404		{object}	errorResponse					"Data not found error"
 //	@Failure		409		{object}	errorResponse					"Conflicting data error"
 //	@Failure		500		{object}	errorResponse					"Internal server error"
-//	@Router			/import_invoices  [post]
+//	@Router			/export_invoices  [post]
 //	@Security		JWTAuth
-func (i *ImportInvoiceHandler) CreateImInvoice(ctx *gin.Context) {
-	var req CreateImInvoiceRequest
+func (e *ExportInvoiceHandler) CreateExInvoice(ctx *gin.Context) {
+	var req CreateExInvoiceRequest
 	err := ctx.BindJSON(&req)
 	if err != nil {
 		validationError(ctx, err)
@@ -63,7 +63,7 @@ func (i *ImportInvoiceHandler) CreateImInvoice(ctx *gin.Context) {
 
 	isRootUser := token.Role == domain.Root
 	if !isRootUser {
-		err := i.acc.HasAccess(ctx, req.WarehouseID, token.ID)
+		err := e.acc.HasAccess(ctx, req.WarehouseID, token.ID)
 		if err != nil {
 			handleError(ctx, err)
 			return
@@ -84,7 +84,7 @@ func (i *ImportInvoiceHandler) CreateImInvoice(ctx *gin.Context) {
 		})
 	}
 
-	created, err := i.svc.CreateImInvoice(ctx, createInvData)
+	created, err := e.svc.CreateExInvoice(ctx, createInvData)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -94,11 +94,11 @@ func (i *ImportInvoiceHandler) CreateImInvoice(ctx *gin.Context) {
 	handleSuccess(ctx, res)
 }
 
-// GetImInvoiceByID ql-kho-lua
+// GetExInvoiceByID ql-kho-lua
 //
-//	@Summary		Get a import invoice by id
-//	@Description	Get a import invoice by id
-//	@Tags			importInvoices
+//	@Summary		Get a export invoice by id
+//	@Description	Get a export invoice by id
+//	@Tags			exportInvoices
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int								true	"Invoice id"
@@ -108,9 +108,9 @@ func (i *ImportInvoiceHandler) CreateImInvoice(ctx *gin.Context) {
 //	@Failure		403	{object}	errorResponse					"Forbidden error"
 //	@Failure		404	{object}	errorResponse					"Data not found error"
 //	@Failure		500	{object}	errorResponse					"Internal server error"
-//	@Router			/import_invoices/{id}  [get]
+//	@Router			/export_invoices/{id}  [get]
 //	@Security		JWTAuth
-func (i *ImportInvoiceHandler) GetImInvoiceByID(ctx *gin.Context) {
+func (e *ExportInvoiceHandler) GetExInvoiceByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	numID, err := strconv.Atoi(id)
@@ -119,7 +119,7 @@ func (i *ImportInvoiceHandler) GetImInvoiceByID(ctx *gin.Context) {
 		return
 	}
 
-	inv, err := i.svc.GetImInvoiceByID(ctx, numID)
+	inv, err := e.svc.GetExInvoiceByID(ctx, numID)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -129,7 +129,7 @@ func (i *ImportInvoiceHandler) GetImInvoiceByID(ctx *gin.Context) {
 
 	isRootUser := token.Role == domain.Root
 	if !isRootUser {
-		err := i.acc.HasAccess(ctx, inv.WarehouseID, token.ID)
+		err := e.acc.HasAccess(ctx, inv.WarehouseID, token.ID)
 		if err != nil {
 			handleError(ctx, err)
 			return
@@ -140,7 +140,7 @@ func (i *ImportInvoiceHandler) GetImInvoiceByID(ctx *gin.Context) {
 	handleSuccess(ctx, res)
 }
 
-type getListImInvoiceRequest struct {
+type getListExInvoiceRequest struct {
 	WarehouseID int        `form:"warehouse_id" binding:"omitempty,min=0"`
 	Start       *time.Time `form:"start" binding:"omitempty"`
 	End         *time.Time `form:"end" binding:"omitempty"`
@@ -148,11 +148,11 @@ type getListImInvoiceRequest struct {
 	Limit       int        `form:"limit" binding:"min=5" example:"5"`
 }
 
-// GetListImInvoices ql-kho-lua
+// GetListExInvoices ql-kho-lua
 //
-//	@Summary		Get a list import invoices
-//	@Description	Get a list import invoices
-//	@Tags			importInvoices
+//	@Summary		Get a list export invoices
+//	@Description	Get a list export invoices
+//	@Tags			exportInvoices
 //	@Accept			json
 //	@Produce		json
 //	@Param			warehouse_id	query		int												false	"Warehouse id"
@@ -166,10 +166,10 @@ type getListImInvoiceRequest struct {
 //	@Failure		403				{object}	errorResponse									"Forbidden error"
 //	@Failure		404				{object}	errorResponse									"Data not found error"
 //	@Failure		500				{object}	errorResponse									"Internal server error"
-//	@Router			/import_invoices  [get]
+//	@Router			/export_invoices  [get]
 //	@Security		JWTAuth
-func (i *ImportInvoiceHandler) GetListImInvoices(ctx *gin.Context) {
-	req := getListImInvoiceRequest{
+func (e *ExportInvoiceHandler) GetListExInvoices(ctx *gin.Context) {
+	req := getListExInvoiceRequest{
 		Skip:  1,
 		Limit: 5,
 	}
@@ -187,14 +187,14 @@ func (i *ImportInvoiceHandler) GetListImInvoices(ctx *gin.Context) {
 			handleError(ctx, domain.ErrForbidden)
 			return
 		}
-		err := i.acc.HasAccess(ctx, req.WarehouseID, token.ID)
+		err := e.acc.HasAccess(ctx, req.WarehouseID, token.ID)
 		if err != nil {
 			handleError(ctx, err)
 			return
 		}
 	}
 
-	count, err := i.svc.CountImInvoices(ctx, req.WarehouseID, req.Start, req.End)
+	count, err := e.svc.CountExInvoices(ctx, req.WarehouseID, req.Start, req.End)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -205,7 +205,7 @@ func (i *ImportInvoiceHandler) GetListImInvoices(ctx *gin.Context) {
 		return
 	}
 
-	ivcs, err := i.svc.GetListImInvoices(ctx, req.WarehouseID, req.Start, req.End, req.Skip, req.Limit)
+	ivcs, err := e.svc.GetListExInvoices(ctx, req.WarehouseID, req.Start, req.End, req.Skip, req.Limit)
 	if err != nil {
 		handleError(ctx, err)
 		return

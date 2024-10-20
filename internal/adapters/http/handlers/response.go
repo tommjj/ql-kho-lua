@@ -21,11 +21,11 @@ type pagination struct {
 	PrevPage     *int `json:"prev_page" example:"1"`
 }
 
-func newPagination(count int64, totalRecords, limitRecords, currentPage int) *pagination {
+func newPagination(totalAllRecords int64, totalRecords, limitRecords, currentPage int) *pagination {
 	var nextPage *int
 	var privPage *int
 
-	totalPages := int(math.Ceil(float64(count) / float64(limitRecords)))
+	totalPages := int(math.Ceil(float64(totalAllRecords) / float64(limitRecords)))
 
 	if currentPage > 1 {
 		privPage = newPtr(currentPage - 1)
@@ -287,6 +287,7 @@ var errorStatusMap = map[error]int{
 	domain.ErrForbidden:                  http.StatusForbidden,
 	domain.ErrNoUpdatedData:              http.StatusBadRequest,
 	domain.ErrWarehouseFull:              http.StatusBadRequest,
+	domain.ErrInsufficientStock:          http.StatusBadRequest,
 }
 
 // handleSuccess write success response with status code 200 mess Success and data

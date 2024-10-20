@@ -136,3 +136,15 @@ func RegisterImportInvoiceRoute(token ports.ITokenService, imInvHandler *handler
 		}
 	}
 }
+
+// RegisterExportInvoiceRoute is a option function to return register export invoice router function
+func RegisterExportInvoiceRoute(token ports.ITokenService, exInvHandler *handlers.ExportInvoiceHandler) RegisterRouterFunc {
+	return func(e gin.IRouter) {
+		auth := e.Group("/export_invoices", handlers.AuthMiddleware(token))
+		{
+			auth.GET("", exInvHandler.GetListExInvoices)
+			auth.GET("/:id", exInvHandler.GetExInvoiceByID)
+			auth.POST("", exInvHandler.CreateExInvoice)
+		}
+	}
+}
