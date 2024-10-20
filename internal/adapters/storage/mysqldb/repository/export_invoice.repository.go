@@ -17,7 +17,7 @@ type exportInvoiceRepository struct {
 	db *mysqldb.MysqlDB
 }
 
-func NewExInvoicesRepository(db *mysqldb.MysqlDB) ports.IExportInvoicesRepository {
+func NewExInvoicesRepository(db *mysqldb.MysqlDB) ports.IExportInvoiceRepository {
 	return &exportInvoiceRepository{
 		db: db,
 	}

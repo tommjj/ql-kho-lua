@@ -11,7 +11,7 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
 
-func NewDefaultExInvoicesRepo() (ports.IExportInvoicesRepository, error) {
+func NewDefaultExInvoicesRepo() (ports.IExportInvoiceRepository, error) {
 	db, err := mysqldb.NewMysqlDB(config.DB{
 		DSN:             "root:@tcp(127.0.0.1:3306)/ql?charset=utf8mb4&parseTime=True&loc=Local",
 		MaxIdleConns:    10,
