@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { WarehouseSchema, Warehouse } from '../zod.schema';
+import { WarehouseSchema, Warehouse, WarehouseItem } from '../zod.schema';
 import fetcher from '../http/fetcher';
 import { ResponseOrError } from './type';
 import { Res, ResWithPagination } from '@/types/http';
@@ -94,6 +94,20 @@ export async function getUsedCapacity(
     const [res, err] = await fetcher
         .set(...getAuthH(key))
         .get<Res<{ used_capacity: number }>>(`/warehouses/${id}/used_capacity`);
+
+    if (res) {
+        return [res, undefined];
+    }
+    return [undefined, err];
+}
+
+export async function getWarehouseInventory(
+    key: string,
+    id: number
+): Promise<ResponseOrError<Res<WarehouseItem[]>>> {
+    const [res, err] = await fetcher
+        .set(...getAuthH(key))
+        .get<Res<WarehouseItem[]>>(`/warehouses/${id}/inventory`);
 
     if (res) {
         return [res, undefined];

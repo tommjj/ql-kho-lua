@@ -17,7 +17,7 @@ type NavItem = {
 const storePageNavItems: NavItem[] = [
     {
         path: '',
-        title: 'Home',
+        title: 'Warehouse',
         icon: Home,
     },
     {
@@ -31,14 +31,17 @@ function getStorePageNavItems(storeID: string): NavItem[] {
     return storePageNavItems.map((item) => ({
         path: `/dashboard/${storeID}${item.path}`,
         title: item.title,
-        icon: Map,
+        icon: item.icon,
     }));
 }
 
 function WarehousePageNavBar() {
-    const { storeID } = useParams<{ storeID: string }>();
+    const { warehouseID } = useParams<{ warehouseID: string }>();
     const pathname = usePathname();
-    const navList = useMemo(() => getStorePageNavItems(storeID), [storeID]);
+    const navList = useMemo(
+        () => getStorePageNavItems(warehouseID),
+        [warehouseID]
+    );
 
     return (
         <nav className="px-2 pt-2 grid gap-y-1.5">

@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useState } from 'react';
 import MapContainer from '../map/map';
 import { Button } from '../shadcn-ui/button';

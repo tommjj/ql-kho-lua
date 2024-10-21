@@ -16,12 +16,12 @@ function LoginForm() {
         <form
             className="grid gap-4"
             onSubmit={() => {
-                setChanged(false);
+                setTimeout(() => setChanged(false), 500);
             }}
             action={action}
         >
             <div id="error" className="text-red-400 text-center">
-                {!changed && code && 'Incorrect username or password!'}
+                {!changed && code && code}
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>

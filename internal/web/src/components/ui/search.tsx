@@ -8,9 +8,10 @@ import { useDebouncedCallback } from 'use-debounce';
 
 type Props = {
     className?: string;
+    shallow?: boolean;
 };
 
-function SearchBar({ className }: Props) {
+function SearchBar({ className, shallow = false }: Props) {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
@@ -26,7 +27,11 @@ function SearchBar({ className }: Props) {
             params.delete('q');
         }
 
-        replace(`${pathname}?${params.toString()}`);
+        if (shallow) {
+            window.history.replaceState(null, '', `?${params.toString()}`);
+        } else {
+            replace(`${pathname}?${params.toString()}`);
+        }
     }, 300);
 
     return (

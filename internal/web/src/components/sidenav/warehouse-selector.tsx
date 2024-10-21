@@ -25,7 +25,7 @@ type Props = {
 function StoreSelector({ warehouses }: Props) {
     const user = useSession();
     const { push } = useRouter();
-    const { storeID } = useParams<{ storeID: string }>();
+    const { warehouseID } = useParams<{ warehouseID: string }>();
     const [open, setOpen] = useState(false);
 
     const items = useMemo(
@@ -39,7 +39,7 @@ function StoreSelector({ warehouses }: Props) {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <div className="flex ">
-                {user.role === Role.ROOT && storeID ? (
+                {user.role === Role.ROOT && warehouseID ? (
                     <Button className="px-3 mr-1" asChild>
                         <Link href="/dashboard/root">
                             <Boxes className="size-[18px]  opacity-80" />
@@ -57,15 +57,16 @@ function StoreSelector({ warehouses }: Props) {
                         className="w-full justify-between"
                     >
                         <div className="flex items-start justify-center">
-                            {storeID ? (
+                            {warehouseID ? (
                                 <Box className="size-[18px] mr-2 opacity-80" />
                             ) : (
                                 <Boxes className="size-[18px] mr-2 opacity-80" />
                             )}
-                            {storeID
+                            {warehouseID
                                 ? warehouses.find(
                                       (warehouse) =>
-                                          warehouse.id.toString() === storeID
+                                          warehouse.id.toString() ===
+                                          warehouseID
                                   )?.name
                                 : 'Root'}
                         </div>

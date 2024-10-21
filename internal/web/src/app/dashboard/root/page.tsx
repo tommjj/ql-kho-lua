@@ -1,5 +1,5 @@
 import { authz } from '@/auth';
-import WarehousePage from '@/components/pages/warehouse/warehouse';
+import WarehousePage from '@/components/pages/warehouses/warehouse';
 import { ErrUnauthorized } from '@/lib/errors';
 import { handleErr } from '@/lib/response';
 import { getListWarehouse } from '@/lib/services/warehouse.service';

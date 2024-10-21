@@ -1,6 +1,6 @@
 import BottomBar from '@/components/sidenav/bottom-bar';
 import RootPageNavBar from '@/components/sidenav/root-nav';
-import StoreSelector from '@/components/sidenav/store-selector';
+import StoreSelector from '@/components/sidenav/warehouse-selector';
 import {
     ResizableHandle,
     ResizablePanel,

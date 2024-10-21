@@ -9,7 +9,6 @@ async function LoginAction(privState: string | undefined, formData: FormData) {
         await signIn('credentials', Object.fromEntries(formData));
     } catch (error) {
         if (error instanceof AuthError) {
-            console.log(error.type);
             switch (error.type) {
                 case 'CredentialsSignin':
                     return 'Invalid credentials.';
