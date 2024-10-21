@@ -1,0 +1,32 @@
+services:
+    db:
+        container_name: 'db'
+        image: mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: 'Admin123'
+            MYSQL_DATABASE: 'ql'
+        volumes:
+            - './db:/docker-entrypoint-initdb.d'
+        ports:
+            - '3306:3306'
+    nextapp:
+        container_name: nextapp
+        build:
+            context: ./internal/web/
+            dockerfile: ../../docker/nextapp/Dockerfile
+        env_file: './internal/web/.production.env'
+        depends_on:
+            - goserver
+        ports:
+            - '3000:3000'
+    goserver:
+        container_name: goserver
+        build:
+            context: .
+            dockerfile: ./docker/server/Dockerfile
+        env_file: './.production.env'
+        depends_on:
+            - db
+        ports:
+            - 8080:8080

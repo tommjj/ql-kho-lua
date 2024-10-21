@@ -46,9 +46,12 @@ func main() {
 	// |> Start Storage
 	zap.L().Info("Start create Storage")
 
-	db, err := Retry(func() (*mysqldb.MysqlDB, error) {
-		return mysqldb.NewMysqlDB(*conf.DB)
-	}, time.Second, 10)
+	db, err := Retry(
+		func() (*mysqldb.MysqlDB, error) {
+			return mysqldb.NewMysqlDB(*conf.DB)
+		},
+		time.Second*2, 100,
+	)
 	if err != nil {
 		zap.L().Fatal(err.Error())
 	}

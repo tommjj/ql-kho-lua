@@ -13,6 +13,8 @@ bin/
 tmp/
 log/
 
+db/
+
 # exclude any development-specific files
 *.env
 *.log
