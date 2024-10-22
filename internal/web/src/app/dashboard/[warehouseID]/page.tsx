@@ -13,6 +13,10 @@ import {
 } from '@/lib/services/warehouse.service';
 import { Role } from '@/types/role';
 
+export const metadata: Metadata = {
+    title: 'warehouse',
+};
+
 type Props = {
     params: {
         warehouseID: string;

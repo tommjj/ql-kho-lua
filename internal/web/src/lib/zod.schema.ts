@@ -7,7 +7,9 @@ const phoneNumber = z.string().refine((v) => validateE164(v), {
     message: 'phone numbers is not valid',
 });
 
-// WarehouseSchema
+/**
+ * WarehouseSchema
+ */
 export const WarehouseSchema = z.object({
     id: z.number().int(),
     name: z.string().min(3).max(255),
@@ -24,7 +26,9 @@ export const WarehouseItemSchema = z.object({
 });
 export type WarehouseItem = z.infer<typeof WarehouseItemSchema>;
 
-// UserSchema
+/**
+ * UserSchema
+ */
 export const UserSchema = z.object({
     id: z.number().int(),
     name: z.string().min(3).max(32),
@@ -34,14 +38,18 @@ export const UserSchema = z.object({
 });
 export type User = z.infer<typeof UserSchema>;
 
-//RiceSchema
+/**
+ * RiceSchema
+ */
 export const RiceSchema = z.object({
     id: z.number().int(),
     name: z.string().min(3).max(50),
 });
 export type Rice = z.infer<typeof RiceSchema>;
 
-// CustomerSchema
+/**
+ * CustomerSchema
+ */
 export const CustomerSchema = z.object({
     id: z.number().int(),
     name: z.string().min(3).max(255),
@@ -53,3 +61,27 @@ export const CustomerSchema = z.object({
         .max(255),
 });
 export type Customer = z.infer<typeof CustomerSchema>;
+
+/**
+ * InvoiceDetail
+ */
+export const InvoiceDetailSchema = z.object({
+    rice_id: z.number().int().min(1),
+    quantity: z.number().int().min(1),
+    price: z.number().min(1),
+    name: z.string(),
+});
+export type InvoiceDetail = z.infer<typeof InvoiceDetailSchema>;
+
+export const InvoiceSchema = z.object({
+    id: z.number().int(),
+    user_id: z.number().int(),
+    user_name: z.string(),
+    warehouse_id: z.number().int(),
+    warehouse_name: z.string(),
+    customer_id: z.number().int(),
+    customer_name: z.string(),
+    total_price: z.number(),
+    details: z.array(InvoiceDetailSchema).min(1),
+});
+export type Invoice = z.infer<typeof InvoiceSchema>;

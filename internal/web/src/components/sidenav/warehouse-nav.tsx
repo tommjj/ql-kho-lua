@@ -2,7 +2,7 @@
 
 import NavItem from './nav-items';
 import { useParams, usePathname } from 'next/navigation';
-import { Home, LucideProps, Map } from 'lucide-react';
+import { ClipboardCopy, ClipboardPaste, Home, LucideProps } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ForwardRefExoticComponent, RefAttributes, useMemo } from 'react';
 
@@ -21,9 +21,14 @@ const storePageNavItems: NavItem[] = [
         icon: Home,
     },
     {
-        path: '/dashboard/root/map',
-        title: 'Map',
-        icon: Map,
+        path: '/import',
+        title: 'Import',
+        icon: ClipboardCopy,
+    },
+    {
+        path: '/export',
+        title: 'Export',
+        icon: ClipboardPaste,
     },
 ];
 
@@ -45,16 +50,20 @@ function WarehousePageNavBar() {
 
     return (
         <nav className="px-2 pt-2 grid gap-y-1.5">
-            {navList.map((Item) => (
+            {navList.map((item) => (
                 <NavItem
-                    key={Item.path}
-                    active={pathname === Item.path}
-                    title={Item.title}
-                    href={Item.path}
+                    key={item.path}
+                    active={
+                        item.path !== `/dashboard/${warehouseID}`
+                            ? pathname.startsWith(item.path)
+                            : item.path === pathname
+                    }
+                    title={item.title}
+                    href={item.path}
                     icon={
-                        <Item.icon
+                        <item.icon
                             className={cn('size-5 mr-2', {
-                                'opacity-80': pathname !== Item.path,
+                                'opacity-80': pathname !== item.path,
                             })}
                         />
                     }
