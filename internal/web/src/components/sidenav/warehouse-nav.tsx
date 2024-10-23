@@ -2,7 +2,14 @@
 
 import NavItem from './nav-items';
 import { useParams, usePathname } from 'next/navigation';
-import { ClipboardCopy, ClipboardPaste, Home, LucideProps } from 'lucide-react';
+import {
+    ClipboardCopy,
+    ClipboardPaste,
+    Home,
+    Leaf,
+    LucideProps,
+    Users,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ForwardRefExoticComponent, RefAttributes, useMemo } from 'react';
 
@@ -29,6 +36,16 @@ const storePageNavItems: NavItem[] = [
         path: '/export',
         title: 'Export',
         icon: ClipboardPaste,
+    },
+    {
+        path: '/rice',
+        title: 'Rice',
+        icon: Leaf,
+    },
+    {
+        path: '/customers',
+        title: 'Customers',
+        icon: Users,
     },
 ];
 

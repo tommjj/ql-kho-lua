@@ -8,10 +8,10 @@ import { Button } from '@/components/shadcn-ui/button';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Metadata } from 'next/types';
-import { getListExportInvoices } from '@/lib/services/export_inoice.service';
+import { getListExportInvoices } from '@/lib/services/export_invoice.service';
 
 export const metadata: Metadata = {
-    title: 'Import invoices',
+    title: 'Export invoices',
 };
 
 type Props = {
@@ -64,7 +64,7 @@ async function ImportPage({ searchParams, params: { warehouseID } }: Props) {
 
     return (
         <section className="relative w-full h-screen">
-            <Header className="absolute top-0 left-0 right-0" title="Import">
+            <Header className="absolute top-0 left-0 right-0" title="Export">
                 <Button asChild>
                     <Link href={`/dashboard/${warehouseID}/export/create`}>
                         Create invoice <Plus className="size-4" />

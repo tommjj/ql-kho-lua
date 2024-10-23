@@ -16,7 +16,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/shadcn-ui/table';
-import { getExportInvoiceByID } from '@/lib/services/export_inoice.service';
+import { getExportInvoiceByID } from '@/lib/services/export_invoice.service';
 import { formatDateTimeString } from '@/lib/utils';
 import { Invoice } from '@/lib/zod.schema';
 import { useLayoutEffect, useState } from 'react';

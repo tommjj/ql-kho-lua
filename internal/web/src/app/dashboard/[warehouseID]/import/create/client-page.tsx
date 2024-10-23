@@ -45,6 +45,8 @@ type Props = {
 };
 
 function CreateImInvoiceClientPage({ customers, rice, warehouse }: Props) {
+    const [search, setSearch] = useState('');
+
     const { push } = useRouter();
     const user = useSession();
     const lock = useRef(false);
@@ -299,20 +301,28 @@ function CreateImInvoiceClientPage({ customers, rice, warehouse }: Props) {
                         <div className="relative flex-grow">
                             <Search className="absolute p-2 size-9 opacity-80 -mt-[1px]" />
                             <Input
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                                 className="w-full pl-9"
                                 placeholder="Search..."
                             ></Input>
                         </div>
                         <TabsList className="bg-foreground">
                             <TabsTrigger
-                                onClick={() => setTabValue('customer')}
+                                onClick={() => {
+                                    setSearch('');
+                                    setTabValue('customer');
+                                }}
                                 value="customer"
                                 className="py-2 data-[state=active]:bg-primary data-[state=active]:text-white"
                             >
                                 <Users className="size-4" />
                             </TabsTrigger>
                             <TabsTrigger
-                                onClick={() => setTabValue('rice')}
+                                onClick={() => {
+                                    setSearch('');
+                                    setTabValue('rice');
+                                }}
                                 value="rice"
                                 className="py-2 data-[state=active]:bg-primary data-[state=active]:text-white"
                             >
@@ -325,46 +335,54 @@ function CreateImInvoiceClientPage({ customers, rice, warehouse }: Props) {
                         className="px-2 overflow-y-auto flex-grow custom-scrollbar animate-left-to-right"
                         value="customer"
                     >
-                        {customers.map((customer) => (
-                            <CustomerCard
-                                key={customer.id}
-                                customer={customer}
-                                className={cn('mb-1', {
-                                    'border-primary':
-                                        customer === selectedCustomer,
-                                })}
-                                onSelect={() => {
-                                    setTabValue('rice');
-                                    setSelectedCustomer(customer);
-                                }}
-                            />
-                        ))}
+                        {customers.map((customer) =>
+                            customer.name
+                                .toLowerCase()
+                                .includes(search.trim().toLowerCase()) ? (
+                                <CustomerCard
+                                    key={customer.id}
+                                    customer={customer}
+                                    className={cn('mb-1', {
+                                        'border-primary':
+                                            customer === selectedCustomer,
+                                    })}
+                                    onSelect={() => {
+                                        setTabValue('rice');
+                                        setSelectedCustomer(customer);
+                                    }}
+                                />
+                            ) : null
+                        )}
                     </TabsContent>
                     <TabsContent
                         className="px-2 overflow-y-auto flex-grow custom-scrollbar animate-right-to-left"
                         value="rice"
                     >
                         {rice.map((r) =>
-                            selectedRice.some(
-                                (v) => v.rice_id === r.id
-                            ) ? null : (
-                                <RiceCard
-                                    key={r.id}
-                                    rice={r}
-                                    className={cn('mb-1')}
-                                    onSelect={() => {
-                                        setSelectedRice((priv) => [
-                                            ...priv,
-                                            {
-                                                rice_id: r.id,
-                                                name: r.name,
-                                                price: 0,
-                                                quantity: 0,
-                                            },
-                                        ]);
-                                    }}
-                                />
-                            )
+                            r.name
+                                .toLowerCase()
+                                .includes(search.trim().toLowerCase()) ? (
+                                selectedRice.some(
+                                    (v) => v.rice_id === r.id
+                                ) ? null : (
+                                    <RiceCard
+                                        key={r.id}
+                                        rice={r}
+                                        className={cn('mb-1')}
+                                        onSelect={() => {
+                                            setSelectedRice((priv) => [
+                                                ...priv,
+                                                {
+                                                    rice_id: r.id,
+                                                    name: r.name,
+                                                    price: 0,
+                                                    quantity: 0,
+                                                },
+                                            ]);
+                                        }}
+                                    />
+                                )
+                            ) : null
                         )}
                     </TabsContent>
                 </Tabs>

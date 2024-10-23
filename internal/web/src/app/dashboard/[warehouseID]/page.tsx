@@ -12,6 +12,7 @@ import {
     getWarehouseByID,
 } from '@/lib/services/warehouse.service';
 import { Role } from '@/types/role';
+import { Metadata } from 'next/types';
 
 export const metadata: Metadata = {
     title: 'warehouse',

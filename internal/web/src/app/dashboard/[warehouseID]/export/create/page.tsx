@@ -9,10 +9,8 @@ import {
 } from '@/lib/services/warehouse.service';
 import { Metadata } from 'next/types';
 
-export const fetchCache = 'default-no-store';
-
 export const metadata: Metadata = {
-    title: 'Create - import invoice',
+    title: 'Create - export invoice',
 };
 
 type Props = {

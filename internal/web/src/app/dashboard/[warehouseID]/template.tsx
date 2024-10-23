@@ -14,6 +14,8 @@ import { ErrUnauthorized } from '@/lib/errors';
 import { handleErr } from '@/lib/response';
 import { Metadata } from 'next/types';
 
+export const fetchCache = 'default-no-store';
+
 export const metadata: Metadata = {
     title: 'warehouse',
 };
