@@ -20,6 +20,7 @@ import { Pagination as PaginationType } from '@/types/http';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import InvoiceView from './invoice-view';
+import { formatDateString } from '@/lib/utils';
 
 const umberFormatter = new Intl.NumberFormat();
 
@@ -91,7 +92,7 @@ function ImportClientPage({
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-[120px] text-lg">
+                                    <TableHead className="w-[80px] text-lg">
                                         ID
                                     </TableHead>
                                     <TableHead className="text-lg">
@@ -102,6 +103,9 @@ function ImportClientPage({
                                     </TableHead>
                                     <TableHead className="text-lg">
                                         Customer id
+                                    </TableHead>
+                                    <TableHead className="text-lg">
+                                        Created at
                                     </TableHead>
                                     <TableHead className="text-lg">
                                         Total price
@@ -142,6 +146,9 @@ function ImportClientPage({
                                         </TableCell>
                                         <TableCell className="font-medium text-lg">
                                             {v.customer_id}
+                                        </TableCell>
+                                        <TableCell className="font-medium text-lg">
+                                            {formatDateString(v.created_at)}
                                         </TableCell>
                                         <TableCell className="font-medium text-lg">
                                             {umberFormatter.format(

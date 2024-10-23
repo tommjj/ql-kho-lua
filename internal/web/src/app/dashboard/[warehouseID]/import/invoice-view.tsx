@@ -17,6 +17,7 @@ import {
     TableRow,
 } from '@/components/shadcn-ui/table';
 import { getImportInvoiceByID } from '@/lib/services/import_invoice.service';
+import { formatDateTimeString } from '@/lib/utils';
 import { Invoice } from '@/lib/zod.schema';
 import { useLayoutEffect, useState } from 'react';
 
@@ -63,6 +64,10 @@ function InvoiceView({ invoiceID }: { invoiceID: string | number }) {
                         <p>{invoice.warehouse_name}</p>
                         <p>Warehouse ID: {invoice.warehouse_id}</p>
                     </div>
+                </div>
+                <div className="flex items-center">
+                    <h3 className="text-lg font-semibold mr-2">Created at: </h3>
+                    <p>{formatDateTimeString(invoice.created_at)}</p>
                 </div>
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-2">

@@ -83,5 +83,6 @@ export const InvoiceSchema = z.object({
     customer_name: z.string(),
     total_price: z.number(),
     details: z.array(InvoiceDetailSchema).min(1),
+    created_at: z.string(),
 });
 export type Invoice = z.infer<typeof InvoiceSchema>;

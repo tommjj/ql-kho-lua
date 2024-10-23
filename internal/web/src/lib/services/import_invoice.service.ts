@@ -13,6 +13,7 @@ export const CreateImportInvoiceSchema = InvoiceSchema.omit({
     warehouse_name: true,
     customer_name: true,
     details: true,
+    created_at: true,
 }).merge(
     z.object({
         details: z.array(InvoiceDetailSchema.omit({ name: true })),
