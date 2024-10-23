@@ -26,9 +26,12 @@ services:
             context: .
             dockerfile: ./docker/goserver/Dockerfile
         env_file: './.production.env'
+        volumes:
+            - filevolume:/public
         depends_on:
             - db
         ports:
             - 8080:8080
 volumes:
     datavolume:
+    filevolume:
