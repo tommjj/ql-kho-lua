@@ -40,6 +40,14 @@ export default function CreateCustomerModal() {
         setIsOpen((priv) => !priv);
     }, []);
 
+    const reset = useCallback(() => {
+        setName('');
+        setEmail('');
+        setPhone('');
+        setAddress('');
+        setError(null);
+    }, []);
+
     const handleSubmit = useCallback(() => {
         console.log(phone);
         const parse = CreateCustomerSchema.safeParse({
@@ -58,7 +66,7 @@ export default function CreateCustomerModal() {
             const [res, err] = await createCustomer(user.token, parse.data);
             if (res) {
                 refresh();
-                setName('');
+                reset();
                 handleToggle();
                 return;
             }
@@ -74,7 +82,7 @@ export default function CreateCustomerModal() {
                     break;
             }
         })();
-    }, [address, email, handleToggle, name, phone, refresh, user.token]);
+    }, [address, email, handleToggle, name, phone, refresh, reset, user.token]);
 
     return (
         <Dialog open={isOpen}>

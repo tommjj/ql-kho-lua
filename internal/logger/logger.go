@@ -16,7 +16,7 @@ var logLevelMap = map[string]zapcore.Level{
 	"info":   zap.InfoLevel,
 	"warn":   zap.WarnLevel,
 	"error":  zap.ErrorLevel,
-	"fpanic": zap.DPanicLevel,
+	"dpanic": zap.DPanicLevel,
 	"panic":  zap.PanicLevel,
 	"fatal":  zap.FatalLevel,
 }

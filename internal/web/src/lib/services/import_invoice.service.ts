@@ -9,6 +9,7 @@ export const CreateImportInvoiceSchema = InvoiceSchema.omit({
     id: true,
     total_price: true,
     user_name: true,
+    user_id: true,
     warehouse_name: true,
     customer_name: true,
     details: true,
@@ -68,18 +69,21 @@ export type GetListInvoicesRequest = {
     limit?: number | undefined;
     start?: Date | undefined;
     end?: Date | undefined;
+    warehouseID?: number;
 };
 
 export async function getListImportInvoices(
     key: string,
-    { end, limit, skip, start }: GetListInvoicesRequest
+    { end, limit, skip, start, warehouseID }: GetListInvoicesRequest
 ): Promise<ResponseOrError<ResWithPagination<Invoice>>> {
     const [res, err] = await fetcher
         .set(...getAuthH(key))
         .get<ResWithPagination<Invoice>>(
             `/import_invoices?skip=${skip}&limit=${limit}${
                 start ? `&start=${start.toISOString()}` : ''
-            }${end ? `&end=${end.toISOString()}` : ''}`
+            }${end ? `&end=${end.toISOString()}` : ''}${
+                warehouseID ? `&warehouse_id=${warehouseID}` : ''
+            }`
         );
 
     if (res) {

@@ -47,6 +47,9 @@ async function ImportPage({ searchParams, params: { warehouseID } }: Props) {
         start: parsed.data.start,
         limit: 10,
         skip: parsed.data.page,
+        warehouseID: Number.isInteger(Number(warehouseID))
+            ? Number(warehouseID)
+            : 0,
     });
 
     if (err) {

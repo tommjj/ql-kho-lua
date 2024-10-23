@@ -20,6 +20,8 @@ import { getImportInvoiceByID } from '@/lib/services/import_invoice.service';
 import { Invoice } from '@/lib/zod.schema';
 import { useLayoutEffect, useState } from 'react';
 
+const umberFormatter = new Intl.NumberFormat();
+
 function InvoiceView({ invoiceID }: { invoiceID: string | number }) {
     const user = useSession();
     const [invoice, setInvoice] = useState<undefined | Invoice>(undefined);
@@ -81,14 +83,16 @@ function InvoiceView({ invoiceID }: { invoiceID: string | number }) {
                                     <TableCell>{detail.name}</TableCell>
                                     <TableCell>{detail.quantity}</TableCell>
                                     <TableCell>
-                                        {detail.price}
+                                        {umberFormatter.format(detail.price)}
                                         <span className="text-[0.5rem]">
                                             {' '}
                                             VND
                                         </span>
                                     </TableCell>
                                     <TableCell>
-                                        {detail.quantity * detail.price}{' '}
+                                        {umberFormatter.format(
+                                            detail.quantity * detail.price
+                                        )}{' '}
                                         <span className="text-[0.5rem]">
                                             {' '}
                                             VND
@@ -107,7 +111,7 @@ function InvoiceView({ invoiceID }: { invoiceID: string | number }) {
                     <div className="text-right">
                         <h3 className="text-lg font-semibold">Total Price</h3>
                         <p className="text-2xl font-bold">
-                            {invoice.total_price}{' '}
+                            {umberFormatter.format(invoice.total_price)}{' '}
                             <span className="text-sm">VND</span>
                         </p>
                     </div>

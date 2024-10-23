@@ -83,6 +83,7 @@ function StoreSelector({ warehouses }: Props) {
                         <CommandGroup>
                             {items.map((warehouse) => (
                                 <CommandItem
+                                    className="cursor-pointer"
                                     key={warehouse.id}
                                     value={warehouse.name}
                                     onSelect={() => {

@@ -224,24 +224,7 @@ func (w *warehouseRepository) GetInventory(ctx context.Context, id int) ([]domai
 				FROM export_invoices LEFT JOIN export_invoice_details on export_invoice_details.invoice_id = export_invoices.id 
 				WHERE export_invoices.warehouse_id = @id
 				GROUP BY export_invoice_details.rice_id) ex 
-				ON im.rice_id = ex.rice_id
-		UNION ALL
-			SELECT 
-    			COALESCE(im.rice_id, ex.rice_id) AS rice_id,
-    			COALESCE(im.total_im, 0) AS total_import,
-    			COALESCE(ex.total_ex, 0) AS total_export
-			FROM 
-    			(SELECT import_invoice_details.rice_id AS rice_id, SUM(import_invoice_details.quantity) as total_im
-				FROM import_invoices LEFT JOIN import_invoice_details on import_invoice_details.invoice_id = import_invoices.id 
-				WHERE import_invoices.warehouse_id = @id
-				GROUP BY import_invoice_details.rice_id) im
-			RIGHT JOIN 
-    			(SELECT export_invoice_details.rice_id AS rice_id, SUM(export_invoice_details.quantity) as total_ex
-				FROM export_invoices LEFT JOIN export_invoice_details on export_invoice_details.invoice_id = export_invoices.id 
-				WHERE export_invoices.warehouse_id = @id
-				GROUP BY export_invoice_details.rice_id) ex 
-				ON im.rice_id = ex.rice_id
-			WHERE im.rice_id IS NULL) t JOIN rice on t.rice_id = rice.id
+				ON im.rice_id = ex.rice_id) t JOIN rice on t.rice_id = rice.id
   		WHERE (t.total_import - t.total_export) > 0
 		ORDER BY rice.id DESC`, sql.Named("id", id)).Rows()
 	if err != nil {

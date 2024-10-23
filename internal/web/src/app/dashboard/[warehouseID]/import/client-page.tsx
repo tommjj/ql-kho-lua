@@ -21,6 +21,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import InvoiceView from './invoice-view';
 
+const umberFormatter = new Intl.NumberFormat();
+
 function ImportClientPage({
     pagination,
     listInvoices,
@@ -136,13 +138,15 @@ function ImportClientPage({
                                             {v.user_id}
                                         </TableCell>
                                         <TableCell className="font-medium text-lg">
-                                            {v.customer_id}
-                                        </TableCell>
-                                        <TableCell className="font-medium text-lg">
                                             {v.warehouse_id}
                                         </TableCell>
                                         <TableCell className="font-medium text-lg">
-                                            {v.total_price}
+                                            {v.customer_id}
+                                        </TableCell>
+                                        <TableCell className="font-medium text-lg">
+                                            {umberFormatter.format(
+                                                v.total_price
+                                            )}
                                             <span className="text-sm">
                                                 {' '}
                                                 VND
@@ -160,7 +164,7 @@ function ImportClientPage({
                 <>
                     <ResizableHandle withHandle />
                     <ResizablePanel
-                        className="relative min-w-[220px] h-full animate-right-to-left "
+                        className="relative min-w-[220px] h-full animate-expand"
                         defaultSize={35}
                         minSize={20}
                         maxSize={50}

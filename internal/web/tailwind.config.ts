@@ -54,6 +54,20 @@ const config: Config = {
             keyframes: {
                 'right-to-left': {
                     from: {
+                        transform: 'translateX(50px)',
+                        opacity: '0',
+                    },
+                    to: {},
+                },
+                'left-to-right': {
+                    from: {
+                        transform: 'translateX(-50px)',
+                        opacity: '0',
+                    },
+                    to: {},
+                },
+                expand: {
+                    from: {
                         'max-width': '0px',
                         'min-width': '0px',
                     },
@@ -62,6 +76,8 @@ const config: Config = {
             },
             animation: {
                 'right-to-left': 'right-to-left 0.2s ease-out',
+                'left-to-right': 'left-to-right 0.2s ease-out',
+                expand: 'expand 0.2s ease-out',
             },
             borderRadius: {
                 lg: 'var(--radius)',
