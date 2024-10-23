@@ -28,6 +28,7 @@ services:
         env_file: './.production.env'
         volumes:
             - filevolume:/public
+            - logfilevolume:/log
         depends_on:
             - db
         ports:
@@ -35,3 +36,4 @@ services:
 volumes:
     datavolume:
     filevolume:
+    logfilevolume:
