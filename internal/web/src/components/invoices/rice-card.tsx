@@ -28,7 +28,8 @@ export default function RiceCard({
                     {rice.name}
                 </CardTitle>
                 <CardDescription>
-                    # {rice.id} - {stock ? `stock: ${stock}` : ''}
+                    # {rice.id}
+                    {stock ? ` - stock: ${stock}` : ''}
                 </CardDescription>
             </CardContent>
         </Card>

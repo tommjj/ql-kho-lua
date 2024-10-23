@@ -84,7 +84,10 @@ export async function getListExportInvoices(
                 start ? `&start=${start.toISOString()}` : ''
             }${end ? `&end=${end.toISOString()}` : ''}${
                 warehouseID ? `&warehouse_id=${warehouseID}` : ''
-            }`
+            }`,
+            {
+                cache: 'no-store',
+            }
         );
 
     if (res) {
