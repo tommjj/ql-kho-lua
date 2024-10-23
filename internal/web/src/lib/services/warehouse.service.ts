@@ -107,7 +107,9 @@ export async function getWarehouseInventory(
 ): Promise<ResponseOrError<Res<WarehouseItem[]>>> {
     const [res, err] = await fetcher
         .set(...getAuthH(key))
-        .get<Res<WarehouseItem[]>>(`/warehouses/${id}/inventory`);
+        .get<Res<WarehouseItem[]>>(`/warehouses/${id}/inventory`, {
+            cache: 'no-store',
+        });
 
     if (res) {
         return [res, undefined];

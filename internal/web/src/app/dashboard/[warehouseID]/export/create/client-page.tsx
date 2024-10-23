@@ -27,11 +27,16 @@ import {
 import Header from '@/components/ui/header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-    createImportInvoice,
-    CreateImportInvoiceSchema,
-} from '@/lib/services/import_invoice.service';
+    createExportInvoice,
+    CreateExportInvoiceSchema,
+} from '@/lib/services/export_inoice.service';
 import { cn } from '@/lib/utils';
-import { Customer, InvoiceDetail, Rice, Warehouse } from '@/lib/zod.schema';
+import {
+    Customer,
+    InvoiceDetail,
+    Warehouse,
+    WarehouseItem,
+} from '@/lib/zod.schema';
 import { AlertCircle, Leaf, Plus, Search, Users, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useCallback, useRef, useState } from 'react';
@@ -40,7 +45,7 @@ const umberFormatter = new Intl.NumberFormat();
 
 type Props = {
     customers: Customer[];
-    rice: Rice[];
+    rice: WarehouseItem[];
     warehouse: Warehouse;
 };
 
@@ -52,7 +57,9 @@ function CreateImInvoiceClientPage({ customers, rice, warehouse }: Props) {
     const [selectedCustomer, setSelectedCustomer] = useState<
         undefined | Customer
     >(undefined);
-    const [selectedRice, setSelectedRice] = useState<InvoiceDetail[]>([]);
+    const [selectedRice, setSelectedRice] = useState<
+        (InvoiceDetail & { stock: number })[]
+    >([]);
 
     const [tabValue, setTabValue] = useState('customer');
 
@@ -102,7 +109,7 @@ function CreateImInvoiceClientPage({ customers, rice, warehouse }: Props) {
             return;
         }
 
-        const parsed = CreateImportInvoiceSchema.safeParse({
+        const parsed = CreateExportInvoiceSchema.safeParse({
             customer_id: selectedCustomer.id,
             warehouse_id: warehouse.id,
             details: selectedRice.map((v) => ({
@@ -113,18 +120,17 @@ function CreateImInvoiceClientPage({ customers, rice, warehouse }: Props) {
         });
 
         if (!parsed.success) {
-            console.log('err');
             setError(parsed.error.errors[0].message);
             return;
         }
 
         (async function () {
-            const [res, err] = await createImportInvoice(
+            const [res, err] = await createExportInvoice(
                 user.token,
                 parsed.data
             );
             if (res) {
-                push(`/dashboard/${warehouse.id}/import`);
+                push(`/dashboard/${warehouse.id}/export`);
                 return;
             }
 
@@ -210,7 +216,10 @@ function CreateImInvoiceClientPage({ customers, rice, warehouse }: Props) {
                                                     )}
                                                     className={cn('w-40', {
                                                         'focus-visible:ring-red-700':
-                                                            rice.quantity <= 0,
+                                                            rice.quantity <=
+                                                                0 ||
+                                                            rice.quantity >=
+                                                                rice.stock,
                                                     })}
                                                     autoFocus
                                                     value={rice.quantity}
@@ -350,16 +359,18 @@ function CreateImInvoiceClientPage({ customers, rice, warehouse }: Props) {
                             ) ? null : (
                                 <RiceCard
                                     key={r.id}
-                                    rice={r}
+                                    rice={{ id: r.id, name: r.rice_name }}
+                                    stock={r.capacity}
                                     className={cn('mb-1')}
                                     onSelect={() => {
                                         setSelectedRice((priv) => [
                                             ...priv,
                                             {
                                                 rice_id: r.id,
-                                                name: r.name,
+                                                name: r.rice_name,
                                                 price: 0,
                                                 quantity: 0,
+                                                stock: r.capacity,
                                             },
                                         ]);
                                     }}

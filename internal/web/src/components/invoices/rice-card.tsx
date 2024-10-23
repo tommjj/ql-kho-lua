@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 
 interface RiceProps {
     rice: Rice;
+    stock?: number;
     className?: string;
     onSelect?: (rice: Rice) => void;
 }
@@ -11,6 +12,7 @@ interface RiceProps {
 export default function RiceCard({
     rice,
     className,
+    stock,
     onSelect = function () {},
 }: RiceProps) {
     return (
@@ -25,7 +27,9 @@ export default function RiceCard({
                 <CardTitle className="text-xl font-medium">
                     {rice.name}
                 </CardTitle>
-                <CardDescription># {rice.id}</CardDescription>
+                <CardDescription>
+                    # {rice.id} - {stock ? `stock: ${stock}` : ''}
+                </CardDescription>
             </CardContent>
         </Card>
     );
