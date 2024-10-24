@@ -17,14 +17,14 @@ services:
             dockerfile: ../../docker/nextapp/Dockerfile
         env_file: './internal/web/.production.env'
         depends_on:
-            - goserver
+            - goapi
         ports:
             - '3000:3000'
-    goserver:
-        container_name: goserver
+    goapi:
+        container_name: goapi
         build:
             context: .
-            dockerfile: ./docker/goserver/Dockerfile
+            dockerfile: ./docker/goapi/Dockerfile
         env_file: './.production.env'
         volumes:
             - filevolume:/public
