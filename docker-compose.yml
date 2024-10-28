@@ -2,7 +2,6 @@ services:
     db:
         container_name: 'db'
         image: mysql
-        restart: always
         environment:
             MYSQL_ROOT_PASSWORD: 'Admin123'
             MYSQL_DATABASE: 'ql'

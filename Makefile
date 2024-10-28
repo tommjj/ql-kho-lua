@@ -1,24 +1,27 @@
 BINARY_FILE_NAME=main
 
-b_start:
+api_start:
 	./bin/$(BINARY_FILE_NAME)
 
-b_build:
+api_build:
 	go build -o ./bin/$(BINARY_FILE_NAME) ./cmd/http/main.go
 
 build_all: b_build f_build
 
-b_dev:
+api_dev:
 	air
 
-f_start:
+app_start:
 	cd ./internal/web; npm start
 
-f_build:
+app_build:
 	cd ./internal/web; npm run build
 
-f_dev:
+app_dev:
 	cd ./internal/web; npm run dev
+
+up:
+	docker compose up --build   
 
 clean:
 	go clean
