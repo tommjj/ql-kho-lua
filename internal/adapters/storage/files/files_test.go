@@ -2,6 +2,8 @@ package files
 
 import (
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -9,17 +11,21 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
 
+func teardownTestDirs(baseDir, tempDir string) {
+	os.RemoveAll(baseDir)
+	os.RemoveAll(tempDir)
+}
+
 func TestNewFileStorage(t *testing.T) {
+	baseDir := "./static"
+	tempDir := "./temp"
+
 	t.Cleanup(func() {
-		os.RemoveAll("./static")
-		os.RemoveAll("./temp")
+		teardownTestDirs(baseDir, tempDir)
 	})
 
-	fileStorage, err := NewFileStorage("./static", "./temp", time.Hour)
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	fileStorage, err := NewFileStorage(baseDir, tempDir, time.Hour)
+	assert.NoError(t, err)
 	assert.NotNil(t, fileStorage, "fileStorage cannot be nil")
 }
 
@@ -29,59 +35,100 @@ func TestLocalFileStorage_ImplementsIFileStorage(t *testing.T) {
 	assert.Implements(t, (*ports.IFileStorage)(nil), fileStorage, "fileStorage must implements IFileStorage")
 }
 
-//**
-
 func TestSaveTempFile(t *testing.T) {
-	fileStorage, err := NewFileStorage("./static", "./temp", time.Hour)
-	if err != nil {
-		t.Fatal(err)
-	}
+	baseDir := "./static"
+	tempDir := "./temp"
 
-	file, err := os.Open("./files.go")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer file.Close()
+	defer teardownTestDirs(baseDir, tempDir)
 
-	f, err := fileStorage.SaveTempFile(file, "test(2).go")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(f)
+	fileStorage, err := NewFileStorage(baseDir, tempDir, time.Hour)
+	assert.NoError(t, err)
+
+	data := "test content"
+	src := strings.NewReader(data)
+	filename := "test.txt"
+
+	path, err := fileStorage.SaveTempFile(src, filename)
+	assert.NoError(t, err)
+	assert.FileExists(t, path)
 }
 
 func TestSavePermanentFile(t *testing.T) {
-	fileStorage, err := NewFileStorage("./static", "./temp", time.Hour)
-	if err != nil {
-		t.Fatal(err)
-	}
+	baseDir := "./static"
+	tempDir := "./temp"
 
-	err = fileStorage.SavePermanentFile("test(2).go")
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer teardownTestDirs(baseDir, tempDir)
+
+	fileStorage, err := NewFileStorage(baseDir, tempDir, time.Hour)
+	assert.NoError(t, err)
+
+	data := "test content"
+	src := strings.NewReader(data)
+	filename := "test.txt"
+
+	fileStorage.SaveTempFile(src, filename)
+
+	err = fileStorage.SavePermanentFile(filename)
+	assert.NoError(t, err)
+	assert.FileExists(t, filepath.Join(baseDir, filename))
 }
 
 func TestDeleteFile(t *testing.T) {
-	fileStorage, err := NewFileStorage("./static", "./temp", time.Hour)
-	if err != nil {
-		t.Fatal(err)
-	}
+	baseDir := "./static"
+	tempDir := "./temp"
 
-	err = fileStorage.DeleteFile("test.go")
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer teardownTestDirs(baseDir, tempDir)
+
+	fileStorage, err := NewFileStorage(baseDir, tempDir, time.Hour)
+	assert.NoError(t, err)
+
+	data := "test content"
+	src := strings.NewReader(data)
+	filename := "test.txt"
+
+	fileStorage.SaveTempFile(src, filename)
+	fileStorage.SavePermanentFile(filename)
+
+	err = fileStorage.DeleteFile(filename)
+	assert.NoError(t, err)
+	assert.NoFileExists(t, filepath.Join(baseDir, filename))
 }
 
 func TestCleanupTempFiles(t *testing.T) {
-	fileStorage, err := NewFileStorage("./static", "./temp", time.Second)
-	if err != nil {
-		t.Fatal(err)
-	}
+	baseDir := "./static"
+	tempDir := "./temp"
 
-	err = fileStorage.CleanupTempFiles()
-	if err != nil {
-		t.Fatal(err)
-	}
+	defer teardownTestDirs(baseDir, tempDir)
+
+	fs, err := NewFileStorage(baseDir, tempDir, time.Second)
+	assert.NoError(t, err)
+
+	data := "test content"
+	src := strings.NewReader(data)
+	filename := "test.txt"
+
+	fs.SaveTempFile(src, filename)
+	time.Sleep(2 * time.Second)
+	err = fs.CleanupTempFiles()
+	assert.NoError(t, err)
+	assert.NoFileExists(t, filepath.Join(tempDir, filename))
+}
+
+func TestCleanupTempFiles_NotExpired(t *testing.T) {
+	baseDir := "./static"
+	tempDir := "./temp"
+
+	defer teardownTestDirs(baseDir, tempDir)
+
+	fs, err := NewFileStorage(baseDir, tempDir, time.Hour)
+	assert.NoError(t, err)
+
+	data := "test content"
+	src := strings.NewReader(data)
+	filename := "test.txt"
+
+	fs.SaveTempFile(src, filename)
+	err = fs.CleanupTempFiles()
+	assert.NoError(t, err)
+	assert.FileExists(t, filepath.Join(tempDir, filename))
 }
