@@ -21,6 +21,7 @@ type Warehouse struct {
 	Items        *[]WarehouseItem `json:"items,omitempty"`
 }
 
+// ParseLocation parse location string to latitude and longitude
 func (s *Warehouse) ParseLocation() (float64, float64, error) {
 	before, after, found := strings.Cut(s.Location, ",")
 	if !found {

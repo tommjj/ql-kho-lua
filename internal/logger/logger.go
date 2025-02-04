@@ -57,6 +57,7 @@ func newWriteSyncer(conf *config.LogFileWriter) zapcore.WriteSyncer {
 		MaxBackups: conf.MaxBackups,
 		MaxAge:     conf.MaxAge,
 	})
+
 	return zapcore.NewMultiWriteSyncer(
 		zapcore.AddSync(fileWriteSyncer),
 		zapcore.AddSync(os.Stdout),

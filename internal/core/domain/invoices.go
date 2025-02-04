@@ -22,7 +22,7 @@ type Invoice struct {
 	Warehouse   *Warehouse    `json:"warehouse"`
 }
 
-// CalcTotalPrice
+// CalcTotalPrice calculate total price of invoice
 func (i *Invoice) CalcTotalPrice() float64 {
 	for _, v := range i.Details {
 		i.TotalPrice += v.Price * float64(v.Quantity)

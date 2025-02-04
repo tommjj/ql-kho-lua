@@ -1,0 +1,1029 @@
+@startuml
+legend
+<u><b>Legend</b></u>
+Render Aggregations: true
+Render Fields: true
+Render Methods: true
+Private Aggregations: false
+end legend
+namespace auth {
+    class CustomClaims << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Email string
+        + Role domain.Role
+        + Key string
+
+    }
+    class JWTService << (S,Aquamarine) >> {
+        - key []byte
+        - keyFunc <font color=blue>func</font>(*jwt.Token) (<font color=blue>interface</font>{}, error)
+        - duration time.Duration
+        - keyRepo ports.IKeyRepository
+
+        + CreateToken(user *domain.User) (string, error)
+        + VerifyToken(tokenString string) (*domain.TokenPayload, error)
+
+    }
+}
+"jwt.RegisteredClaims" *-- "extends""auth.CustomClaims"
+
+"ports.ITokenService" <|-- "implements""auth.JWTService"
+
+"auth.CustomClaims""uses" o-- "domain.Role"
+
+namespace config {
+    class App << (S,Aquamarine) >> {
+        + Name string
+        + Env string
+
+    }
+    class Auth << (S,Aquamarine) >> {
+        + SecretKey string
+        + Duration time.Duration
+
+    }
+    class Config << (S,Aquamarine) >> {
+        + App *App
+        + Logger *Logger
+        + Auth *Auth
+        + Http *HTTP
+        + DB *DB
+
+    }
+    class DB << (S,Aquamarine) >> {
+        + DSN string
+        + MaxIdleConns int
+        + MaxOpenConns int
+        + ConnMaxLifetime time.Duration
+
+    }
+    class HTTP << (S,Aquamarine) >> {
+        + Env string
+        + AllowedOrigins []string
+        + URL string
+        + Port int
+        + Logger Logger
+
+    }
+    class LogFileWriter << (S,Aquamarine) >> {
+        + FileName string
+        + MaxSize int
+        + MaxBackups int
+        + MaxAge int
+
+    }
+    class Logger << (S,Aquamarine) >> {
+        + Level string
+        + Encoder string
+        + LogFileWriter *LogFileWriter
+
+    }
+}
+
+
+"config.Auth""uses" o-- "time.Duration"
+"config.Config""uses" o-- "config.App"
+"config.Config""uses" o-- "config.Auth"
+"config.Config""uses" o-- "config.DB"
+"config.Config""uses" o-- "config.HTTP"
+"config.Config""uses" o-- "config.Logger"
+"config.DB""uses" o-- "time.Duration"
+"config.HTTP""uses" o-- "config.Logger"
+"config.Logger""uses" o-- "config.LogFileWriter"
+
+namespace domain {
+    class Customer << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Email string
+        + Phone string
+        + Address string
+
+    }
+    class Invoice << (S,Aquamarine) >> {
+        + ID int
+        + WarehouseID int
+        + CustomerID int
+        + UserID int
+        + CreatedAt time.Time
+        + TotalPrice float64
+        + Details []InvoiceItem
+        + CreatedBy *User
+        + Customer *Customer
+        + Warehouse *Warehouse
+
+        + CalcTotalPrice() float64
+
+    }
+    class InvoiceItem << (S,Aquamarine) >> {
+        + Price float64
+        + Quantity int
+        + RiceID int
+        + Rice *Rice
+
+    }
+    class Rice << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+
+    }
+    class TokenPayload << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Email string
+        + Role Role
+        + Key string
+
+    }
+    class User << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Phone string
+        + Email string
+        + Password string
+        + Role Role
+
+        + RemovePass() 
+
+    }
+    class Warehouse << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Location string
+        + Capacity int
+        + UsedCapacity *int
+        + Image string
+        + Items *[]WarehouseItem
+
+        + ParseLocation() (float64, float64, error)
+
+    }
+    class WarehouseItem << (S,Aquamarine) >> {
+        + RiceID int
+        + Rice *Rice
+        + Quantity int
+
+    }
+    class domain.Role << (T, #FF7700) >>  {
+    }
+}
+
+
+"domain.Invoice""uses" o-- "domain.Customer"
+"domain.Invoice""uses" o-- "domain.InvoiceItem"
+"domain.Invoice""uses" o-- "domain.User"
+"domain.Invoice""uses" o-- "domain.Warehouse"
+"domain.Invoice""uses" o-- "time.Time"
+"domain.InvoiceItem""uses" o-- "domain.Rice"
+"domain.TokenPayload""uses" o-- "domain.Role"
+"domain.User""uses" o-- "domain.Role"
+"domain.Warehouse""uses" o-- "domain.WarehouseItem"
+"domain.WarehouseItem""uses" o-- "domain.Rice"
+
+namespace files {
+    class localFileStorage << (S,Aquamarine) >> {
+        - baseDir string
+        - tempDir string
+        - maxAge time.Duration
+
+        + SaveTempFile(src io.Reader, filename string) (string, error)
+        + SavePermanentFile(filename string) error
+        + DeleteFile(filename string) error
+        + DeleteTempFile(filename string) error
+        + CleanupTempFiles() error
+
+    }
+}
+
+"ports.IFileStorage" <|-- "implements""files.localFileStorage"
+
+
+namespace handlers {
+    class AuthHandler << (S,Aquamarine) >> {
+        - svc ports.IAuthService
+
+        + Login(ctx *gin.Context) 
+
+    }
+    class CreateExInvoiceRequest << (S,Aquamarine) >> {
+        + WarehouseID int
+        + CustomerID int
+        + Details []DetailExInvoiceRequest
+
+    }
+    class CreateImInvoiceRequest << (S,Aquamarine) >> {
+        + WarehouseID int
+        + CustomerID int
+        + Details []DetailImInvoiceRequest
+
+    }
+    class CustomerHandler << (S,Aquamarine) >> {
+        - svc ports.ICustomerService
+
+        + CreateCustomer(ctx *gin.Context) 
+        + GetCustomerByID(ctx *gin.Context) 
+        + GetListCustomers(ctx *gin.Context) 
+        + UpdateCustomer(ctx *gin.Context) 
+        + DeleteCustomer(ctx *gin.Context) 
+
+    }
+    class DetailExInvoiceRequest << (S,Aquamarine) >> {
+        + RiceID int
+        + Price float64
+        + Quantity int
+
+    }
+    class DetailImInvoiceRequest << (S,Aquamarine) >> {
+        + RiceID int
+        + Price float64
+        + Quantity int
+
+    }
+    class ExportInvoiceHandler << (S,Aquamarine) >> {
+        - svc ports.IExportInvoiceService
+        - acc ports.IAccessControlService
+
+        + CreateExInvoice(ctx *gin.Context) 
+        + GetExInvoiceByID(ctx *gin.Context) 
+        + GetListExInvoices(ctx *gin.Context) 
+
+    }
+    class ImportInvoiceHandler << (S,Aquamarine) >> {
+        - svc ports.IImportInvoicesService
+        - acc ports.IAccessControlService
+
+        + CreateImInvoice(ctx *gin.Context) 
+        + GetImInvoiceByID(ctx *gin.Context) 
+        + GetListImInvoices(ctx *gin.Context) 
+
+    }
+    class RiceHandler << (S,Aquamarine) >> {
+        - svc ports.IRiceService
+
+        + CreateRice(ctx *gin.Context) 
+        + GetRiceByID(ctx *gin.Context) 
+        + GetListRice(ctx *gin.Context) 
+        + UpdateRice(ctx *gin.Context) 
+        + DeleteRice(ctx *gin.Context) 
+
+    }
+    class UploadHandler << (S,Aquamarine) >> {
+        - svc ports.IUploadService
+
+        + UploadImage(ctx *gin.Context) 
+
+    }
+    class UserHandler << (S,Aquamarine) >> {
+        - svc ports.IUserRepository
+
+        + CreateUser(ctx *gin.Context) 
+        + GetUserByID(ctx *gin.Context) 
+        + GetListUsers(ctx *gin.Context) 
+        + UpdateUser(ctx *gin.Context) 
+        + DeleteUserByID(ctx *gin.Context) 
+
+    }
+    class WarehouseHandler << (S,Aquamarine) >> {
+        - scv ports.IWarehouseService
+        - acc ports.IAccessControlRepository
+
+        + CreateWarehouse(ctx *gin.Context) 
+        + GetWarehouseByID(ctx *gin.Context) 
+        + GetListWarehouses(ctx *gin.Context) 
+        + GetUsedCapacityByID(ctx *gin.Context) 
+        + GetInventory(ctx *gin.Context) 
+        + UpdateWarehouse(ctx *gin.Context) 
+        + DeleteWarehouse(ctx *gin.Context) 
+
+    }
+    class authResponse << (S,Aquamarine) >> {
+        + Token string
+
+    }
+    class createCustomerRequest << (S,Aquamarine) >> {
+        + Name string
+        + Email string
+        + Phone string
+        + Address string
+
+    }
+    class createRiceRequest << (S,Aquamarine) >> {
+        + Name string
+
+    }
+    class createUserRequest << (S,Aquamarine) >> {
+        + Name string
+        + Email string
+        + Phone string
+        + Password string
+
+    }
+    class createWarehouseRequest << (S,Aquamarine) >> {
+        + Name string
+        + Location []float64
+        + Image string
+        + Capacity int
+
+    }
+    class customerResponse << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Email string
+        + Phone string
+        + Address string
+
+    }
+    class errorResponse << (S,Aquamarine) >> {
+        + Success bool
+        + Messages []string
+
+    }
+    class getListCustomerRequest << (S,Aquamarine) >> {
+        + Query string
+        + Skip int
+        + Limit int
+
+    }
+    class getListExInvoiceRequest << (S,Aquamarine) >> {
+        + WarehouseID int
+        + Start *time.Time
+        + End *time.Time
+        + Skip int
+        + Limit int
+
+    }
+    class getListImInvoiceRequest << (S,Aquamarine) >> {
+        + WarehouseID int
+        + Start *time.Time
+        + End *time.Time
+        + Skip int
+        + Limit int
+
+    }
+    class getListRiceRequest << (S,Aquamarine) >> {
+        + Query string
+        + Skip int
+        + Limit int
+
+    }
+    class getListUserRequest << (S,Aquamarine) >> {
+        + Query string
+        + Skip int
+        + Limit int
+
+    }
+    class getListWarehouseRequest << (S,Aquamarine) >> {
+        + Query string
+        + Skip int
+        + Limit int
+
+    }
+    class invoiceDetailResponse << (S,Aquamarine) >> {
+        + RiceID int
+        + Name string
+        + Price float64
+        + Quantity int
+
+    }
+    class invoiceResponse << (S,Aquamarine) >> {
+        + ID int
+        + CustomerID int
+        + CustomerName string
+        + WarehouseID int
+        + WarehouseName string
+        + UserID int
+        + UserName string
+        + CreatedAt time.Time
+        + TotalPrice float64
+        + Details []invoiceDetailResponse
+
+    }
+    class loginRequest << (S,Aquamarine) >> {
+        + Email string
+        + Password string
+
+    }
+    class pagination << (S,Aquamarine) >> {
+        + TotalRecords int
+        + LimitRecords int
+        + CurrentPage int
+        + TotalPages int
+        + NextPage *int
+        + PrevPage *int
+
+    }
+    class response << (S,Aquamarine) >> {
+        + Success bool
+        + Message string
+        + Data any
+
+    }
+    class responseWithPagination << (S,Aquamarine) >> {
+        + Success bool
+        + Message string
+        + Pagination *pagination
+        + Data any
+
+    }
+    class riceResponse << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+
+    }
+    class updateCustomerRequest << (S,Aquamarine) >> {
+        + Name string
+        + Email string
+        + Phone string
+        + Address string
+
+    }
+    class updateRiceRequest << (S,Aquamarine) >> {
+        + Name string
+
+    }
+    class updateUserRequest << (S,Aquamarine) >> {
+        + Name string
+        + Email string
+        + Phone string
+        + Password string
+
+    }
+    class updateWarehouseRequest << (S,Aquamarine) >> {
+        + Name string
+        + Location []float64
+        + Image string
+        + Capacity int
+
+    }
+    class uploadImageRequest << (S,Aquamarine) >> {
+        + File *multipart.FileHeader
+
+    }
+    class uploadImageResponse << (S,Aquamarine) >> {
+        + Filename string
+
+    }
+    class usedCapacityResponse << (S,Aquamarine) >> {
+        + UsedCapacity int64
+
+    }
+    class userResponse << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Phone string
+        + Email string
+        + Role domain.Role
+
+    }
+    class warehouseItemResponse << (S,Aquamarine) >> {
+        + ID int
+        + RiceName string
+        + Capacity int
+
+    }
+    class warehouseResponse << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Location []float64
+        + Image string
+        + Capacity int
+
+    }
+}
+
+
+"handlers.CreateExInvoiceRequest""uses" o-- "handlers.DetailExInvoiceRequest"
+"handlers.CreateImInvoiceRequest""uses" o-- "handlers.DetailImInvoiceRequest"
+"handlers.getListExInvoiceRequest""uses" o-- "time.Time"
+"handlers.getListImInvoiceRequest""uses" o-- "time.Time"
+"handlers.invoiceResponse""uses" o-- "handlers.invoiceDetailResponse"
+"handlers.invoiceResponse""uses" o-- "time.Time"
+"handlers.response""uses" o-- "handlers.any"
+"handlers.responseWithPagination""uses" o-- "handlers.any"
+"handlers.responseWithPagination""uses" o-- "handlers.pagination"
+"handlers.uploadImageRequest""uses" o-- "multipart.FileHeader"
+"handlers.userResponse""uses" o-- "domain.Role"
+
+namespace http {
+    class http.RegisterRouterFunc << (T, #FF7700) >>  {
+    }
+    class router << (S,Aquamarine) >> {
+        - engine *gin.Engine
+
+        + Port int
+        + Url string
+
+        + Serve() 
+
+    }
+    class "<font color=blue>func</font>(gin.IRouter) " as fontcolorbluefuncfontginIRouter {
+        'This class was created so that we can correctly have an alias pointing to this name. Since it contains dots that can break namespaces
+    }
+}
+
+
+
+namespace mapmutex {
+    class Mapmutex << (S,Aquamarine) >> {
+        - m sync.Map
+
+        + Lock(key any) 
+        + UnLock(key any) 
+
+    }
+}
+
+
+
+namespace mysqldb {
+    class MysqlDB << (S,Aquamarine) >> {
+    }
+}
+"gorm.DB" *-- "extends""mysqldb.MysqlDB"
+
+
+
+namespace ports {
+    interface IAccessControlRepository  {
+        + HasAccess(ctx context.Context, warehouseID int, userID int) error
+        + SetAccess(ctx context.Context, warehouseID int, userID int) error
+        + DelAccess(ctx context.Context, warehouseID int, userID int) error
+
+    }
+    interface IAccessControlService  {
+        + HasAccess(ctx context.Context, warehouseID int, userID int) error
+        + SetAccess(ctx context.Context, warehouseID int, userID int) error
+        + DelAccess(ctx context.Context, warehouseID int, userID int) error
+
+    }
+    interface IAuthService  {
+        + Login(ctx context.Context, email string, password string) (string, error)
+
+    }
+    interface ICustomerRepository  {
+        + CreateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
+        + GetCustomerByID(ctx context.Context, id int) (*domain.Customer, error)
+        + CountCustomers(ctx context.Context, query string) (int64, error)
+        + GetListCustomers(ctx context.Context, query string, limit int, skip int) ([]domain.Customer, error)
+        + UpdateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
+        + DeleteCustomer(ctx context.Context, id int) error
+
+    }
+    interface ICustomerService  {
+        + CreateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
+        + GetCustomerByID(ctx context.Context, id int) (*domain.Customer, error)
+        + CountCustomers(ctx context.Context, query string) (int64, error)
+        + GetListCustomers(ctx context.Context, query string, limit int, skip int) ([]domain.Customer, error)
+        + UpdateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
+        + DeleteCustomer(ctx context.Context, id int) error
+
+    }
+    interface IExportInvoiceRepository  {
+        + CreateExInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error)
+        + GetExInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + GetExInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + CountExInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error)
+        + GetListExInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip int, limit int) ([]domain.Invoice, error)
+
+    }
+    interface IExportInvoiceService  {
+        + CreateExInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error)
+        + GetExInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + CountExInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error)
+        + GetListExInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip int, limit int) ([]domain.Invoice, error)
+
+    }
+    interface IFileStorage  {
+        + SaveTempFile(src io.Reader, filename string) (string, error)
+        + SavePermanentFile(filename string) error
+        + DeleteFile(filename string) error
+        + DeleteTempFile(filename string) error
+        + CleanupTempFiles() error
+
+    }
+    interface IImportInvoicesRepository  {
+        + CreateImInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error)
+        + GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + GetImInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + CountImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error)
+        + GetListImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip int, limit int) ([]domain.Invoice, error)
+
+    }
+    interface IImportInvoicesService  {
+        + CreateImInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error)
+        + GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + CountImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error)
+        + GetListImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip int, limit int) ([]domain.Invoice, error)
+
+    }
+    interface IKeyRepository  {
+        + SetKey(ctx context.Context, id int, key string) error
+        + GetKey(ctx context.Context, id int) (string, error)
+        + DelKey(ctx context.Context, id int) error
+
+    }
+    interface IRiceRepository  {
+        + CreateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
+        + GetRiceByID(ctx context.Context, id int) (*domain.Rice, error)
+        + CountRice(ctx context.Context, query string) (int64, error)
+        + GetListRice(ctx context.Context, query string, limit int, skip int) ([]domain.Rice, error)
+        + UpdateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
+        + DeleteRice(ctx context.Context, id int) error
+
+    }
+    interface IRiceService  {
+        + CreateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
+        + GetRiceByID(ctx context.Context, id int) (*domain.Rice, error)
+        + CountRice(ctx context.Context, query string) (int64, error)
+        + GetListRice(ctx context.Context, query string, limit int, skip int) ([]domain.Rice, error)
+        + UpdateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
+        + DeleteRice(ctx context.Context, id int) error
+
+    }
+    interface ITokenService  {
+        + CreateToken(user *domain.User) (string, error)
+        + VerifyToken(token string) (*domain.TokenPayload, error)
+
+    }
+    interface IUploadService  {
+        + SaveTemp(file *multipart.FileHeader) (string, error)
+
+    }
+    interface IUserRepository  {
+        + CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+        + GetUserByID(ctx context.Context, id int) (*domain.User, error)
+        + GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
+        + CountUsers(ctx context.Context, query string) (int64, error)
+        + GetListUsers(ctx context.Context, query string, limit int, skip int) ([]domain.User, error)
+        + UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+        + DeleteUser(ctx context.Context, id int) error
+
+    }
+    interface IUserService  {
+        + CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+        + GetUserByID(ctx context.Context, id int) (*domain.User, error)
+        + GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
+        + CountUsers(ctx context.Context, query string) (int64, error)
+        + GetListUsers(ctx context.Context, query string, limit int, skip int) ([]domain.User, error)
+        + UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+        + DeleteUser(ctx context.Context, id int) error
+
+    }
+    interface IWarehouseRepository  {
+        + CreateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error)
+        + GetWarehouseByID(ctx context.Context, id int) (*domain.Warehouse, error)
+        + CountWarehouses(ctx context.Context, query string) (int64, error)
+        + GetListWarehouses(ctx context.Context, query string, limit int, skip int) ([]domain.Warehouse, error)
+        + CountAuthorizedWarehouses(ctx context.Context, userID int, query string) (int64, error)
+        + GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit int, skip int) ([]domain.Warehouse, error)
+        + GetUsedCapacityByID(ctx context.Context, id int) (int64, error)
+        + GetInventory(ctx context.Context, id int) ([]domain.WarehouseItem, error)
+        + UpdateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error)
+        + DeleteWarehouse(ctx context.Context, id int) error
+
+    }
+    interface IWarehouseService  {
+        + CreateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error)
+        + GetWarehouseByID(ctx context.Context, id int) (*domain.Warehouse, error)
+        + CountWarehouses(ctx context.Context, query string) (int64, error)
+        + GetListWarehouses(ctx context.Context, query string, limit int, skip int) ([]domain.Warehouse, error)
+        + CountAuthorizedWarehouses(ctx context.Context, userID int, query string) (int64, error)
+        + GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit int, skip int) ([]domain.Warehouse, error)
+        + GetUsedCapacityByID(ctx context.Context, id int) (int64, error)
+        + GetInventory(ctx context.Context, id int) ([]domain.WarehouseItem, error)
+        + UpdateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error)
+        + DeleteWarehouse(ctx context.Context, id int) error
+
+    }
+}
+
+
+
+namespace repository {
+    class accessControlRepository << (S,Aquamarine) >> {
+        - db *mysqldb.MysqlDB
+
+        + HasAccess(ctx context.Context, warehouseID int, userID int) error
+        + SetAccess(ctx context.Context, warehouseID int, userID int) error
+        + DelAccess(ctx context.Context, warehouseID int, userID int) error
+
+    }
+    class customerRepository << (S,Aquamarine) >> {
+        - db *mysqldb.MysqlDB
+
+        + CreateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
+        + GetCustomerByID(ctx context.Context, id int) (*domain.Customer, error)
+        + CountCustomers(ctx context.Context, query string) (int64, error)
+        + GetListCustomers(ctx context.Context, query string, limit int, skip int) ([]domain.Customer, error)
+        + UpdateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
+        + DeleteCustomer(ctx context.Context, id int) error
+
+    }
+    class exportInvoiceRepository << (S,Aquamarine) >> {
+        - db *mysqldb.MysqlDB
+
+        + CreateExInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error)
+        + GetExInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + GetExInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + CountExInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error)
+        + GetListExInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip int, limit int) ([]domain.Invoice, error)
+
+    }
+    class importInvoiceRepository << (S,Aquamarine) >> {
+        - db *mysqldb.MysqlDB
+
+        + CreateImInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error)
+        + GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + GetImInvoiceWithAssociationsByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + CountImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error)
+        + GetListImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip int, limit int) ([]domain.Invoice, error)
+
+    }
+    class keyRepository << (S,Aquamarine) >> {
+        - db *mysqldb.MysqlDB
+
+        + GetKey(ctx context.Context, id int) (string, error)
+        + SetKey(ctx context.Context, id int, key string) error
+        + DelKey(ctx context.Context, id int) error
+
+    }
+    class riceRepository << (S,Aquamarine) >> {
+        - db *mysqldb.MysqlDB
+
+        + CreateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
+        + GetRiceByID(ctx context.Context, id int) (*domain.Rice, error)
+        + CountRice(ctx context.Context, query string) (int64, error)
+        + GetListRice(ctx context.Context, query string, limit int, skip int) ([]domain.Rice, error)
+        + UpdateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
+        + DeleteRice(ctx context.Context, id int) error
+
+    }
+    class userRepository << (S,Aquamarine) >> {
+        - db *mysqldb.MysqlDB
+
+        + CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+        + GetUserByID(ctx context.Context, id int) (*domain.User, error)
+        + GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
+        + CountUsers(ctx context.Context, query string) (int64, error)
+        + GetListUsers(ctx context.Context, query string, limit int, skip int) ([]domain.User, error)
+        + UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+        + DeleteUser(ctx context.Context, id int) error
+
+    }
+    class warehouseRepository << (S,Aquamarine) >> {
+        - db *mysqldb.MysqlDB
+
+        + CreateWarehouse(ctx context.Context, warehouses *domain.Warehouse) (*domain.Warehouse, error)
+        + GetWarehouseByID(ctx context.Context, id int) (*domain.Warehouse, error)
+        + CountWarehouses(ctx context.Context, query string) (int64, error)
+        + GetListWarehouses(ctx context.Context, query string, limit int, skip int) ([]domain.Warehouse, error)
+        + CountAuthorizedWarehouses(ctx context.Context, userID int, query string) (int64, error)
+        + GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit int, skip int) ([]domain.Warehouse, error)
+        + GetUsedCapacityByID(ctx context.Context, id int) (int64, error)
+        + GetInventory(ctx context.Context, id int) ([]domain.WarehouseItem, error)
+        + UpdateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error)
+        + DeleteWarehouse(ctx context.Context, id int) error
+
+    }
+}
+
+"ports.IAccessControlRepository" <|-- "implements""repository.accessControlRepository"
+"ports.ICustomerRepository" <|-- "implements""repository.customerRepository"
+"ports.IExportInvoiceRepository" <|-- "implements""repository.exportInvoiceRepository"
+"ports.IImportInvoicesRepository" <|-- "implements""repository.importInvoiceRepository"
+"ports.IKeyRepository" <|-- "implements""repository.keyRepository"
+"ports.IRiceRepository" <|-- "implements""repository.riceRepository"
+"ports.IUserRepository" <|-- "implements""repository.userRepository"
+"ports.IWarehouseRepository" <|-- "implements""repository.warehouseRepository"
+
+namespace schema {
+    class Customer << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Email string
+        + Phone string
+        + Address string
+        + DeletedAt gorm.DeletedAt
+        + ExportInvoices []ExportInvoice
+        + ImportInvoices []ImportInvoice
+
+    }
+    class ExportInvoice << (S,Aquamarine) >> {
+        + ID int
+        + WarehouseID int
+        + CustomerID int
+        + UserID int
+        + TotalPrice float64
+        + CreatedAt time.Time
+        + Warehouse Warehouse
+        + Customer Customer
+        + User User
+        + Details []ExportInvoiceDetail
+
+    }
+    class ExportInvoiceDetail << (S,Aquamarine) >> {
+        + InvoiceID int
+        + RiceID int
+        + Price float64
+        + Quantity int
+        + Rice Rice
+
+    }
+    class ImportInvoice << (S,Aquamarine) >> {
+        + ID int
+        + WarehouseID int
+        + CustomerID int
+        + UserID int
+        + TotalPrice float64
+        + CreatedAt time.Time
+        + Warehouse Warehouse
+        + Customer Customer
+        + User User
+        + Details []ImportInvoiceDetail
+
+    }
+    class ImportInvoiceDetail << (S,Aquamarine) >> {
+        + InvoiceID int
+        + RiceID int
+        + Price float64
+        + Quantity int
+        + Rice Rice
+
+    }
+    class Rice << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + DeletedAt gorm.DeletedAt
+        + ExportInvoiceDetails []ExportInvoiceDetail
+        + ImportInvoiceDetails []ImportInvoiceDetail
+
+    }
+    class User << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Email string
+        + Phone string
+        + Role domain.Role
+        + Password string
+        + Key sql.NullString
+        + DeletedAt gorm.DeletedAt
+        + AuthorizedWarehouses []*Warehouse
+        + ExportInvoices []ExportInvoice
+        + ImportInvoices []ImportInvoice
+
+    }
+    class Warehouse << (S,Aquamarine) >> {
+        + ID int
+        + Name string
+        + Location string
+        + Capacity int
+        + Image string
+        + DeletedAt gorm.DeletedAt
+        + AuthorizedUsers []*User
+        + ExportInvoices []ExportInvoice
+        + ImportInvoices []ImportInvoice
+
+    }
+}
+
+
+"schema.Customer""uses" o-- "gorm.DeletedAt"
+"schema.Customer""uses" o-- "schema.ExportInvoice"
+"schema.Customer""uses" o-- "schema.ImportInvoice"
+"schema.ExportInvoice""uses" o-- "schema.Customer"
+"schema.ExportInvoice""uses" o-- "schema.ExportInvoiceDetail"
+"schema.ExportInvoice""uses" o-- "schema.User"
+"schema.ExportInvoice""uses" o-- "schema.Warehouse"
+"schema.ExportInvoice""uses" o-- "time.Time"
+"schema.ExportInvoiceDetail""uses" o-- "schema.Rice"
+"schema.ImportInvoice""uses" o-- "schema.Customer"
+"schema.ImportInvoice""uses" o-- "schema.ImportInvoiceDetail"
+"schema.ImportInvoice""uses" o-- "schema.User"
+"schema.ImportInvoice""uses" o-- "schema.Warehouse"
+"schema.ImportInvoice""uses" o-- "time.Time"
+"schema.ImportInvoiceDetail""uses" o-- "schema.Rice"
+"schema.Rice""uses" o-- "gorm.DeletedAt"
+"schema.Rice""uses" o-- "schema.ExportInvoiceDetail"
+"schema.Rice""uses" o-- "schema.ImportInvoiceDetail"
+"schema.User""uses" o-- "domain.Role"
+"schema.User""uses" o-- "gorm.DeletedAt"
+"schema.User""uses" o-- "schema.ExportInvoice"
+"schema.User""uses" o-- "schema.ImportInvoice"
+"schema.User""uses" o-- "schema.Warehouse"
+"schema.User""uses" o-- "sql.NullString"
+"schema.Warehouse""uses" o-- "gorm.DeletedAt"
+"schema.Warehouse""uses" o-- "schema.ExportInvoice"
+"schema.Warehouse""uses" o-- "schema.ImportInvoice"
+"schema.Warehouse""uses" o-- "schema.User"
+
+namespace services {
+    class accessControlService << (S,Aquamarine) >> {
+        - repo ports.IAccessControlRepository
+
+        + HasAccess(ctx context.Context, warehouseID int, userID int) error
+        + SetAccess(ctx context.Context, warehouseID int, userID int) error
+        + DelAccess(ctx context.Context, warehouseID int, userID int) error
+
+    }
+    class authService << (S,Aquamarine) >> {
+        - userRepo ports.IUserRepository
+        - tokenService ports.ITokenService
+
+        + Login(ctx context.Context, email string, password string) (string, error)
+
+    }
+    class customerService << (S,Aquamarine) >> {
+        - repo ports.ICustomerRepository
+
+        + CreateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
+        + GetCustomerByID(ctx context.Context, id int) (*domain.Customer, error)
+        + CountCustomers(ctx context.Context, query string) (int64, error)
+        + GetListCustomers(ctx context.Context, query string, limit int, skip int) ([]domain.Customer, error)
+        + UpdateCustomer(ctx context.Context, customer *domain.Customer) (*domain.Customer, error)
+        + DeleteCustomer(ctx context.Context, id int) error
+
+    }
+    class exInvoiceService << (S,Aquamarine) >> {
+        - imInvoiceRepo ports.IExportInvoiceRepository
+        - warehouseRepo ports.IWarehouseRepository
+        - l *mapmutex.Mapmutex
+
+        + CreateExInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error)
+        + GetExInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + CountExInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error)
+        + GetListExInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip int, limit int) ([]domain.Invoice, error)
+
+    }
+    class imInvoiceService << (S,Aquamarine) >> {
+        - imInvoiceRepo ports.IImportInvoicesRepository
+        - warehouseRepo ports.IWarehouseRepository
+        - l *mapmutex.Mapmutex
+
+        + CreateImInvoice(ctx context.Context, invoice *domain.Invoice) (*domain.Invoice, error)
+        + GetImInvoiceByID(ctx context.Context, id int) (*domain.Invoice, error)
+        + CountImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time) (int64, error)
+        + GetListImInvoices(ctx context.Context, warehouseID int, start *time.Time, end *time.Time, skip int, limit int) ([]domain.Invoice, error)
+
+    }
+    class riceService << (S,Aquamarine) >> {
+        - repo ports.IRiceRepository
+
+        + CreateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
+        + GetRiceByID(ctx context.Context, id int) (*domain.Rice, error)
+        + CountRice(ctx context.Context, query string) (int64, error)
+        + GetListRice(ctx context.Context, query string, limit int, skip int) ([]domain.Rice, error)
+        + UpdateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error)
+        + DeleteRice(ctx context.Context, id int) error
+
+    }
+    class uploadService << (S,Aquamarine) >> {
+        - storage ports.IFileStorage
+
+        + SaveTemp(file *multipart.FileHeader) (string, error)
+
+    }
+    class userService << (S,Aquamarine) >> {
+        - repo ports.IUserRepository
+
+        + CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+        + GetUserByID(ctx context.Context, id int) (*domain.User, error)
+        + GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
+        + CountUsers(ctx context.Context, q string) (int64, error)
+        + GetListUsers(ctx context.Context, q string, limit int, skip int) ([]domain.User, error)
+        + UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+        + DeleteUser(ctx context.Context, id int) error
+
+    }
+    class warehouseService << (S,Aquamarine) >> {
+        - repo ports.IWarehouseRepository
+        - file ports.IFileStorage
+
+        + CreateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error)
+        + GetWarehouseByID(ctx context.Context, id int) (*domain.Warehouse, error)
+        + CountWarehouses(ctx context.Context, query string) (int64, error)
+        + GetListWarehouses(ctx context.Context, query string, limit int, skip int) ([]domain.Warehouse, error)
+        + CountAuthorizedWarehouses(ctx context.Context, userID int, query string) (int64, error)
+        + GetAuthorizedWarehouses(ctx context.Context, userID int, query string, limit int, skip int) ([]domain.Warehouse, error)
+        + GetUsedCapacityByID(ctx context.Context, id int) (int64, error)
+        + GetInventory(ctx context.Context, id int) ([]domain.WarehouseItem, error)
+        + UpdateWarehouse(ctx context.Context, warehouse *domain.Warehouse) (*domain.Warehouse, error)
+        + DeleteWarehouse(ctx context.Context, id int) error
+
+    }
+}
+
+"ports.IAccessControlService" <|-- "implements""services.accessControlService"
+"ports.IAuthService" <|-- "implements""services.authService"
+"ports.ICustomerService" <|-- "implements""services.customerService"
+"ports.IExportInvoiceService" <|-- "implements""services.exInvoiceService"
+"ports.IImportInvoicesService" <|-- "implements""services.imInvoiceService"
+"ports.IRiceService" <|-- "implements""services.riceService"
+"ports.IUploadService" <|-- "implements""services.uploadService"
+"ports.IUserService" <|-- "implements""services.userService"
+"ports.IWarehouseService" <|-- "implements""services.warehouseService"
+
+
+"__builtin__.string" #.. "alias of""domain.Role"
+"http.fontcolorbluefuncfontginIRouter" #.. "alias of""http.RegisterRouterFunc"
+@enduml

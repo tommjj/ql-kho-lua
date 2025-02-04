@@ -21,6 +21,7 @@ type pagination struct {
 	PrevPage     *int `json:"prev_page" example:"1"`
 }
 
+// newPagination create a new pagination metadata for pagination response
 func newPagination(totalAllRecords int64, totalRecords, limitRecords, currentPage int) *pagination {
 	var nextPage *int
 	var privPage *int
@@ -45,12 +46,14 @@ func newPagination(totalAllRecords int64, totalRecords, limitRecords, currentPag
 	}
 }
 
+// response is a response body
 type response struct {
 	Success bool   `json:"success" example:"true"`
 	Message string `json:"message" example:"Success"`
 	Data    any    `json:"data,omitempty"`
 }
 
+// responseWithPagination is a response body with pagination
 type responseWithPagination struct {
 	Success    bool        `json:"success" example:"true"`
 	Message    string      `json:"message" example:"Success"`
@@ -123,7 +126,7 @@ func newUserResponse(user *domain.User) userResponse {
 
 // warehouseResponse represents a warehouse response body
 type warehouseResponse struct {
-	ID       int       `json:"id"`
+	ID       int       `json:"id" example:"1"`
 	Name     string    `json:"name" example:"store 01"`
 	Location []float64 `json:"location" example:"50.12,68.36"`
 	Image    string    `json:"image" example:"2455.png"`
@@ -143,10 +146,12 @@ func newWarehouseResponse(store *domain.Warehouse) warehouseResponse {
 	}
 }
 
+// usedCapacityResponse represents a used capacity response data
 type usedCapacityResponse struct {
 	UsedCapacity int64 `json:"used_capacity" example:"500"`
 }
 
+// newUsedCapacityResponse is a helper function to create a response body for handling used capacity data
 func newUsedCapacityResponse(v int64) usedCapacityResponse {
 	return usedCapacityResponse{
 		UsedCapacity: v,
@@ -210,10 +215,10 @@ func newCustomerResponse(customer *domain.Customer) customerResponse {
 
 // invoiceDetailResponse represents a invoice detail response body
 type invoiceDetailResponse struct {
-	RiceID   int     `json:"rice_id"`
-	Name     string  `json:"name"`
-	Price    float64 `json:"price"`
-	Quantity int     `json:"quantity"`
+	RiceID   int     `json:"rice_id" example:"1"`
+	Name     string  `json:"name" example:"name"`
+	Price    float64 `json:"price" example:"500"`
+	Quantity int     `json:"quantity" example:"5"`
 }
 
 // NewInvoiceDetail is a helper function to create a invoice Detail response for handling invoice data
@@ -232,15 +237,15 @@ func newInvoiceDetail(invoiceDetail *domain.InvoiceItem) invoiceDetailResponse {
 
 // invoiceResponse is a helper function to create a response body for handling invoice data
 type invoiceResponse struct {
-	ID            int                     `json:"id"`
-	CustomerID    int                     `json:"customer_id"`
-	CustomerName  string                  `json:"customer_name,omitempty"`
-	WarehouseID   int                     `json:"warehouse_id"`
-	WarehouseName string                  `json:"warehouse_name,omitempty"`
-	UserID        int                     `json:"user_id"`
-	UserName      string                  `json:"user_name,omitempty"`
-	CreatedAt     time.Time               `json:"created_at"`
-	TotalPrice    float64                 `json:"total_price"`
+	ID            int                     `json:"id" example:"1"`
+	CustomerID    int                     `json:"customer_id" example:"1"`
+	CustomerName  string                  `json:"customer_name,omitempty" example:"Ascalon"`
+	WarehouseID   int                     `json:"warehouse_id" example:"1"`
+	WarehouseName string                  `json:"warehouse_name,omitempty" example:"store 01"`
+	UserID        int                     `json:"user_id" example:"1"`
+	UserName      string                  `json:"user_name,omitempty" example:"vertin"`
+	CreatedAt     time.Time               `json:"created_at" example:"2021-09-01T00:00:00Z"`
+	TotalPrice    float64                 `json:"total_price" example:"500"`
 	Details       []invoiceDetailResponse `json:"details,omitempty"`
 }
 

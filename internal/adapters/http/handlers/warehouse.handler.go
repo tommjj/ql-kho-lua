@@ -96,7 +96,7 @@ func (w *WarehouseHandler) GetWarehouseByID(ctx *gin.Context) {
 
 	numID, err := strconv.Atoi(id)
 	if err != nil {
-		validationError(ctx, errors.New("id must be a number"))
+		validationError(ctx, errors.New("id invalid"))
 		return
 	}
 
@@ -131,14 +131,14 @@ type getListWarehouseRequest struct {
 // GetListWarehouses ql-kho-lua
 //
 //	@Summary		get warehouses
-//	@Description	get warehouses
+//	@Description	get warehouses with pagination
 //	@Tags			warehouses
 //	@Accept			json
 //	@Produce		json
 //	@Param			q		query		string										false	"Query"
 //	@Param			skip	query		int											false	"Skip"	default(1)	minimum(1)
 //	@Param			limit	query		int											false	"Limit"	default(5)	minimum(5)
-//	@Success		200		{object}	responseWithPagination{data=[]userResponse}	"Warehouses data"
+//	@Success		200		{object}	responseWithPagination{data=[]warehouseResponse}	"Warehouses data"
 //	@Failure		400		{object}	errorResponse								"Validation error"
 //	@Failure		401		{object}	errorResponse								"Unauthorized error"
 //	@Failure		403		{object}	errorResponse								"Forbidden error"
@@ -222,7 +222,7 @@ func (w *WarehouseHandler) GetUsedCapacityByID(ctx *gin.Context) {
 
 	numID, err := strconv.Atoi(id)
 	if err != nil {
-		validationError(ctx, errors.New("id must be a number"))
+		validationError(ctx, errors.New("id invalid"))
 		return
 	}
 
@@ -269,7 +269,7 @@ func (w *WarehouseHandler) GetInventory(ctx *gin.Context) {
 
 	numID, err := strconv.Atoi(id)
 	if err != nil {
-		validationError(ctx, errors.New("id must be a number"))
+		validationError(ctx, errors.New("id invalid"))
 		return
 	}
 
@@ -307,7 +307,7 @@ type updateWarehouseRequest struct {
 
 // UpdateWarehouse ql-kho-lua
 //
-//	@Summary		Update a warehouse and get created user data
+//	@Summary		Update a warehouse
 //	@Description	Update a warehouse and get created warehouse data
 //	@Tags			warehouses
 //	@Accept			json
@@ -330,7 +330,7 @@ func (w *WarehouseHandler) UpdateWarehouse(ctx *gin.Context) {
 
 	numID, err := strconv.Atoi(id)
 	if err != nil {
-		validationError(ctx, errors.New("id must be a number"))
+		validationError(ctx, errors.New("id invalid"))
 		return
 	}
 
@@ -369,7 +369,7 @@ func (w *WarehouseHandler) UpdateWarehouse(ctx *gin.Context) {
 // DeleteWarehouse ql-kho-lua
 //
 //	@Summary		Delete a warehouse
-//	@Description	Delete a warehouse
+//	@Description	Delete a warehouse by id
 //	@Tags			warehouses
 //	@Accept			json
 //	@Produce		json

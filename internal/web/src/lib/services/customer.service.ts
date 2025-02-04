@@ -110,7 +110,7 @@ export async function updateCustomer(
 /**
  * deleteCustomer delete customer by id
  *
- * @param key string
+ * @param {string} key
  * @param id number
  * @returns Promise<ResponseOrError<Res<undefined>>>
  */

@@ -13,7 +13,7 @@ var (
 	// authorizationHeaderKey is the key for authorization header in the request
 	authorizationHeaderKey = "authorization"
 	// authorizationType is the accepted authorization type
-	authorizationType = "jwt"
+	authorizationType = "bearer"
 	// authorizationPayloadKey is the key for authorization payload in the context
 	authorizationPayloadKey = "authorization_payload"
 )

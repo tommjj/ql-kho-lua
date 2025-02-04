@@ -23,13 +23,13 @@ type createCustomerRequest struct {
 	Name    string `json:"name" binding:"required,min=3,max=255" example:"Sentenced"`
 	Email   string `json:"email" binding:"required,email" example:"example@exp.com"`
 	Phone   string `json:"phone" binding:"required,e164" example:"+84123456789"`
-	Address string `json:"address" binding:"required" example:"abc, xyz"`
+	Address string `json:"address" binding:"required,min=1,max=255" example:"abc, xyz"`
 }
 
 // CreateCustomer ql-kho-lua
 //
-//	@Summary		Create a new customer and get created user data
-//	@Description	Create a new customer and get created user data
+//	@Summary		Create a new customer
+//	@Description	Create a new customer and get created customer data
 //	@Tags			customers
 //	@Accept			json
 //	@Produce		json
@@ -110,7 +110,7 @@ type getListCustomerRequest struct {
 // GetListCustomers ql-kho-lua
 //
 //	@Summary		get customers
-//	@Description	get customers
+//	@Description	get customers with pagination
 //	@Tags			customers
 //	@Accept			json
 //	@Produce		json
@@ -172,7 +172,7 @@ type updateCustomerRequest struct {
 // UpdateCustomer ql-kho-lua
 //
 //	@Summary		update customer
-//	@Description	update customer
+//	@Description	update customer and get updated customer data
 //	@Tags			customers
 //	@Accept			json
 //	@Produce		json
@@ -222,7 +222,7 @@ func (c *CustomerHandler) UpdateCustomer(ctx *gin.Context) {
 // DeleteCustomer ql-kho-lua
 //
 //	@Summary		delete customer
-//	@Description	delete customer
+//	@Description	delete customer by id
 //	@Tags			customers
 //	@Accept			json
 //	@Produce		json

@@ -23,7 +23,7 @@ type createUserRequest struct {
 	Name     string `json:"name" binding:"required,min=3,max=32" example:"vertin"`
 	Email    string `json:"email" binding:"required,email" example:"example@exm.com"`
 	Phone    string `json:"phone" binding:"required,e164" example:"+84123456788"`
-	Password string `json:"password" binding:"required,min=8" example:"password"`
+	Password string `json:"password" binding:"required,min=8,max=12" example:"password"`
 }
 
 // CreateUser ql-kho-lua

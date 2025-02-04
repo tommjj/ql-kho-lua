@@ -22,12 +22,12 @@ func NewFileStorage(baseDir string, tempDir string, maxAge time.Duration) (ports
 		return nil, domain.ErrConflictingDirectory
 	}
 
-	err := os.MkdirAll(baseDir, 0777)
+	err := os.MkdirAll(baseDir, 0766)
 	if err != nil {
 		return nil, domain.ErrCreateBaseDirectory
 	}
 
-	err = os.MkdirAll(tempDir, 0777)
+	err = os.MkdirAll(tempDir, 0766)
 	if err != nil {
 		return nil, domain.ErrCreateTempDirectory
 	}
@@ -106,6 +106,7 @@ func (s *localFileStorage) DeleteTempFile(filename string) error {
 		}
 		return err
 	}
+
 	return nil
 }
 

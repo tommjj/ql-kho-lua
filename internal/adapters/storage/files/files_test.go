@@ -4,7 +4,32 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
+
+func TestNewFileStorage(t *testing.T) {
+	t.Cleanup(func() {
+		os.RemoveAll("./static")
+		os.RemoveAll("./temp")
+	})
+
+	fileStorage, err := NewFileStorage("./static", "./temp", time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.NotNil(t, fileStorage, "fileStorage cannot be nil")
+}
+
+func TestLocalFileStorage_ImplementsIFileStorage(t *testing.T) {
+	fileStorage := &localFileStorage{}
+
+	assert.Implements(t, (*ports.IFileStorage)(nil), fileStorage, "fileStorage must implements IFileStorage")
+}
+
+//**
 
 func TestSaveTempFile(t *testing.T) {
 	fileStorage, err := NewFileStorage("./static", "./temp", time.Hour)

@@ -22,16 +22,16 @@ func NewExportInvoiceHandler(svc ports.IExportInvoiceService, acc ports.IAccessC
 	}
 }
 
-type DetailExInvoiceRequest struct {
+type detailExInvoiceRequest struct {
 	RiceID   int     `json:"rice_id" binding:"required"`
 	Price    float64 `json:"price" binding:"required,min=1"`
 	Quantity int     `json:"quantity" binding:"required,min=1"`
 }
 
-type CreateExInvoiceRequest struct {
+type createExInvoiceRequest struct {
 	WarehouseID int                      `json:"warehouse_id" binding:"required"`
 	CustomerID  int                      `json:"customer_id" binding:"required"`
-	Details     []DetailExInvoiceRequest `json:"details" binding:"required,min=1,unique=RiceID"`
+	Details     []detailExInvoiceRequest `json:"details" binding:"required,min=1,unique=RiceID"`
 }
 
 // CreateExInvoice ql-kho-lua
@@ -52,7 +52,7 @@ type CreateExInvoiceRequest struct {
 //	@Router			/export_invoices  [post]
 //	@Security		JWTAuth
 func (e *ExportInvoiceHandler) CreateExInvoice(ctx *gin.Context) {
-	var req CreateExInvoiceRequest
+	var req createExInvoiceRequest
 	err := ctx.BindJSON(&req)
 	if err != nil {
 		validationError(ctx, err)

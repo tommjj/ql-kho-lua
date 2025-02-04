@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@maplibre/maplibre-gl-geocoder": "^1.7.0",
@@ -50,6 +51,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/validator": "^13.12.2",
+    "cypress": "^13.17.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.8",
     "postcss": "^8",

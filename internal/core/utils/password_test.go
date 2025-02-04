@@ -2,7 +2,7 @@ package utils
 
 import "testing"
 
-func TestXxx(t *testing.T) {
+func TestHashPassword(t *testing.T) {
 	bashed, err := HashPassword("12345678")
 	if err != nil {
 		t.Fatal(err)

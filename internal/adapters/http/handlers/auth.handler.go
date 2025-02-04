@@ -17,7 +17,7 @@ func NewAuthHandler(authService ports.IAuthService) *AuthHandler {
 
 type loginRequest struct {
 	Email    string `json:"email" binding:"required,email" example:"ex@email.com" format:"email"`
-	Password string `json:"password" binding:"required,min=8" example:"12345678" minLength:"8"`
+	Password string `json:"password" binding:"required,min=8,max=12" example:"12345678" minLength:"8"`
 }
 
 // Login ql-kho-lua

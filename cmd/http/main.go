@@ -29,7 +29,7 @@ import (
 //	@securityDefinitions.apikey	JWTAuth
 //	@in							header
 //	@name						Authorization
-//	@description				Type "JWT" followed by a space and the access token.
+//	@description				Type "bearer" followed by a space and the access token.
 func main() {
 	// |> Start load config
 	conf, err := config.New()

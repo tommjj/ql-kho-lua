@@ -81,6 +81,8 @@ func NewAdapter(conf *config.HTTP, options ...RegisterRouterFunc) (*router, erro
 }
 
 // Serve is a method start server
+//
+// blocking
 func (r *router) Serve() {
 	zap.L().Info(fmt.Sprintf("start server at http://%v:%v", r.Url, r.Port))
 

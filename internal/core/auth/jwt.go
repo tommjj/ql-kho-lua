@@ -30,7 +30,7 @@ type JWTService struct {
 	keyRepo  ports.IKeyRepository
 }
 
-func NewJWTTokenService(conf config.Auth, keyRepo ports.IKeyRepository) ports.ITokenService {
+func NewJWTTokenService(conf config.Auth, keyRepo ports.IKeyRepository) *JWTService {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, domain.ErrInvalidToken
@@ -65,7 +65,7 @@ func (j *JWTService) CreateToken(user *domain.User) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.duration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    "blog-api",
+			Issuer:    "ql-kho-api",
 		},
 	})
 

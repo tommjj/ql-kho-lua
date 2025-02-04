@@ -45,7 +45,8 @@ func (ar *accessControlRepository) HasAccess(ctx context.Context, warehouseID in
 }
 
 func (ar *accessControlRepository) SetAccess(ctx context.Context, warehouseID int, userID int) error {
-	err := ar.db.WithContext(ctx).Model(&schema.User{ID: userID}).Association("AuthorizedWarehouses").Append(&schema.Warehouse{ID: warehouseID})
+	err := ar.db.WithContext(ctx).
+		Model(&schema.User{ID: userID}).Association("AuthorizedWarehouses").Append(&schema.Warehouse{ID: warehouseID})
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrForeignKeyViolated) {

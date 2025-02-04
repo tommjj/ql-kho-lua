@@ -31,7 +31,13 @@ func TestWarehouseRepo_CreateWarehouse(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := repo.CreateWarehouse(context.TODO(), &domain.Warehouse{Name: "Store 04", Location: "40.431858734948605,-99.95028183893876", Capacity: 1000, Image: "f20e8a37-af94-4a09-99a4-b62e7b2edbdb.png"})
+	data, err := repo.CreateWarehouse(
+		context.TODO(), &domain.Warehouse{
+			Name:     "Store 04",
+			Location: "40.431858734948605,-99.95028183893876",
+			Capacity: 1000,
+			Image:    "f20e8a37-af94-4a09-99a4-b62e7b2edbdb.png",
+		})
 	if err != nil {
 		t.Fatal(err)
 	}
