@@ -12,11 +12,12 @@ import (
 
 type (
 	Config struct {
-		App    *App
-		Logger *Logger
-		Auth   *Auth
-		Http   *HTTP
-		DB     *DB
+		App             *App
+		Logger          *Logger
+		Auth            *Auth
+		Http            *HTTP
+		DB              *DB
+		DefaultRootUser *DefaultRootUser
 	}
 
 	App struct {
@@ -56,6 +57,13 @@ type (
 		Port           int
 		Logger         Logger
 	}
+
+	DefaultRootUser struct {
+		Name     string
+		Email    string
+		Password string
+		Phone    string
+	}
 )
 
 func New() (*Config, error) {
@@ -88,12 +96,18 @@ func New() (*Config, error) {
 		return nil, err
 	}
 
+	defaultRootUser, err := GetDefaultRootUserConf()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
-		App:    app,
-		Logger: logger,
-		Auth:   auth,
-		Http:   http,
-		DB:     db,
+		App:             app,
+		Logger:          logger,
+		Auth:            auth,
+		Http:            http,
+		DB:              db,
+		DefaultRootUser: defaultRootUser,
 	}, nil
 }
 
@@ -217,5 +231,14 @@ func GetHTTPConf() (*HTTP, error) {
 		URL:            os.Getenv("HTTP_URL"),
 		Port:           port,
 		Logger:         logger,
+	}, nil
+}
+
+func GetDefaultRootUserConf() (*DefaultRootUser, error) {
+	return &DefaultRootUser{
+		Name:     os.Getenv("ROOT_USER_NAME"),
+		Email:    os.Getenv("ROOT_USER_MAIL"),
+		Password: os.Getenv("ROOT_USER_PASS"),
+		Phone:    os.Getenv("ROOT_USER_PHONE"),
 	}, nil
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/tommjj/ql-kho-lua/internal/core/auth"
 	"github.com/tommjj/ql-kho-lua/internal/core/mapmutex"
 	"github.com/tommjj/ql-kho-lua/internal/core/services"
+	"github.com/tommjj/ql-kho-lua/internal/core/utils"
 	"github.com/tommjj/ql-kho-lua/internal/logger"
 	"go.uber.org/zap"
 )
@@ -100,6 +101,12 @@ func main() {
 	customerService := services.NewCustomerService(customerRepository)
 	imInvoiceService := services.NewImInvoicesService(imInvoiceRepository, storehouseRepository, &mapmutex.Mapmutex{})
 	exInvoiceService := services.NewExInvoicesService(exInvoiceRepository, storehouseRepository, &mapmutex.Mapmutex{})
+
+	// auto create a root user
+	err = utils.AutoCreateRootUser(userService, conf.DefaultRootUser)
+	if err != nil {
+		zap.L().Fatal(err.Error())
+	}
 
 	// |> Start Handler
 	zap.L().Info("Start create handler")
