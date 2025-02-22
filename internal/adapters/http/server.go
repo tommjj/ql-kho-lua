@@ -2,7 +2,6 @@ package http
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/go-playground/validator/v10"
 	custom_validator "github.com/tommjj/ql-kho-lua/internal/adapters/http/validator"
@@ -10,10 +9,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gin-contrib/cors"
-	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/tommjj/ql-kho-lua/internal/logger"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -36,13 +33,13 @@ func NewAdapter(conf *config.HTTP, options ...RegisterRouterFunc) (*router, erro
 	r := gin.New()
 
 	// set logger middleware
-	logger, err := logger.New(conf.Logger)
-	if err != nil {
-		return nil, err
-	}
+	// logger, err := logger.New(conf.Logger)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
-	r.Use(ginzap.RecoveryWithZap(logger, true))
+	// r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+	// r.Use(ginzap.RecoveryWithZap(logger, true))
 
 	// set CORS
 	CORSConfig := cors.DefaultConfig()
