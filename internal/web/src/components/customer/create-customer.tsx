@@ -130,7 +130,7 @@ export default function CreateCustomerModal() {
                                 }}
                                 value={name}
                                 className={cn('', {
-                                    'focus-visible:ring-red-700':
+                                    'focus-visible:ring-red-700 ring-red-700':
                                         name.length < 3,
                                 })}
                                 placeholder="Customer name"
@@ -150,7 +150,7 @@ export default function CreateCustomerModal() {
                                     setEmail(e.target.value);
                                 }}
                                 className={cn('', {
-                                    'focus-visible:ring-red-700':
+                                    'focus-visible:ring-red-700 ring-red-700':
                                         !isEmail(email),
                                 })}
                                 placeholder="Customer email"

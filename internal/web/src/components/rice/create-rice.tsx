@@ -98,7 +98,8 @@ export default function CreateRiceModal() {
                             }}
                             value={name}
                             className={cn('', {
-                                'focus-visible:ring-red-700': name.length < 3,
+                                'focus-visible:ring-red-700 ring-red-700':
+                                    name.length < 3,
                             })}
                             autoFocus
                         />

@@ -48,7 +48,7 @@ func NewJWTTokenService(conf config.Auth, keyRepo ports.IKeyRepository) *JWTServ
 }
 
 func (j *JWTService) CreateToken(user *domain.User) (string, error) {
-	key := utils.CreateRandomString(64)
+	key := utils.GenerateRandomString(64)
 
 	err := j.keyRepo.SetKey(context.Background(), user.ID, key)
 	if err != nil {

@@ -118,7 +118,7 @@ export default function UpdateStaffModal({ staff }: { staff: User }) {
                                 }}
                                 value={name}
                                 className={cn('', {
-                                    'focus-visible:ring-red-700':
+                                    'focus-visible:ring-red-700 ring-red-700':
                                         name.length < 3,
                                 })}
                                 placeholder="Staff name"
@@ -138,7 +138,7 @@ export default function UpdateStaffModal({ staff }: { staff: User }) {
                                     setEmail(e.target.value);
                                 }}
                                 className={cn('', {
-                                    'focus-visible:ring-red-700':
+                                    'focus-visible:ring-red-700 ring-red-700':
                                         !isEmail(email),
                                 })}
                                 placeholder="Staff email"

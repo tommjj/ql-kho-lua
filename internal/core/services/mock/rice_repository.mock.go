@@ -13,12 +13,21 @@ type MockRiceRepository struct {
 
 func (m *MockRiceRepository) CreateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error) {
 	args := m.Called(ctx, rice)
-	return args.Get(0).(*domain.Rice), args.Error(1)
+
+	if rice, ok := args.Get(0).(*domain.Rice); ok {
+		return rice, args.Error(1)
+	} else {
+		return nil, args.Error(1)
+	}
 }
 
 func (m *MockRiceRepository) GetRiceByID(ctx context.Context, id int) (*domain.Rice, error) {
 	args := m.Called(ctx, id)
-	return args.Get(0).(*domain.Rice), args.Error(1)
+	if rice, ok := args.Get(0).(*domain.Rice); ok {
+		return rice, args.Error(1)
+	} else {
+		return nil, args.Error(1)
+	}
 }
 
 func (m *MockRiceRepository) CountRice(ctx context.Context, query string) (int64, error) {
@@ -28,12 +37,20 @@ func (m *MockRiceRepository) CountRice(ctx context.Context, query string) (int64
 
 func (m *MockRiceRepository) GetListRice(ctx context.Context, query string, limit, skip int) ([]domain.Rice, error) {
 	args := m.Called(ctx, query, limit, skip)
-	return args.Get(0).([]domain.Rice), args.Error(1)
+	if rice, ok := args.Get(0).([]domain.Rice); ok {
+		return rice, args.Error(1)
+	} else {
+		return nil, args.Error(1)
+	}
 }
 
 func (m *MockRiceRepository) UpdateRice(ctx context.Context, rice *domain.Rice) (*domain.Rice, error) {
 	args := m.Called(ctx, rice)
-	return args.Get(0).(*domain.Rice), args.Error(1)
+	if rice, ok := args.Get(0).(*domain.Rice); ok {
+		return rice, args.Error(1)
+	} else {
+		return nil, args.Error(1)
+	}
 }
 
 func (m *MockRiceRepository) DeleteRice(ctx context.Context, id int) error {

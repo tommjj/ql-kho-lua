@@ -124,6 +124,7 @@ func main() {
 	zap.L().Info("Start create http server")
 
 	server, err := http.NewAdapter(conf.Http, http.RegisterPingRoute(),
+		http.WithLogger(conf.Http.Logger),
 		http.RegisterStatic("./public"),
 		http.Group("/v1/api",
 			http.RegisterUploadRoute(uploadHandler),

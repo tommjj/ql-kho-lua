@@ -186,7 +186,7 @@ export function UpdateWarehouse({
                                     onChange={(e) => setName(e.target.value)}
                                     value={name}
                                     className={cn('col-span-3', {
-                                        'focus-visible:ring-red-700':
+                                        'focus-visible:ring-red-700 ring-red-700':
                                             name.length <= 3,
                                     })}
                                 />
@@ -209,7 +209,7 @@ export function UpdateWarehouse({
                                         setLocation(ok ? l : null);
                                     }}
                                     className={cn('col-span-3', {
-                                        'focus-visible:ring-red-700':
+                                        'focus-visible:ring-red-700 ring-red-700':
                                             !isLocation(locationString),
                                     })}
                                 />
@@ -229,7 +229,7 @@ export function UpdateWarehouse({
                                     }
                                     value={capacity ? capacity : ''}
                                     className={cn('col-span-3', {
-                                        'focus-visible:ring-red-700':
+                                        'focus-visible:ring-red-700 ring-red-700':
                                             capacity && capacity < 1,
                                     })}
                                 />

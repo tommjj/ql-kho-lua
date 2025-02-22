@@ -1,0 +1,16 @@
+=== RUN   TestNewFileStorage
+--- PASS: TestNewFileStorage (0.00s)
+=== RUN   TestLocalFileStorage_ImplementsIFileStorage
+--- PASS: TestLocalFileStorage_ImplementsIFileStorage (0.00s)
+=== RUN   TestSaveTempFile
+--- PASS: TestSaveTempFile (0.00s)
+=== RUN   TestSavePermanentFile
+--- PASS: TestSavePermanentFile (0.00s)
+=== RUN   TestDeleteFile
+--- PASS: TestDeleteFile (0.00s)
+=== RUN   TestCleanupTempFiles
+--- PASS: TestCleanupTempFiles (2.00s)
+=== RUN   TestCleanupTempFiles_NotExpired
+--- PASS: TestCleanupTempFiles_NotExpired (0.00s)
+PASS
+ok  	github.com/tommjj/ql-kho-lua/internal/adapters/storage/files	2.011s

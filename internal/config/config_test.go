@@ -12,5 +12,5 @@ func TestConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Log(conf.DB)
+	t.Logf("%+v", conf)
 }

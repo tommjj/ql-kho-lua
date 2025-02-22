@@ -134,7 +134,7 @@ export default function UpdateCustomerModal({
                                 }}
                                 value={name}
                                 className={cn('', {
-                                    'focus-visible:ring-red-700':
+                                    'focus-visible:ring-red-700 ring-red-700':
                                         name.length < 3,
                                 })}
                                 placeholder="Customer name"
@@ -154,7 +154,7 @@ export default function UpdateCustomerModal({
                                     setEmail(e.target.value);
                                 }}
                                 className={cn('', {
-                                    'focus-visible:ring-red-700':
+                                    'focus-visible:ring-red-700 ring-red-700':
                                         !isEmail(email),
                                 })}
                                 placeholder="Customer email"
@@ -181,7 +181,7 @@ export default function UpdateCustomerModal({
                                     setAddress(e.target.value);
                                 }}
                                 className={cn('', {
-                                    'focus-visible:ring-red-700':
+                                    'focus-visible:ring-red-700 ring-red-700':
                                         address.length < 3,
                                 })}
                                 placeholder="Customer address"
