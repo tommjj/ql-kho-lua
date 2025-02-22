@@ -12,7 +12,7 @@ import (
 	mockRepo "github.com/tommjj/ql-kho-lua/internal/core/services/mock"
 )
 
-func TestImplements(t *testing.T) {
+func TestRiceServiceImplements(t *testing.T) {
 	assert.Implements(t, (*ports.IRiceService)(nil), new(riceService))
 }
 

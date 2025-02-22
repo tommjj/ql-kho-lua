@@ -149,7 +149,9 @@ func (w *warehouseService) UpdateWarehouse(ctx context.Context, warehouse *domai
 
 	updated, err := w.repo.UpdateWarehouse(ctx, warehouse)
 	if err != nil {
-		w.file.DeleteFile(warehouse.Image)
+		if isChangeImage {
+			_ = w.file.DeleteFile(warehouse.Image)
+		}
 
 		switch err {
 		case domain.ErrNoUpdatedData:
