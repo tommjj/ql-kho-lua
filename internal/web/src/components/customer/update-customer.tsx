@@ -14,7 +14,7 @@ import {
 } from '../shadcn-ui/dialog';
 import { Input } from '../shadcn-ui/input';
 import { Label } from '../shadcn-ui/label';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { useSession } from '../session-context';
@@ -44,6 +44,14 @@ export default function UpdateCustomerModal({
     const handleToggle = useCallback(() => {
         setIsOpen((priv) => !priv);
     }, []);
+
+    useEffect(() => {
+        setName(customer.name);
+        setEmail(customer.email);
+        setPhone(customer.phone);
+        setAddress(customer.address);
+        setError(null);
+    }, [customer]);
 
     const handleSubmit = useCallback(() => {
         const parse = UpdateCustomerSchema.safeParse({

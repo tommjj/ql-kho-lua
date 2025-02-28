@@ -200,7 +200,7 @@ func (i *ImportInvoiceHandler) GetListImInvoices(ctx *gin.Context) {
 		return
 	}
 
-	if checkPageOverflow(count, req.Limit, req.Skip) {
+	if isPageOutOfRange(count, req.Limit, req.Skip) {
 		handleError(ctx, domain.ErrDataNotFound)
 		return
 	}

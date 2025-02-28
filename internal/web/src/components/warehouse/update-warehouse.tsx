@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import MapContainer from '../map/map';
 import { Button } from '../shadcn-ui/button';
 import {
@@ -55,6 +55,18 @@ export function UpdateWarehouse({
     const [image, setImage] = useState<string | undefined>(undefined);
 
     const [error, setError] = useState<string | null>();
+
+    useEffect(() => {
+        setName(warehouse.name);
+        setCapacity(warehouse.capacity);
+        setLocation({
+            lat: warehouse.location[0],
+            lng: warehouse.location[1],
+        });
+        setLocationString(`${warehouse.location[0]},${warehouse.location[1]}`);
+        setImage(warehouse.image);
+        setError(null);
+    }, [warehouse]);
 
     const handleSelectLocation = useCallback((e: MapLayerMouseEvent) => {
         setLocationString(`${e.lngLat.lat},${e.lngLat.lng}`);

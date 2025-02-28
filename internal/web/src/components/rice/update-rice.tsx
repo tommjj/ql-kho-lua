@@ -14,7 +14,7 @@ import {
 } from '../shadcn-ui/dialog';
 import { Input } from '../shadcn-ui/input';
 import { Label } from '../shadcn-ui/label';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { updateRice, UpdateRiceSchema } from '@/lib/services/rice.service';
@@ -28,6 +28,10 @@ export default function UpdateRiceModal({ rice }: { rice: Rice }) {
     const [isOpen, setIsOpen] = useState(false);
     const [name, setName] = useState(rice.name);
     const [error, setError] = useState<string | null>();
+
+    useEffect(() => {
+        setName(rice.name);
+    }, [rice]);
 
     const handleToggle = useCallback(() => {
         setIsOpen((priv) => !priv);

@@ -14,7 +14,7 @@ import {
 } from '../shadcn-ui/dialog';
 import { Input } from '../shadcn-ui/input';
 import { Label } from '../shadcn-ui/label';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import PhoneNumberInput from '../ui/phone-numbers-input';
@@ -32,6 +32,13 @@ export default function UpdateStaffModal({ staff }: { staff: User }) {
     const [email, setEmail] = useState(staff.email);
     const [phone, setPhone] = useState(staff.phone);
     const [error, setError] = useState<string | null>();
+
+    useEffect(() => {
+        setName(staff.name);
+        setEmail(staff.email);
+        setPhone(staff.phone);
+        setError(null);
+    }, [staff]);
 
     const handleToggle = useCallback(() => {
         setIsOpen((priv) => !priv);
