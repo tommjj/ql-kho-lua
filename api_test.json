@@ -1,7 +1,7 @@
 {
     "info": {
-        "_postman_id": "427c4b5d-92a9-42b5-8c25-18ff834e918a",
-        "name": "go-qlkholua",
+        "_postman_id": "1ea844ac-38c2-4688-8363-81442b25b0a7",
+        "name": "ql-kholua_test",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "_exporter_id": "34138671"
     },
@@ -11,6 +11,335 @@
             "item": [
                 {
                     "name": "login",
+                    "item": [
+                        {
+                            "name": "Login_Success",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"JSON có token\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "    pm.expect(jsonData.data).to.have.property(\"token\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\": \"user@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "auth", "login"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login_FailUserNotFound",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Phản hồi có chứa 'invalid email or password'\", function() {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData.messages).to.include(\"invalid email or password\");\r",
+                                            "})"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\": \"notfound@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "auth", "login"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login_FailWrongPasswordInvalid",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Phản hồi có chứa 'invalid email or password'\", function() {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData.messages).to.include(\"invalid email or password\");\r",
+                                            "})"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\": \"user@example.com\",\r\n    \"password\": \"password\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "auth", "login"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login_FailInvalidEmail",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"email\": \"invalid-email\",\r\n    \"password\": \"password\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "auth", "login"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login_FailMissingEmail",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \"password\": \"password123\" }",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "auth", "login"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login_FailMissingPassword",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \"email\": \"user@example.com\" }",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "auth", "login"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login_FailMissingSQLInjection",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \"email\": \"' OR '1'='1\", \"password\": \"password123\" }",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "auth", "login"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login_FailMissingSQLInjectionInPassword",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "     pm.expect(pm.response.code).to.be.oneOf([400, 401]);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \"email\": \"user@example.com\", \"password\": \"' OR '1'='1\" }",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "auth", "login"]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ],
+            "description": "# Auth test"
+        },
+        {
+            "name": "setup",
+            "item": [
+                {
+                    "name": "RootUser",
                     "event": [
                         {
                             "listen": "test",
@@ -20,11 +349,10 @@
                                     "    pm.response.to.have.status(200);\r",
                                     "});\r",
                                     "\r",
-                                    "pm.test(\"Response should contain token\", function() {\r",
-                                    "    const jsonData = pm.response.json();\r",
-                                    "    pm.expect(jsonData).to.have.property(\"data\");\r",
-                                    "    pm.expect(jsonData.data).to.have.property(\"token\");\r",
-                                    "})"
+                                    "pm.test(\"Save auth token\", function () {\r",
+                                    "    var jsonData = pm.response.json();\r",
+                                    "    pm.environment.set(\"root_token\", jsonData.data.token);\r",
+                                    "});"
                                 ],
                                 "type": "text/javascript"
                             }
@@ -38,7 +366,45 @@
                             "raw": "{\r\n    \"email\": \"mostima@mail.com\",\r\n    \"password\": \"12345678\"\r\n}",
                             "options": {
                                 "raw": {
-                                    "language": "text"
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://127.0.0.1:8080/v1/api/auth/login",
+                            "protocol": "http",
+                            "host": ["127", "0", "0", "1"],
+                            "port": "8080",
+                            "path": ["v1", "api", "auth", "login"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "MemberUser",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Save auth token\", function () {\r",
+                                    "    var jsonData = pm.response.json();\r",
+                                    "    pm.environment.set(\"member_token\", jsonData.data.token);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"email\": \"laplala@mail.com\",\r\n    \"password\": \"12345678\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
                                 }
                             }
                         },
@@ -55,18 +421,1415 @@
             ]
         },
         {
-            "name": "customers",
+            "name": "rice",
             "item": [
                 {
-                    "name": "New request",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": ""
+                    "name": "create_rice",
+                    "item": [
+                        {
+                            "name": "CreateRice_Success",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body có data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "    pm.expect(jsonData.data).to.have.property(\"id\");\r",
+                                            "    pm.expect(jsonData.data).to.have.property(\"name\");\r",
+                                            "\r",
+                                            "    pm.environment.set(\"rice_id\", jsonData.data.id)\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateRice_FailMemberToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(403);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{member_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateRice_FailMissingToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateRice_FailInvalidToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "11121221114545",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateRice_FailShortName",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Ja\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateRice_FailLongName",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"X8fK9qPzMv2bLdT3YgWjVRNCAo1sUhZxQBE6tmJw5cFpDK7nGsa\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateRice_FailExistName",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(409);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateRice_FailMissingName",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n   \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
                         }
-                    },
-                    "response": []
+                    ]
+                },
+                {
+                    "name": "get_rice_by_id",
+                    "item": [
+                        {
+                            "name": "GetRiceByID_Success",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body có data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "    pm.expect(jsonData.data).to.have.property(\"id\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetRiceByID_FailNotFound",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(404);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/9999999",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "9999999"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetRiceByID_FailInvalidID",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/ABC",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "ABC"]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "get_list_rice",
+                    "item": [
+                        {
+                            "name": "GetListRice_Success",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body có data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetListRice_SuccessWithQuery",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body có data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice?q=Jasmine",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"],
+                                    "query": [
+                                        {
+                                            "key": "q",
+                                            "value": "Jasmine"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetListRice_SuccessValidPage",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body có data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice?skip=1&limit=5",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"],
+                                    "query": [
+                                        {
+                                            "key": "skip",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "5"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetListRice_FailInvalidLimit",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice?limit=4",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "4"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetListRice_FailNotFound",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(404);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice?limit=5&skip=99999",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice"],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "5"
+                                        },
+                                        {
+                                            "key": "skip",
+                                            "value": "99999"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "update_rice",
+                    "item": [
+                        {
+                            "name": "UpdateRice_Success",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body có data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "    pm.expect(jsonData.data).to.have.property(\"id\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Updated Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "UpdateRice_FailMemberToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(403);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{member_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Updated Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "UpdateRice_FailInvalidToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "12345656",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Updated Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "UpdateRice_FailNotFound",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(404);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Updated Jasmine\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/99999",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "99999"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "UpdateRice_FailExistName",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(409);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Gạo thơm Lài Miên\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "UpdateRice_FailShortName",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"Ju\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "UpdateRice_FailLongName",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"X8fK9qPzMv2bLdT3YgWjVRNCAo1sUhZxQBE6tmJw5cFpDK7nGs5cFpDK7nGs5\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "UpdateRice_FailInvalidID",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"name\": \"updated\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/ABC",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "ABC"]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "delete_rice",
+                    "item": [
+                        {
+                            "name": "DeleteRice_FailMemberToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(403);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{member_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "DeleteRice_FailMissingToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "noauth"
+                                },
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "DeleteRice_FailInvalidToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "12255",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "DeleteRice_FailNotFound",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(404);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/999999",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "999999"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "DeleteRice_FailInvalidID",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/ABC",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "ABC"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "DeleteRice_Success",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/rice/{{rice_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "rice", "{{rice_id}}"]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
                 }
             ]
         },
@@ -74,76 +1837,1040 @@
             "name": "users",
             "item": [
                 {
-                    "name": "get_user_by_id",
-                    "request": {
-                        "auth": {
-                            "type": "apikey",
-                            "apikey": [
+                    "name": "create_user",
+                    "item": [
+                        {
+                            "name": "CreateUser_Success",
+                            "event": [
                                 {
-                                    "key": "key",
-                                    "value": "authorization",
-                                    "type": "string"
-                                },
-                                {
-                                    "key": "value",
-                                    "value": "jwt ",
-                                    "type": "string"
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body has data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
                                 }
-                            ]
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"user02\", \r\n    \"email\": \"user02@example.com\", \r\n    \"phone\": \"+84123456789\", \r\n    \"password\": \"password\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
                         },
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "http://127.0.0.1:8080/v1/api/users/3",
-                            "protocol": "http",
-                            "host": ["127", "0", "0", "1"],
-                            "port": "8080",
-                            "path": ["v1", "api", "users", "3"]
+                        {
+                            "name": "CreateUser_FailMemberToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(403);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{member_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"user02\", \r\n    \"email\": \"user02@example.com\", \r\n    \"phone\": \"+84123456789\", \r\n    \"password\": \"password\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateUser_FailMissingToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "noauth"
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"user02\", \r\n    \"email\": \"user02@example.com\", \r\n    \"phone\": \"+84123456789\", \r\n    \"password\": \"password\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateUser_FailInvalidToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "123456789",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"user02\", \r\n    \"email\": \"user02@example.com\", \r\n    \"phone\": \"+84123456789\", \r\n    \"password\": \"password\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateUser_FailShortName",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"T\", \r\n    \"email\": \"teo@example.com\", \r\n    \"phone\": \"+84123456789\", \r\n    \"password\": \"password\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateUser_FailInvalidEmail",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"Teo\", \r\n    \"email\": \"invalid_email\", \r\n    \"phone\": \"+84123456789\", \r\n    \"password\": \"password123\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateUser_FailIvalidPhone",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"Teo\", \r\n    \"email\": \"teo@example.com\", \r\n    \"phone\": \"12345\", \r\n    \"password\": \"password123\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateUser_FailShortPassword",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(400);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"Teo\", \r\n    \"email\": \"teo@example.com\", \r\n    \"phone\": \"+84123456789\", \r\n    \"password\": \"short\" \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "CreateUser_FailExistEmail",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(409);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \r\n    \"name\": \"mostima\", \r\n    \"email\": \"mostima@mail.com\", \r\n    \"phone\": \"+84123456789\", \r\n    \"password\": \"password123\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
                         }
-                    },
-                    "response": []
+                    ]
+                },
+                {
+                    "name": "get_user_by_id",
+                    "item": [
+                        {
+                            "name": "GetUserByID_Success",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body has data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users/1",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users", "1"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUserByID_SuccessMemberOwnInfo",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body has data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{member_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users/{{member_acc_id}}",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": [
+                                        "v1",
+                                        "api",
+                                        "users",
+                                        "{{member_acc_id}}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUserByID_FailMemberOtherUser",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(403);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{member_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users/1",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users", "1"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUserByID_FailMissingToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "noauth"
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users/1",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users", "1"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUserByID_FailInvalidToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "123456789",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users/1",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users", "1"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUserByID_FailNotFound",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(404);\r",
+                                            "});\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users/99999",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users", "99999"]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "get_list_users",
+                    "item": [
+                        {
+                            "name": "GetUsers_FailMemberToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(403);\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{member_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUsers_FailMissingToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "noauth"
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUsers_FailInvalidToken",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(401);\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "123456789",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUsers_SuccessWithQuery",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body has data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users?q=m",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"],
+                                    "query": [
+                                        {
+                                            "key": "q",
+                                            "value": "m"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUsers_SuccessVaildPage",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body has data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users?skip=1&limit=5",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"],
+                                    "query": [
+                                        {
+                                            "key": "q",
+                                            "value": "m",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "skip",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "5"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUsers_FailNotFound",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(404);\r",
+                                            "});\r",
+                                            "\r",
+                                            ""
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users?skip=99999&limit=5",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"],
+                                    "query": [
+                                        {
+                                            "key": "q",
+                                            "value": "m",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "skip",
+                                            "value": "99999"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "5"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "GetUsers_Success",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test(\"Status test\", function () {\r",
+                                            "    pm.response.to.have.status(200);\r",
+                                            "});\r",
+                                            "\r",
+                                            "pm.test(\"Body has data\", function () {\r",
+                                            "    const jsonData = pm.response.json();\r",
+                                            "    pm.expect(jsonData).to.have.property(\"data\");\r",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{root_token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "http://127.0.0.1:8080/v1/api/users",
+                                    "protocol": "http",
+                                    "host": ["127", "0", "0", "1"],
+                                    "port": "8080",
+                                    "path": ["v1", "api", "users"],
+                                    "query": [
+                                        {
+                                            "key": "q",
+                                            "value": "m",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "skip",
+                                            "value": "99999",
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "5",
+                                            "disabled": true
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
                 }
             ]
-        },
-        {
-            "name": "ping",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.test(\"Status test\", function () {\r",
-                            "    pm.response.to.have.status(200);\r",
-                            "});\r",
-                            ""
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "http://localhost:8080/ping",
-                    "protocol": "http",
-                    "host": ["localhost"],
-                    "port": "8080",
-                    "path": ["ping"]
-                }
-            },
-            "response": []
         }
     ],
     "variable": [
         {
-            "key": "base_api",
-            "value": "http://localhost:8080/v1/api",
+            "key": "root_token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6Ik1vc3RpbWEiLCJlbWFpbCI6Im1vc3RpbWFAbWFpbC5jb20iLCJyb2xlIjoicm9vdCIsImtleSI6ImhwZjdQaWcyQXFPZEljSVJMZmV3Y3Q0blc3VkRpYVhMSFFYWEZFYWtMNkpVUUR4REtYM2I0b0VBdGdDdVk2dlMiLCJpc3MiOiJxbC1raG8tYXBpIiwiZXhwIjoxNzQwODYwMDQ1LCJuYmYiOjE3NDA4MTY4NDUsImlhdCI6MTc0MDgxNjg0NX0.xhFom3tSYGYPqxo_pBSEoLd960Lt3OUvo-Fm_jDlOOo",
             "type": "string"
         },
         {
-            "key": "url",
-            "value": "http://localhost:8080",
+            "key": "member_token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6ImxhcGxhbGEiLCJlbWFpbCI6ImxhcGxhbGFAbWFpbC5jb20iLCJyb2xlIjoibWVtYmVyIiwia2V5IjoiUFBLUW1FMDNJdHk5WUJkWTZENFRGM3dCUkVJb0xJRHJYeWtLVkVyUHNSdHhySnRYSlRYdnJiM0dyVlA5Zm9lbCIsImlzcyI6InFsLWtoby1hcGkiLCJleHAiOjE3NDA4NjAwNzIsIm5iZiI6MTc0MDgxNjg3MiwiaWF0IjoxNzQwODE2ODcyfQ.tEGacO8VzpMus-3g-Gnx9gyiCUP_3nHGFW_3fIH4rwI",
+            "type": "string"
+        },
+        {
+            "key": "rice_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "member_acc_id",
+            "value": "2",
             "type": "string"
         }
     ]

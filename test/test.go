@@ -13,7 +13,7 @@ func main() {
 	req, _ := http.NewRequest("GET", url, nil)
 
 	req.Header.Add("Accept", "*/*")
-	req.Header.Add("User-Agent", "Thunder Client (https://www.thunderclient.com)")
+	req.Header.Add("Cache-Control", "no-cache")
 
 	times := 300
 
