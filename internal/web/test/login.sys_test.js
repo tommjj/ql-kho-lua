@@ -4,13 +4,11 @@ const { Builder, Browser, By, Key, until } = require('selenium-webdriver');
 const { describe, it, before, after } = require('node:test');
 
 var assert;
-var expect;
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 (async () => {
     const chai = await import('chai');
     assert = chai.assert;
-    expect = chai.expect;
 })();
 
 describe('Login_Success', async () => {

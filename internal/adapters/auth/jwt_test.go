@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/tommjj/ql-kho-lua/internal/adapters/auth"
 	"github.com/tommjj/ql-kho-lua/internal/config"
-	"github.com/tommjj/ql-kho-lua/internal/core/auth"
 	"github.com/tommjj/ql-kho-lua/internal/core/domain"
 	"github.com/tommjj/ql-kho-lua/internal/core/ports"
 )
